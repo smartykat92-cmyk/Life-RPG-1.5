@@ -1,0 +1,41 @@
+// Active Settings shell renderer for Vibe RPG.
+// Receives navigation and panel callbacks from main-entry.
+
+const { FEATURE_FLAGS } = require("../../config/featureFlags");
+
+function renderSettingsScreen(parent, ctx = {}) {
+  const settingsPanel = !FEATURE_FLAGS.showInterfaceSettings && ctx.settingsPanel === "interface" ? "profile" : ctx.settingsPanel;
+  const navigate = ctx.navigate;
+  const shell = parent.createDiv({ cls: "vrpg-hero-card vrpg-settings-shell" });
+  shell.createDiv({ cls: "vrpg-kicker", text: "Настройки" });
+  shell.createDiv({ cls: "vrpg-title", text: "Система" });
+  shell.createDiv({ cls: "vrpg-subtitle", text: "Персонализация героя, воды, привычек и магазина." });
+  const nav = shell.createDiv({ cls: "vrpg-command-grid vrpg-settings-nav" });
+  const panels = [
+    ["profile", "Герой", "имя, класс, фото"],
+    ["interface", "Интерфейс", "виджеты главной"],
+    ["resources", "Вода", "стаканы и дневные цели"],
+    ["habits", "Привычки", "ежедневные действия"],
+    ["quests", "Квесты", "карточки статистики"],
+    ["rewards", "Награды", "магазин XP"]
+  ].filter(([id]) => FEATURE_FLAGS.showInterfaceSettings || id !== "interface");
+  panels.forEach(([id, title, desc]) => {
+    const button = nav.createEl("button", { cls: settingsPanel === id ? "vrpg-command-action is-active" : "vrpg-command-action" });
+    button.createEl("strong", { text: title });
+    button.createSpan({ text: desc });
+    button.onclick = () => {
+      navigate({ tab: "settings", settingsPanel: id });
+    };
+  });
+  const body = shell.createDiv({ cls: "vrpg-home-module" });
+  if (settingsPanel === "profile") ctx.renderSettingsProfile(body);
+  if (settingsPanel === "interface") ctx.renderSettingsInterface(body);
+  if (settingsPanel === "resources") ctx.renderSettingsResources(body);
+  if (settingsPanel === "habits") ctx.renderSettingsHabits(body);
+  if (settingsPanel === "quests") ctx.renderSettingsQuests(body);
+  if (settingsPanel === "rewards") ctx.renderSettingsRewards(body);
+}
+
+module.exports = {
+  renderSettingsScreen
+};

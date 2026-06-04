@@ -1,0 +1,12 @@
+{
+  "name": "life-rpg",
+  "version": "0.1.0",
+  "description": "Life RPG dashboard for Obsidian with habits, XP, rewards, wallet, and water tracking.",
+  "license": "MIT",
+  "scripts": {
+    "build": "esbuild src/main-entry.js --bundle --platform=node --format=cjs --external:obsidian --outfile=main.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0"
+  }
+}

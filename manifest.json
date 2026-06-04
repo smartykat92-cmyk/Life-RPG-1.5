@@ -1,0 +1,9 @@
+{
+  "id": "vibe-rpg",
+  "name": "Life RPG",
+  "version": "0.1.0",
+  "minAppVersion": "1.5.0",
+  "description": "Life RPG dashboard for habits, XP, rewards, wallet, water, and daily progress.",
+  "author": "Pan",
+  "isDesktopOnly": false
+}
