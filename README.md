@@ -17,6 +17,22 @@ Life RPG is an Obsidian plugin that turns daily habits, water, rewards, XP, inve
 
 Life RPG stores data locally in Obsidian plugin data. It does not use network requests, telemetry, ads, accounts, or external services.
 
+## Support
+
+If Life RPG helps your daily routine, you can support development with TON or USDT on the TON network:
+
+```text
+UQDm3RqcRQ_dUEjL9mYIDWDkzXuyIpTxaQ5bJ9qPAosa328q
+```
+
+Tonkeeper link:
+
+```text
+https://app.tonkeeper.com/transfer/UQDm3RqcRQ_dUEjL9mYIDWDkzXuyIpTxaQ5bJ9qPAosa328q?text=Life%20RPG%20support
+```
+
+Please send only assets on the TON network to this address.
+
 ## Installation
 
 For beta testing, install this plugin through BRAT or manually copy the release files into:
