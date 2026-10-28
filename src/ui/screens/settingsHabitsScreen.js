@@ -10,11 +10,11 @@ function renderSettingsHabitsScreen(parent, ctx = {}) {
   const updateHabit = ctx.updateHabit;
   const deleteHabit = ctx.deleteHabit;
   const confirm = ctx.confirm;
-  const areas = [["body", "Тело"], ["mind", "Разум"], ["craft", "Дело"], ["control", "Контроль"]];
+  const areas = [["body", "Body"], ["mind", "Mind"], ["craft", "Craft"], ["control", "Control"]];
   const panel = parent.createDiv({ cls: "vrpg-panel" });
-  panel.createDiv({ cls: "vrpg-section", text: "Добавить привычку" });
-  const input = panel.createEl("input", { type: "text", placeholder: "Например: плавание, английский, дневник" });
-  const icon = panel.createEl("input", { type: "text", placeholder: "Иконка, например 🏃" });
+  panel.createDiv({ cls: "vrpg-section", text: "Add Habit" });
+  const input = panel.createEl("input", { type: "text", placeholder: "e.g. swimming, English, journaling" });
+  const icon = panel.createEl("input", { type: "text", placeholder: "Icon, e.g. 🏃" });
   const iconPicker = panel.createDiv({ cls: "vrpg-icon-picker" });
   habitIcons.forEach(value => {
     const pick = iconPicker.createEl("button", { text: value });
@@ -22,12 +22,12 @@ function renderSettingsHabitsScreen(parent, ctx = {}) {
       icon.value = value;
     };
   });
-  const xp = panel.createEl("input", { type: "number", placeholder: "XP за выполнение, обычно 10" });
+  const xp = panel.createEl("input", { type: "number", placeholder: "XP per completion, usually 10" });
   const select = panel.createEl("select");
   areas.forEach(([value, label]) => {
     select.createEl("option", { text: label, value });
   });
-  const button = panel.createEl("button", { cls: "vrpg-primary", text: "Добавить" });
+  const button = panel.createEl("button", { cls: "vrpg-primary", text: "Add" });
   button.onclick = () => {
     addHabit(input.value, select.value, xp.value || 10, icon.value || "✨");
     input.value = "";
@@ -36,14 +36,14 @@ function renderSettingsHabitsScreen(parent, ctx = {}) {
   };
 
   const list = parent.createDiv({ cls: "vrpg-panel" });
-  list.createDiv({ cls: "vrpg-section", text: "Мои привычки" });
+  list.createDiv({ cls: "vrpg-section", text: "My Habits" });
   for (const habit of data.habits) {
     const row = list.createDiv({ cls: "vrpg-setting-row" });
     row.createDiv({ cls: "vrpg-card-title", text: `${habit.icon || "•"} ${habit.title}` });
     row.createDiv({ cls: "vrpg-subtitle", text: `${areaLabels[habit.area] || habit.area} • ${habit.xp} XP` });
-    const toggle = row.createEl("button", { cls: "vrpg-primary", text: habit.enabled === false ? "Включить" : "Скрыть" });
+    const toggle = row.createEl("button", { cls: "vrpg-primary", text: habit.enabled === false ? "Enable" : "Hide" });
     toggle.onclick = () => setHabitEnabled(habit.id, habit.enabled === false);
-    const edit = row.createEl("button", { cls: "vrpg-primary", text: "Редактировать" });
+    const edit = row.createEl("button", { cls: "vrpg-primary", text: "Edit" });
     let editForm = null;
     edit.onclick = () => {
       if (editForm) {
@@ -63,22 +63,22 @@ function renderSettingsHabitsScreen(parent, ctx = {}) {
         areaSelect.createEl("option", { text: label, value });
       });
       areaSelect.value = habit.area || "body";
-      const save = editForm.createEl("button", { cls: "vrpg-primary", text: "Сохранить" });
+      const save = editForm.createEl("button", { cls: "vrpg-primary", text: "Save" });
       save.onclick = () => updateHabit(habit.id, {
         title: titleInput.value,
         icon: iconInput.value,
         xp: xpInput.value,
         area: areaSelect.value
       });
-      const cancel = editForm.createEl("button", { cls: "vrpg-primary", text: "Отмена" });
+      const cancel = editForm.createEl("button", { cls: "vrpg-primary", text: "Cancel" });
       cancel.onclick = () => {
         editForm.remove();
         editForm = null;
       };
     };
-    const remove = row.createEl("button", { cls: "vrpg-danger", text: "Удалить" });
+    const remove = row.createEl("button", { cls: "vrpg-danger", text: "Delete" });
     remove.onclick = () => {
-      if (confirm(`Удалить привычку "${habit.title}"? История по ней тоже уберётся из расчёта.`)) {
+      if (confirm(`Delete habit "${habit.title}"? Its history will also be removed from calculations.`)) {
         deleteHabit(habit.id);
       }
     };

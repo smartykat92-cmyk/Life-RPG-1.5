@@ -24,10 +24,10 @@ function timeParts(date = new Date()) {
 
 function dayPhase(date = new Date()) {
   const hour = date.getHours();
-  if (hour < 6) return "ночь";
-  if (hour < 12) return "утро";
-  if (hour < 18) return "день";
-  return "вечер";
+  if (hour < 6) return "night";
+  if (hour < 12) return "morning";
+  if (hour < 18) return "afternoon";
+  return "evening";
 }
 
 function parseMoney(value) {
@@ -42,7 +42,7 @@ function formatMoney(value) {
 }
 
 function monthLabel(date = new Date()) {
-  return date.toLocaleDateString("ru-RU", { month: "long", year: "numeric" });
+  return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
 
 function dateFromKey(key) {
@@ -52,7 +52,7 @@ function dateFromKey(key) {
 
 function walletMonthLabel(key) {
   const date = dateFromKey(key);
-  return date.toLocaleDateString("ru-RU", { month: "long", year: "numeric" });
+  return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
 
 function calendarDays(date = new Date()) {

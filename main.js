@@ -9,21 +9,21 @@ var require_constants = __commonJS({
     var APP_VIEW2 = "vibe-rpg-app-view";
     var SIDEBAR_VIEW2 = "vibe-rpg-sidebar-view";
     var AREA_LABELS2 = {
-      body: "\u0422\u0435\u043B\u043E",
-      mind: "\u0420\u0430\u0437\u0443\u043C",
-      craft: "\u0414\u0435\u043B\u043E",
-      control: "\u041A\u043E\u043D\u0442\u0440\u043E\u043B\u044C"
+      body: "Body",
+      mind: "Mind",
+      craft: "Craft",
+      control: "Control"
     };
     var MOODS2 = {
-      low: "\u041D\u0438\u0437\u043A\u0430\u044F",
-      normal: "\u041D\u043E\u0440\u043C",
-      high: "\u0412\u044B\u0441\u043E\u043A\u0430\u044F"
+      low: "Low",
+      normal: "Normal",
+      high: "High"
     };
     var RARITIES2 = {
-      common: "\u041E\u0431\u044B\u0447\u043D\u0430\u044F",
-      rare: "\u0420\u0435\u0434\u043A\u0430\u044F",
-      epic: "\u042D\u043F\u0438\u0447\u0435\u0441\u043A\u0430\u044F",
-      legendary: "\u041B\u0435\u0433\u0435\u043D\u0434\u0430\u0440\u043D\u0430\u044F"
+      common: "Common",
+      rare: "Rare",
+      epic: "Epic",
+      legendary: "Legendary"
     };
     var HABIT_ICONS2 = ["\u{1F3CB}\uFE0F", "\u{1F6B6}", "\u{1F9D8}", "\u{1F3C3}", "\u{1F6B4}", "\u{1F9E0}", "\u{1F6E0}\uFE0F", "\u{1F6E1}\uFE0F", "\u{1F4DA}", "\u270D\uFE0F", "\u{1F3A7}", "\u{1F4A7}", "\u{1F9F9}", "\u{1F4AC}", "\u{1F3AF}", "\u{1F525}"];
     module2.exports = {
@@ -59,10 +59,10 @@ var require_utils = __commonJS({
     }
     function dayPhase2(date = /* @__PURE__ */ new Date()) {
       const hour = date.getHours();
-      if (hour < 6) return "\u043D\u043E\u0447\u044C";
-      if (hour < 12) return "\u0443\u0442\u0440\u043E";
-      if (hour < 18) return "\u0434\u0435\u043D\u044C";
-      return "\u0432\u0435\u0447\u0435\u0440";
+      if (hour < 6) return "night";
+      if (hour < 12) return "morning";
+      if (hour < 18) return "afternoon";
+      return "evening";
     }
     function parseMoney2(value) {
       const normalized = String(value || "").replace(/[\s.']/g, "").replace(",", ".");
@@ -74,7 +74,7 @@ var require_utils = __commonJS({
       return String(amount).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
     function monthLabel2(date = /* @__PURE__ */ new Date()) {
-      return date.toLocaleDateString("ru-RU", { month: "long", year: "numeric" });
+      return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
     }
     function dateFromKey2(key) {
       const [day, month, year] = String(key || "").split(".").map(Number);
@@ -82,7 +82,7 @@ var require_utils = __commonJS({
     }
     function walletMonthLabel2(key) {
       const date = dateFromKey2(key);
-      return date.toLocaleDateString("ru-RU", { month: "long", year: "numeric" });
+      return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
     }
     function calendarDays2(date = /* @__PURE__ */ new Date()) {
       const year = date.getFullYear();
@@ -119,11 +119,11 @@ var require_utils = __commonJS({
 var require_questStatsConfig = __commonJS({
   "src/config/questStatsConfig.js"(exports2, module2) {
     var QUEST_STATS_CARDS2 = [
-      { id: "dailyXp", label: "XP \u0437\u0430 \u0434\u0435\u043D\u044C", enabled: true },
-      { id: "minimum", label: "\u041C\u0438\u043D\u0438\u043C\u0443\u043C \u0434\u043D\u044F", enabled: true },
-      { id: "total", label: "\u041F\u0440\u0438\u0432\u044B\u0447\u043A\u0438 \u0434\u043D\u044F", enabled: true },
-      { id: "strongDays", label: "\u0421\u0438\u043B\u044C\u043D\u044B\u0445 \u0434\u043D\u0435\u0439 \u0437\u0430 \u043D\u0435\u0434\u0435\u043B\u044E", enabled: true },
-      { id: "streak", label: "\u0421\u0435\u0440\u0438\u044F", enabled: true }
+      { id: "dailyXp", label: "Daily XP", enabled: true },
+      { id: "minimum", label: "Day's Minimum", enabled: true },
+      { id: "total", label: "Today's Habits", enabled: true },
+      { id: "strongDays", label: "Strong Days This Week", enabled: true },
+      { id: "streak", label: "Streak", enabled: true }
     ];
     function createDefaultQuestStatsCards() {
       return QUEST_STATS_CARDS2.reduce((result, card) => {
@@ -149,26 +149,26 @@ var require_heroClassesConfig = __commonJS({
       {
         id: "habit_warrior",
         icon: "\u2694\uFE0F",
-        title: "\u0412\u043E\u0438\u043D \u043F\u0440\u0438\u0432\u044B\u0447\u0435\u043A",
-        description: "\u0420\u0435\u0433\u0443\u043B\u044F\u0440\u043D\u043E\u0441\u0442\u044C, \u0435\u0436\u0435\u0434\u043D\u0435\u0432\u043D\u044B\u0435 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044F \u0438 \u0441\u0442\u0430\u0431\u0438\u043B\u044C\u043D\u044B\u0439 \u043F\u0440\u043E\u0433\u0440\u0435\u0441\u0441."
+        title: "Habit Warrior",
+        description: "Consistency, daily actions, and steady progress."
       },
       {
         id: "discipline_mage",
         icon: "\u{1F9D9}",
-        title: "\u041C\u0430\u0433 \u0434\u0438\u0441\u0446\u0438\u043F\u043B\u0438\u043D\u044B",
-        description: "\u0421\u0430\u043C\u043E\u043A\u043E\u043D\u0442\u0440\u043E\u043B\u044C, \u043A\u043E\u043D\u0446\u0435\u043D\u0442\u0440\u0430\u0446\u0438\u044F \u0438 \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u0435 \u0446\u0435\u043B\u0435\u0439 \u043D\u0435\u0441\u043C\u043E\u0442\u0440\u044F \u043D\u0430 \u043E\u0431\u0441\u0442\u043E\u044F\u0442\u0435\u043B\u044C\u0441\u0442\u0432\u0430."
+        title: "Discipline Mage",
+        description: "Self-control, focus, and achieving goals despite obstacles."
       },
       {
         id: "balance_keeper",
         icon: "\u{1F33F}",
-        title: "\u0425\u0440\u0430\u043D\u0438\u0442\u0435\u043B\u044C \u0431\u0430\u043B\u0430\u043D\u0441\u0430",
-        description: "\u0413\u0430\u0440\u043C\u043E\u043D\u0438\u0447\u043D\u043E\u0435 \u0440\u0430\u0437\u0432\u0438\u0442\u0438\u0435 \u0432\u0441\u0435\u0445 \u0441\u0444\u0435\u0440 \u0436\u0438\u0437\u043D\u0438."
+        title: "Balance Keeper",
+        description: "Harmonious growth across all areas of life."
       },
       {
         id: "change_architect",
         icon: "\u{1F525}",
-        title: "\u0410\u0440\u0445\u0438\u0442\u0435\u043A\u0442\u043E\u0440 \u043F\u0435\u0440\u0435\u043C\u0435\u043D",
-        description: "\u0421\u043E\u0437\u0434\u0430\u043D\u0438\u0435 \u043D\u043E\u0432\u044B\u0445 \u043F\u0440\u0438\u0432\u044B\u0447\u0435\u043A \u0438 \u0438\u0437\u043C\u0435\u043D\u0435\u043D\u0438\u0435 \u0441\u0432\u043E\u0435\u0439 \u0436\u0438\u0437\u043D\u0438 \u0448\u0430\u0433 \u0437\u0430 \u0448\u0430\u0433\u043E\u043C."
+        title: "Change Architect",
+        description: "Building new habits and transforming your life step by step."
       }
     ];
     function getHeroClass(id) {
@@ -223,8 +223,8 @@ var require_layoutConfig = __commonJS({
     var HOME_WIDGET_DEFINITIONS = [
       {
         id: "command",
-        title: "\u041A\u043E\u043C\u0430\u043D\u0434\u043D\u044B\u0439 \u0446\u0435\u043D\u0442\u0440",
-        description: "\u041F\u0440\u043E\u0444\u0438\u043B\u044C \u0433\u0435\u0440\u043E\u044F, \u043E\u0431\u0449\u0438\u0439 \u043F\u0440\u043E\u0433\u0440\u0435\u0441\u0441 \u0438 \u043D\u0430\u0432\u0438\u0433\u0430\u0446\u0438\u044F \u043F\u043E \u0433\u043B\u0430\u0432\u043D\u043E\u0439",
+        title: "Command Center",
+        description: "Hero profile, overall progress, and home navigation",
         defaultEnabled: true,
         defaultSize: "large",
         allowedSizes: ["large", "full"],
@@ -238,8 +238,8 @@ var require_layoutConfig = __commonJS({
       },
       {
         id: "clock",
-        title: "\u0421\u0435\u0439\u0447\u0430\u0441",
-        description: "\u0422\u0435\u043A\u0443\u0449\u0435\u0435 \u0432\u0440\u0435\u043C\u044F \u0438 \u0444\u0430\u0437\u0430 \u0434\u043D\u044F",
+        title: "Now",
+        description: "Current time and time of day",
         defaultEnabled: true,
         defaultSize: "small",
         allowedSizes: ["small", "medium"],
@@ -253,8 +253,8 @@ var require_layoutConfig = __commonJS({
       },
       {
         id: "calendar",
-        title: "\u041A\u0430\u043B\u0435\u043D\u0434\u0430\u0440\u044C",
-        description: "\u0412\u044B\u0431\u043E\u0440 \u0434\u043D\u044F \u0438 \u043A\u0440\u0430\u0442\u043A\u0430\u044F \u0441\u0442\u0430\u0442\u0438\u0441\u0442\u0438\u043A\u0430 \u043D\u0435\u0434\u0435\u043B\u0438",
+        title: "Calendar",
+        description: "Day selection and weekly stats",
         defaultEnabled: true,
         defaultSize: "medium",
         allowedSizes: ["medium", "large"],
@@ -268,8 +268,8 @@ var require_layoutConfig = __commonJS({
       },
       {
         id: "water",
-        title: "\u0412\u043E\u0434\u0430",
-        description: "\u0412\u043E\u0434\u043D\u044B\u0439 \u0431\u0430\u043B\u0430\u043D\u0441 \u0432\u044B\u0431\u0440\u0430\u043D\u043D\u043E\u0433\u043E \u0434\u043D\u044F",
+        title: "Water",
+        description: "Water balance for the selected day",
         defaultEnabled: true,
         defaultSize: "small",
         allowedSizes: ["small", "medium"],
@@ -283,8 +283,8 @@ var require_layoutConfig = __commonJS({
       },
       {
         id: "today",
-        title: "\u0421\u0435\u0433\u043E\u0434\u043D\u044F",
-        description: "\u041F\u0440\u0438\u0432\u044B\u0447\u043A\u0438, \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043D\u0438\u0435 \u0438 \u043F\u0440\u043E\u0433\u0440\u0435\u0441\u0441 \u0432\u044B\u0431\u0440\u0430\u043D\u043D\u043E\u0433\u043E \u0434\u043D\u044F",
+        title: "Today",
+        description: "Habits, mood, and progress for the selected day",
         defaultEnabled: true,
         defaultSize: "large",
         allowedSizes: ["medium", "large", "full"],
@@ -298,8 +298,8 @@ var require_layoutConfig = __commonJS({
       },
       {
         id: "hero",
-        title: "\u0413\u0435\u0440\u043E\u0439",
-        description: "\u0423\u0440\u043E\u0432\u0435\u043D\u044C, XP, \u0440\u0430\u0434\u0430\u0440 \u0438 \u043F\u0440\u043E\u0433\u0440\u0435\u0441\u0441 \u0433\u0435\u0440\u043E\u044F",
+        title: "Hero",
+        description: "Level, XP, radar, and hero progress",
         defaultEnabled: true,
         defaultSize: "large",
         allowedSizes: ["medium", "large", "full"],
@@ -313,8 +313,8 @@ var require_layoutConfig = __commonJS({
       },
       {
         id: "quests",
-        title: "\u041A\u0432\u0435\u0441\u0442\u044B",
-        description: "\u041A\u0430\u0440\u0442\u043E\u0447\u043A\u0438 \u043F\u0440\u043E\u0433\u0440\u0435\u0441\u0441\u0430 \u0438 linked-\u043A\u0432\u0435\u0441\u0442\u044B",
+        title: "Quests",
+        description: "Progress cards and linked quests",
         defaultEnabled: true,
         defaultSize: "medium",
         allowedSizes: ["medium", "large", "full"],
@@ -328,8 +328,8 @@ var require_layoutConfig = __commonJS({
       },
       {
         id: "rewards",
-        title: "\u041D\u0430\u0433\u0440\u0430\u0434\u044B",
-        description: "\u041C\u0430\u0433\u0430\u0437\u0438\u043D \u043D\u0430\u0433\u0440\u0430\u0434 \u0437\u0430 XP",
+        title: "Rewards",
+        description: "Reward shop for XP",
         defaultEnabled: true,
         defaultSize: "medium",
         allowedSizes: ["medium", "large", "full"],
@@ -343,8 +343,8 @@ var require_layoutConfig = __commonJS({
       },
       {
         id: "inventory",
-        title: "\u0418\u043D\u0432\u0435\u043D\u0442\u0430\u0440\u044C",
-        description: "\u041A\u0443\u043F\u043B\u0435\u043D\u043D\u044B\u0435 \u043D\u0430\u0433\u0440\u0430\u0434\u044B \u0438 \u0441\u0442\u0430\u0442\u0443\u0441 \u0438\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u043D\u0438\u044F",
+        title: "Inventory",
+        description: "Purchased rewards and usage status",
         defaultEnabled: true,
         defaultSize: "medium",
         allowedSizes: ["small", "medium", "large"],
@@ -358,8 +358,8 @@ var require_layoutConfig = __commonJS({
       },
       {
         id: "wallet",
-        title: "\u0411\u0430\u043D\u043A",
-        description: "\u0414\u043E\u0445\u043E\u0434\u044B, \u0440\u0430\u0441\u0445\u043E\u0434\u044B \u0438 \u0438\u0441\u0442\u043E\u0440\u0438\u044F \u043E\u043F\u0435\u0440\u0430\u0446\u0438\u0439",
+        title: "Bank",
+        description: "Income, expenses, and transaction history",
         defaultEnabled: true,
         defaultSize: "medium",
         allowedSizes: ["medium", "large", "full"],
@@ -525,7 +525,7 @@ var require_themeConfig = __commonJS({
       {
         id: "brand-dark",
         title: "Brand Dark",
-        description: "\u0424\u0438\u0440\u043C\u0435\u043D\u043D\u0430\u044F \u0442\u0451\u043C\u043D\u0430\u044F purple/blue \u043F\u0430\u043B\u0438\u0442\u0440\u0430 Life RPG",
+        description: "Brand dark purple/blue Life RPG palette",
         className: "vrpg-theme-brand-dark"
       }
     ];
@@ -597,10 +597,10 @@ var require_defaults = __commonJS({
     var { DEFAULT_INTERFACE_THEME } = require_themeConfig();
     var DEFAULT_DATA = {
       player: {
-        name: "\u0413\u0435\u0440\u043E\u0439",
+        name: "Hero",
         classId: DEFAULT_HERO_CLASS_ID,
-        className: "\u0412\u043E\u0438\u043D \u043F\u0440\u0438\u0432\u044B\u0447\u0435\u043A",
-        goal: "\u0437\u0430\u043A\u0440\u044B\u0432\u0430\u0442\u044C \u043C\u0438\u043D\u0438\u043C\u0443\u043C 3 \u043F\u0440\u0438\u0432\u044B\u0447\u043A\u0438 \u0432 \u0434\u0435\u043D\u044C",
+        className: "Habit Warrior",
+        goal: "complete at least 3 habits per day",
         avatarUrl: ""
       },
       settings: {
@@ -613,20 +613,20 @@ var require_defaults = __commonJS({
         interfaceTheme: DEFAULT_INTERFACE_THEME
       },
       habits: [
-        { id: "gym", title: "\u0417\u0430\u043B", area: "body", icon: "\u{1F3CB}\uFE0F", xp: 10, enabled: true },
-        { id: "walk", title: "\u041F\u0440\u043E\u0433\u0443\u043B\u043A\u0430", area: "body", icon: "\u{1F6B6}", xp: 10, enabled: true },
-        { id: "stretch", title: "\u0420\u0430\u0441\u0442\u044F\u0436\u043A\u0430", area: "body", icon: "\u{1F9D8}", xp: 10, enabled: true },
-        { id: "run", title: "\u0411\u0435\u0433", area: "body", icon: "\u{1F3C3}", xp: 10, enabled: true },
-        { id: "bike", title: "\u0412\u0435\u043B\u043E\u0441\u0438\u043F\u0435\u0434", area: "body", icon: "\u{1F6B4}", xp: 10, enabled: true },
-        { id: "focus", title: "20 \u043C\u0438\u043D\u0443\u0442 \u0432 \u0442\u0438\u0448\u0438\u043D\u0435", area: "mind", icon: "\u{1F9E0}", xp: 10, enabled: true },
-        { id: "work", title: "\u0420\u0430\u0431\u043E\u0442\u0430 / \u043F\u0440\u043E\u0435\u043A\u0442", area: "craft", icon: "\u{1F6E0}\uFE0F", xp: 10, enabled: true },
-        { id: "control", title: "\u0414\u0435\u043D\u044C \u0431\u0435\u0437 \u0437\u0430\u043B\u0438\u043F\u0430\u043D\u0438\u044F", area: "control", icon: "\u{1F6E1}\uFE0F", xp: 10, enabled: true }
+        { id: "gym", title: "Gym", area: "body", icon: "\u{1F3CB}\uFE0F", xp: 10, enabled: true },
+        { id: "walk", title: "Walk", area: "body", icon: "\u{1F6B6}", xp: 10, enabled: true },
+        { id: "stretch", title: "Stretch", area: "body", icon: "\u{1F9D8}", xp: 10, enabled: true },
+        { id: "run", title: "Run", area: "body", icon: "\u{1F3C3}", xp: 10, enabled: true },
+        { id: "bike", title: "Bike", area: "body", icon: "\u{1F6B4}", xp: 10, enabled: true },
+        { id: "focus", title: "20 Minutes Quiet Focus", area: "mind", icon: "\u{1F9E0}", xp: 10, enabled: true },
+        { id: "work", title: "Work / Project", area: "craft", icon: "\u{1F6E0}\uFE0F", xp: 10, enabled: true },
+        { id: "control", title: "No Doom Scrolling", area: "control", icon: "\u{1F6E1}\uFE0F", xp: 10, enabled: true }
       ],
       rewards: [
-        { id: "youtube", title: "30 \u043C\u0438\u043D\u0443\u0442 YouTube", cost: 100, icon: "\u25B6\uFE0F", rarity: "common" },
-        { id: "coffee", title: "\u041A\u043E\u0444\u0435 / \u043D\u0430\u043F\u0438\u0442\u043E\u043A", cost: 100, icon: "\u2615", rarity: "common" },
-        { id: "dinner", title: "\u041A\u0430\u0444\u0435 / \u0432\u043A\u0443\u0441\u043D\u044B\u0439 \u0443\u0436\u0438\u043D", cost: 250, icon: "\u{1F35C}", rarity: "rare" },
-        { id: "game", title: "\u0412\u0435\u0447\u0435\u0440 \u0438\u0433\u0440\u044B", cost: 250, icon: "\u{1F3AE}", rarity: "rare" }
+        { id: "youtube", title: "30 Minutes YouTube", cost: 100, icon: "\u25B6\uFE0F", rarity: "common" },
+        { id: "coffee", title: "Coffee / Drink", cost: 100, icon: "\u2615", rarity: "common" },
+        { id: "dinner", title: "Dinner Out", cost: 250, icon: "\u{1F35C}", rarity: "rare" },
+        { id: "game", title: "Game Night", cost: 250, icon: "\u{1F3AE}", rarity: "rare" }
       ],
       days: {},
       inventory: [],
@@ -686,7 +686,7 @@ var require_questStatsSystem = __commonJS({
       }
       const customQuestStatsCards = Array.isArray(settings.customQuestStatsCards) ? settings.customQuestStatsCards.filter((card) => card && typeof card === "object" && card.id).map((card) => ({
         id: String(card.id),
-        label: String(card.label || "\u0421\u0432\u043E\u044F \u043A\u0430\u0440\u0442\u043E\u0447\u043A\u0430").trim() || "\u0421\u0432\u043E\u044F \u043A\u0430\u0440\u0442\u043E\u0447\u043A\u0430",
+        label: String(card.label || "Custom Card").trim() || "Custom Card",
         value: String(card.value || "").trim(),
         habitId: card.habitId ? String(card.habitId) : "",
         habitIds: safeHabitIds(card.habitIds, card.habitId),
@@ -723,7 +723,7 @@ var require_questStatsSystem = __commonJS({
       const normalized = normalizeQuestStatsSettings2(data.settings || {});
       const card = {
         id: uid("questCard"),
-        label: String(input.label || "\u0421\u0432\u043E\u044F \u043A\u0430\u0440\u0442\u043E\u0447\u043A\u0430").trim() || "\u0421\u0432\u043E\u044F \u043A\u0430\u0440\u0442\u043E\u0447\u043A\u0430",
+        label: String(input.label || "Custom Card").trim() || "Custom Card",
         value: String(input.value || "").trim(),
         habitId: input.habitId ? String(input.habitId) : "",
         habitIds: safeHabitIds(input.habitIds, input.habitId),
@@ -745,7 +745,7 @@ var require_questStatsSystem = __commonJS({
       if (index === -1) return { ok: false, data, card: null, reason: "unknown-card" };
       const next = { ...cards[index] };
       if (Object.prototype.hasOwnProperty.call(patch, "label")) {
-        next.label = String(patch.label || "\u0421\u0432\u043E\u044F \u043A\u0430\u0440\u0442\u043E\u0447\u043A\u0430").trim() || "\u0421\u0432\u043E\u044F \u043A\u0430\u0440\u0442\u043E\u0447\u043A\u0430";
+        next.label = String(patch.label || "Custom Card").trim() || "Custom Card";
       }
       if (Object.prototype.hasOwnProperty.call(patch, "value")) {
         next.value = String(patch.value || "").trim();
@@ -857,11 +857,11 @@ var require_questStatsSystem = __commonJS({
       if (card.type === "habitCount") {
         const days = card.period === "today" ? 1 : goal;
         const done = countAnyHabitDoneInLastDays(data, habitIds, selectedDateKey, days);
-        return `${done}/${goal} \u0434\u043D\u0435\u0439`;
+        return `${done}/${goal} days`;
       }
       if (card.type === "habitStreak") {
         const streak2 = habitStreakForAnyHabit(data, habitIds, selectedDateKey);
-        return `${streak2}/${goal} \u0434\u043D\u0435\u0439`;
+        return `${streak2}/${goal} days`;
       }
       return card.value || "";
     }
@@ -1053,7 +1053,7 @@ var require_waterWidget = __commonJS({
   "src/ui/components/waterWidget.js"(exports2, module2) {
     function renderWaterWidget2(parent, options = {}) {
       const stats = options.stats || {};
-      const title = options.title || "\u0412\u043E\u0434\u0430";
+      const title = options.title || "Water";
       const mode = options.mode || "ring";
       const className = options.className || (mode === "panel" ? "vrpg-panel vrpg-water-panel" : "vrpg-glass-widget vrpg-water-widget");
       const root = parent.createDiv({ cls: className });
@@ -1066,7 +1066,7 @@ var require_waterWidget = __commonJS({
         waterRing.createDiv({ cls: "vrpg-water-value", text: `${stats.value}/${stats.goal}` });
         root.createDiv({
           cls: "vrpg-subtitle",
-          text: `${Math.round(stats.currentMl / 100) / 10}/${Math.round(stats.targetMl / 100) / 10} \u043B \u0441\u0435\u0433\u043E\u0434\u043D\u044F`
+          text: `${Math.round(stats.currentMl / 100) / 10}/${Math.round(stats.targetMl / 100) / 10} L today`
         });
         const controls = root.createDiv({ cls: "vrpg-water-controls" });
         const minus = controls.createEl("button", { text: "-" });
@@ -1077,14 +1077,14 @@ var require_waterWidget = __commonJS({
       if (mode === "panel") {
         root.createDiv({ cls: "vrpg-section", text: title });
         const waterLine = root.createDiv({ cls: "vrpg-water-line" });
-        waterLine.createDiv({ cls: "vrpg-card-title", text: `${stats.value}/${stats.goal} \u0441\u0442\u0430\u043A\u0430\u043D\u043E\u0432` });
-        waterLine.createDiv({ cls: "vrpg-subtitle", text: `${stats.percent}% \xB7 ${stats.glassMl} \u043C\u043B \u0441\u0442\u0430\u043A\u0430\u043D` });
+        waterLine.createDiv({ cls: "vrpg-card-title", text: `${stats.value}/${stats.goal} glasses` });
+        waterLine.createDiv({ cls: "vrpg-subtitle", text: `${stats.percent}% \xB7 ${stats.glassMl} ml glass` });
         const waterBar = root.createDiv({ cls: "vrpg-water-bar" });
         waterBar.createDiv({ cls: "vrpg-water-fill", attr: { style: `width:${stats.percent}%` } });
         const controls = root.createDiv({ cls: "vrpg-water-controls" });
-        const minus = controls.createEl("button", { text: "-1 \u0441\u0442\u0430\u043A\u0430\u043D" });
+        const minus = controls.createEl("button", { text: "-1 glass" });
         minus.onclick = options.onDecrement;
-        const plus = controls.createEl("button", { text: "+1 \u0441\u0442\u0430\u043A\u0430\u043D" });
+        const plus = controls.createEl("button", { text: "+1 glass" });
         plus.onclick = options.onIncrement;
       }
       return root;
@@ -1103,9 +1103,9 @@ var require_walletRows = __commonJS({
       const deleteWallet = ctx.deleteWallet || (() => {
       });
       const row = parent.createDiv({ cls: "vrpg-wallet-row" });
-      row.createDiv({ cls: item.type === "income" ? "vrpg-money-positive" : "vrpg-money-negative", text: `${item.type === "income" ? "+" : "-"}${formatMoney2(item.amount)} \u20BD` });
-      row.createDiv({ cls: "vrpg-subtitle", text: `${item.time || "--:--"} \xB7 ${item.note || "\u0431\u0435\u0437 \u043A\u043E\u043C\u043C\u0435\u043D\u0442\u0430\u0440\u0438\u044F"}` });
-      const remove = row.createEl("button", { cls: "vrpg-danger vrpg-icon-action", text: "\u0423\u0434\u0430\u043B\u0438\u0442\u044C" });
+      row.createDiv({ cls: item.type === "income" ? "vrpg-money-positive" : "vrpg-money-negative", text: `${item.type === "income" ? "+" : "-"}${formatMoney2(item.amount)} $` });
+      row.createDiv({ cls: "vrpg-subtitle", text: `${item.time || "--:--"} \xB7 ${item.note || "no comment"}` });
+      const remove = row.createEl("button", { cls: "vrpg-danger vrpg-icon-action", text: "Delete" });
       remove.onclick = () => deleteWallet(item.id);
     }
     function renderWalletMonth(parent, wallet, selectedKey, ctx = {}) {
@@ -1123,7 +1123,7 @@ var require_walletRows = __commonJS({
         days.get(item.date).push(item);
       }
       if (!days.size) {
-        parent.createDiv({ cls: "vrpg-subtitle", text: "\u0412 \u044D\u0442\u043E\u043C \u043C\u0435\u0441\u044F\u0446\u0435 \u0437\u0430\u043F\u0438\u0441\u0435\u0439 \u043F\u043E\u043A\u0430 \u043D\u0435\u0442." });
+        parent.createDiv({ cls: "vrpg-subtitle", text: "No records this month yet." });
         return;
       }
       const sortedDays = Array.from(days.entries()).sort((a, b) => dateFromKey2(b[0]).getTime() - dateFromKey2(a[0]).getTime());
@@ -1134,7 +1134,7 @@ var require_walletRows = __commonJS({
         const expense = items.filter((item) => item.type === "expense").reduce((sum, item) => sum + Number(item.amount || 0), 0);
         const summary = dayDetails.createEl("summary");
         summary.createSpan({ text: dayKey });
-        summary.createSpan({ text: `${income - expense >= 0 ? "+" : ""}${formatMoney2(income - expense)} \u20BD \xB7 ${items.length}` });
+        summary.createSpan({ text: `${income - expense >= 0 ? "+" : ""}${formatMoney2(income - expense)} $ \xB7 ${items.length}` });
         for (const item of items.slice().sort((a, b) => String(b.time || "").localeCompare(String(a.time || "")))) {
           renderWalletRow(dayDetails, item, ctx);
         }
@@ -1419,7 +1419,7 @@ var require_homeScreen = __commonJS({
       const water = selectedWater;
       const isTodaySelected = selectedKey === dateKey2(now);
       const nextReward = data.rewards.slice().sort((a, b) => Number(a.cost || 0) - Number(b.cost || 0)).find((reward) => Number(reward.cost || 0) > t.balance);
-      const nextRewardText = nextReward ? `\u0414\u043E "${nextReward.title}" \u043E\u0441\u0442\u0430\u043B\u043E\u0441\u044C ${Number(nextReward.cost || 0) - t.balance} XP` : "\u0411\u0430\u0437\u043E\u0432\u044B\u0439 \u043C\u0430\u0433\u0430\u0437\u0438\u043D \u0443\u0436\u0435 \u0434\u043E\u0441\u0442\u0443\u043F\u0435\u043D";
+      const nextRewardText = nextReward ? `${Number(nextReward.cost || 0) - t.balance} XP until "${nextReward.title}"` : "Basic shop already unlocked";
       const todayPercent = today.total ? Math.round(today.done / today.total * 100) : 0;
       const layoutWidgets = getEnabledLayoutWidgets(data);
       const widgetById = new Map(layoutWidgets.map((widget) => [widget.id, widget]));
@@ -1442,7 +1442,7 @@ var require_homeScreen = __commonJS({
         const editBar = parent.createDiv({ cls: "vrpg-home-edit-bar" });
         const editButton = editBar.createEl("button", {
           cls: isHomeEditMode ? "vrpg-primary is-active" : "vrpg-primary",
-          text: isHomeEditMode ? "\u0413\u043E\u0442\u043E\u0432\u043E" : "\u0420\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u044D\u043A\u0440\u0430\u043D"
+          text: isHomeEditMode ? "Done" : "Edit Screen"
         });
         editButton.onclick = toggleHomeEditMode;
       }
@@ -1575,7 +1575,7 @@ var require_homeScreen = __commonJS({
           text: "\u2195",
           attr: {
             draggable: "true",
-            title: "\u041F\u0435\u0440\u0435\u0442\u0430\u0449\u0438\u0442\u044C \u0432\u0438\u0434\u0436\u0435\u0442"
+            title: "Drag widget"
           }
         });
         handle.ondragstart = (event) => {
@@ -1626,7 +1626,7 @@ var require_homeScreen = __commonJS({
           cls: "vrpg-home-drag-handle",
           text: "\u2195",
           attr: {
-            title: "\u041F\u0435\u0440\u0435\u0442\u0430\u0449\u0438\u0442\u044C \u0432\u0438\u0434\u0436\u0435\u0442"
+            title: "Drag widget"
           }
         });
         handle.onpointerdown = (event) => {
@@ -1693,7 +1693,7 @@ var require_homeScreen = __commonJS({
           cls: "vrpg-home-resize-handle",
           text: "\u2198",
           attr: {
-            title: "\u0418\u0437\u043C\u0435\u043D\u0438\u0442\u044C \u0440\u0430\u0437\u043C\u0435\u0440 \u0432\u0438\u0434\u0436\u0435\u0442\u0430"
+            title: "Resize widget"
           }
         });
         resize.onpointerdown = (event) => {
@@ -1801,20 +1801,20 @@ var require_homeScreen = __commonJS({
         const xpVital = commandVitals.createDiv({ cls: "vrpg-command-vital" });
         xpVital.createDiv({ cls: "vrpg-section", text: "XP" });
         xpVital.createDiv({ cls: "vrpg-card-title", text: `${t.balance}` });
-        xpVital.createDiv({ cls: "vrpg-subtitle", text: `${t.levelXP}/100 \u0443\u0440\u043E\u0432\u043D\u044F` });
+        xpVital.createDiv({ cls: "vrpg-subtitle", text: `${t.levelXP}/100 to level` });
         const streakVital = commandVitals.createDiv({ cls: "vrpg-command-vital" });
-        streakVital.createDiv({ cls: "vrpg-section", text: "\u0421\u0435\u0440\u0438\u044F" });
+        streakVital.createDiv({ cls: "vrpg-section", text: "Streak" });
         streakVital.createDiv({ cls: "vrpg-card-title", text: `${streak2(data)}` });
-        streakVital.createDiv({ cls: "vrpg-subtitle", text: "\u0434\u043D\u0435\u0439" });
+        streakVital.createDiv({ cls: "vrpg-subtitle", text: "days" });
         createProgressBar2(card, todayPercent, "vrpg-command-progress");
         const commandGrid = card.createDiv({ cls: "vrpg-command-grid" });
         const commandItems = {
-          today: [isTodaySelected ? "\u0421\u0435\u0433\u043E\u0434\u043D\u044F" : "\u0414\u0435\u043D\u044C", "\u041E\u0442\u043C\u0435\u0442\u0438\u0442\u044C \u043F\u0440\u0438\u0432\u044B\u0447\u043A\u0438"],
-          hero: ["\u0413\u0435\u0440\u043E\u0439", `${t.levelXP}/100 XP \u0443\u0440\u043E\u0432\u043D\u044F`],
-          quests: ["\u041A\u0432\u0435\u0441\u0442\u044B", `${today.done >= 3 ? "\u0434\u043D\u0435\u0432\u043D\u043E\u0439 \u043C\u0438\u043D\u0438\u043C\u0443\u043C \u0437\u0430\u043A\u0440\u044B\u0442" : `${Math.min(today.done, 3)}/3 \u0434\u043E \u043C\u0438\u043D\u0438\u043C\u0443\u043C\u0430`}`],
-          rewards: ["\u041C\u0430\u0433\u0430\u0437\u0438\u043D", nextRewardText],
-          inventory: ["\u0418\u043D\u0432\u0435\u043D\u0442\u0430\u0440\u044C", `${data.inventory.filter((item) => !item.used).length} \u0430\u043A\u0442\u0438\u0432\u043D\u044B\u0445`],
-          wallet: ["\u0411\u0430\u043D\u043A", `${(data.wallet || []).length} \u0437\u0430\u043F\u0438\u0441\u0435\u0439`]
+          today: [isTodaySelected ? "Today" : "Day", "Check off habits"],
+          hero: ["Hero", `${t.levelXP}/100 XP to level`],
+          quests: ["Quests", `${today.done >= 3 ? "daily minimum met" : `${Math.min(today.done, 3)}/3 to minimum`}`],
+          rewards: ["Shop", nextRewardText],
+          inventory: ["Inventory", `${data.inventory.filter((item) => !item.used).length} active`],
+          wallet: ["Bank", `${(data.wallet || []).length} records`]
         };
         const panelWidgetById = new Map(panelWidgets.map((panelWidget) => [panelWidget.id, panelWidget]));
         HOME_PANEL_WIDGET_IDS.forEach((id) => {
@@ -1835,14 +1835,14 @@ var require_homeScreen = __commonJS({
           attr: getWidgetAttr(widget)
         });
         prepareWidgetRoot(clock, widget);
-        clock.createDiv({ cls: "vrpg-kicker", text: "\u0421\u0435\u0439\u0447\u0430\u0441" });
+        clock.createDiv({ cls: "vrpg-kicker", text: "Now" });
         const parts = timeParts2(now);
         const clockFace = clock.createDiv({ cls: "vrpg-clock" });
         clockFace.createSpan({ text: parts.hours });
         clockFace.createSpan({ cls: "vrpg-clock-colon", text: ":" });
         clockFace.createSpan({ text: parts.minutes });
         clock.createDiv({ cls: "vrpg-phase", text: dayPhase2(now) });
-        clock.createDiv({ cls: "vrpg-subtitle", text: now.toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" }) });
+        clock.createDiv({ cls: "vrpg-subtitle", text: now.toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long" }) });
       };
       const renderCalendarWidget = (widget, parentEl = top) => {
         const calendarDate = Number.isFinite(selectedDate.getTime()) ? selectedDate : now;
@@ -1864,7 +1864,7 @@ var require_homeScreen = __commonJS({
         calendarHeader.createDiv({ cls: "vrpg-kicker", text: monthLabel2(monthDate) });
         calendarHeader.createEl("button", { cls: "vrpg-icon-action", text: "\u203A" }).onclick = () => moveMonth(1);
         const week = calendar.createDiv({ cls: "vrpg-calendar" });
-        ["\u041F", "\u0412", "\u0421", "\u0427", "\u041F", "\u0421", "\u0412"].forEach((day) => week.createSpan({ cls: "vrpg-calendar-head", text: day }));
+        ["M", "T", "W", "T", "F", "S", "S"].forEach((day) => week.createSpan({ cls: "vrpg-calendar-head", text: day }));
         for (const day of calendarDays2(monthDate)) {
           const key = day ? dateKey2(new Date(monthDate.getFullYear(), monthDate.getMonth(), day)) : "";
           const dayButton = week.createEl("button", {
@@ -1885,13 +1885,13 @@ var require_homeScreen = __commonJS({
         }
         const dayDetails = calendar.createDiv({ cls: "vrpg-calendar-details" });
         dayDetails.createDiv({ cls: "vrpg-card-title", text: selectedKey });
-        dayDetails.createDiv({ cls: "vrpg-subtitle", text: `\u041F\u0440\u0438\u0432\u044B\u0447\u043A\u0438: ${selectedStats.done}/${selectedStats.total} \xB7 \u0412\u043E\u0434\u0430: ${selectedWater.value}/${selectedWater.goal}` });
-        dayDetails.createDiv({ cls: "vrpg-subtitle", text: isGridMode ? `\u041D\u0435\u0434\u0435\u043B\u044F: ${strongDays}/7 \xB7 \u0441\u0435\u0440\u0438\u044F ${streak2(data)}` : `\u041D\u0435\u0434\u0435\u043B\u044F: ${strongDays}/7 \u0441\u0438\u043B\u044C\u043D\u044B\u0445 \u0434\u043D\u0435\u0439 \xB7 \u043B\u0443\u0447\u0448\u0438\u0439 \u0434\u0435\u043D\u044C ${bestDay.xp} XP \xB7 \u0441\u0435\u0440\u0438\u044F ${streak2(data)}` });
+        dayDetails.createDiv({ cls: "vrpg-subtitle", text: `Habits: ${selectedStats.done}/${selectedStats.total} \xB7 Water: ${selectedWater.value}/${selectedWater.goal}` });
+        dayDetails.createDiv({ cls: "vrpg-subtitle", text: isGridMode ? `Week: ${strongDays}/7 \xB7 streak ${streak2(data)}` : `Week: ${strongDays}/7 strong days \xB7 best day ${bestDay.xp} XP \xB7 streak ${streak2(data)}` });
       };
       const renderWaterLayoutWidget = (widget, parentEl = top) => {
         const waterRoot = renderWaterWidget2(parentEl, {
           stats: water,
-          title: "\u0412\u043E\u0434\u0430",
+          title: "Water",
           mode: "ring",
           className: getWidgetClass("vrpg-glass-widget vrpg-water-widget", widget),
           onDecrement: () => changeWater(-1, selectedKey),
@@ -1913,20 +1913,20 @@ var require_homeScreen = __commonJS({
         const body = card.createDiv({ cls: "vrpg-preview-body" });
         renderBody(body, card);
         if (options.openPanel) {
-          const open = body.createEl("button", { cls: "vrpg-primary vrpg-preview-open", text: options.openLabel || "\u041E\u0442\u043A\u0440\u044B\u0442\u044C" });
+          const open = body.createEl("button", { cls: "vrpg-primary vrpg-preview-open", text: options.openLabel || "Open" });
           open.onclick = () => navigate({ tab: "home", homePanel: options.openPanel });
         }
         return card;
       };
       const renderTodayPreview = (widget) => {
-        renderPreviewWidget(widget, "vrpg-preview-today", "\u0421\u0435\u0433\u043E\u0434\u043D\u044F", `${today.done}/${today.total} \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u043E \xB7 ${today.xp} XP`, (body) => {
+        renderPreviewWidget(widget, "vrpg-preview-today", "Today", `${today.done}/${today.total} completed \xB7 ${today.xp} XP`, (body) => {
           const topLine = body.createDiv({ cls: "vrpg-preview-progress-line" });
           topLine.createDiv({ cls: "vrpg-card-title", text: `${today.done}/${today.total}` });
-          topLine.createDiv({ cls: "vrpg-subtitle", text: today.done >= 3 ? "\u043C\u0438\u043D\u0438\u043C\u0443\u043C \u0434\u043D\u044F \u0437\u0430\u043A\u0440\u044B\u0442" : `${Math.min(today.done, 3)}/3 \u0434\u043E \u043C\u0438\u043D\u0438\u043C\u0443\u043C\u0430` });
+          topLine.createDiv({ cls: "vrpg-subtitle", text: today.done >= 3 ? "daily minimum met" : `${Math.min(today.done, 3)}/3 to minimum` });
           createProgressBar2(body, todayPercent, "vrpg-preview-progress");
           const list = body.createDiv({ cls: "vrpg-preview-task-list" });
           if (!habits.length) {
-            list.createDiv({ cls: "vrpg-preview-empty", text: "\u041F\u0440\u0438\u0432\u044B\u0447\u043A\u0438 \u043D\u0430 \u0441\u0435\u0433\u043E\u0434\u043D\u044F \u043D\u0435 \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u044B" });
+            list.createDiv({ cls: "vrpg-preview-empty", text: "No habits added for today" });
           } else {
             habits.slice(0, 3).forEach((habit) => {
               const done = !!(selectedDay.completed && selectedDay.completed[habit.id]);
@@ -1939,35 +1939,35 @@ var require_homeScreen = __commonJS({
             });
           }
           if (habits.length > 3) {
-            body.createDiv({ cls: "vrpg-subtitle", text: `\u0415\u0449\u0451 ${habits.length - 3} \u043F\u0440\u0438\u0432\u044B\u0447\u0435\u043A \u0432 \u0440\u0430\u0437\u0434\u0435\u043B\u0435 \u0421\u0435\u0433\u043E\u0434\u043D\u044F` });
+            body.createDiv({ cls: "vrpg-subtitle", text: `${habits.length - 3} more habits in the Today section` });
           }
-        }, { openPanel: "today", openLabel: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u0434\u0435\u043D\u044C" });
+        }, { openPanel: "today", openLabel: "Open Today" });
       };
       const renderHeroProgressPreview = (widget) => {
-        renderPreviewWidget(widget, "vrpg-preview-hero", "\u041F\u0440\u043E\u0433\u0440\u0435\u0441\u0441 \u0433\u0435\u0440\u043E\u044F", `${heroTitle2(t.level)} \xB7 ${t.levelXP}/100 XP \u0443\u0440\u043E\u0432\u043D\u044F`, (body) => {
+        renderPreviewWidget(widget, "vrpg-preview-hero", "Hero Progress", `${heroTitle2(t.level)} \xB7 ${t.levelXP}/100 XP to level`, (body) => {
           body.createDiv({ cls: "vrpg-preview-level", text: `LEVEL ${t.level}` });
           createProgressBar2(body, t.levelXP, "vrpg-preview-progress");
           const statsGrid = body.createDiv({ cls: "vrpg-preview-stat-grid" });
           [
             ["XP", `${t.balance}`],
-            ["\u0421\u0435\u0440\u0438\u044F", `${streak2(data)} \u0434\u043D\u0435\u0439`],
-            ["\u041D\u0435\u0434\u0435\u043B\u044F", `${strongDays}/7`]
+            ["Streak", `${streak2(data)} days`],
+            ["Week", `${strongDays}/7`]
           ].forEach(([label, value]) => {
             const item = statsGrid.createDiv({ cls: "vrpg-preview-stat" });
             item.createSpan({ text: label });
             item.createEl("strong", { text: value });
           });
-        }, { openPanel: "hero", openLabel: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u0433\u0435\u0440\u043E\u044F" });
+        }, { openPanel: "hero", openLabel: "Open Hero" });
       };
       const renderQuestsPreview = (widget) => {
-        renderPreviewWidget(widget, "vrpg-preview-quests", "\u041A\u0432\u0435\u0441\u0442\u044B", `${Math.min(today.done, 3)}/3 \u0434\u043E \u043C\u0438\u043D\u0438\u043C\u0443\u043C\u0430`, (body) => {
+        renderPreviewWidget(widget, "vrpg-preview-quests", "Quests", `${Math.min(today.done, 3)}/3 to minimum`, (body) => {
           if (!habits.length) {
-            body.createDiv({ cls: "vrpg-preview-empty", text: "\u041A\u0432\u0435\u0441\u0442\u044B \u043D\u0435 \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043D\u044B" });
+            body.createDiv({ cls: "vrpg-preview-empty", text: "No quests configured" });
             return;
           }
           const rows = [
-            ["\u041C\u0438\u043D\u0438\u043C\u0443\u043C \u0434\u043D\u044F", `${Math.min(today.done, 3)}/3`, today.done >= 3 ? "\u0437\u0430\u043A\u0440\u044B\u0442" : "\u0432 \u043F\u0440\u043E\u0446\u0435\u0441\u0441\u0435"],
-            ["\u0421\u0438\u043B\u044C\u043D\u0430\u044F \u043D\u0435\u0434\u0435\u043B\u044F", `${strongDays}/7`, `\u043B\u0443\u0447\u0448\u0438\u0439 \u0434\u0435\u043D\u044C ${bestDay.xp} XP`]
+            ["Daily Minimum", `${Math.min(today.done, 3)}/3`, today.done >= 3 ? "met" : "in progress"],
+            ["Strong Week", `${strongDays}/7`, `best day ${bestDay.xp} XP`]
           ];
           rows.forEach(([label, value, note]) => {
             const row = body.createDiv({ cls: "vrpg-preview-row" });
@@ -1976,15 +1976,15 @@ var require_homeScreen = __commonJS({
             copy.createDiv({ cls: "vrpg-section", text: label });
             copy.createDiv({ cls: "vrpg-subtitle", text: note });
           });
-        }, { openPanel: "quests", openLabel: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u043A\u0432\u0435\u0441\u0442\u044B" });
+        }, { openPanel: "quests", openLabel: "Open Quests" });
       };
       const renderRewardsPreview = (widget) => {
         const rewards = (data.rewards || []).slice().sort((a, b) => Number(a.cost || 0) - Number(b.cost || 0));
         const available = rewards.filter((reward) => t.balance >= Number(reward.cost || 0));
         const previewRewards = available.length ? available.slice(0, 2) : rewards.slice(0, 2);
-        renderPreviewWidget(widget, "vrpg-preview-rewards", "\u041D\u0430\u0433\u0440\u0430\u0434\u044B", available.length ? `\u0414\u043E\u0441\u0442\u0443\u043F\u043D\u043E: ${available.length}` : nextRewardText, (body) => {
+        renderPreviewWidget(widget, "vrpg-preview-rewards", "Rewards", available.length ? `Available: ${available.length}` : nextRewardText, (body) => {
           if (!previewRewards.length) {
-            body.createDiv({ cls: "vrpg-preview-empty", text: "\u041D\u0430\u0433\u0440\u0430\u0434\u044B \u043D\u0435 \u0434\u043E\u0431\u0430\u0432\u043B\u0435\u043D\u044B" });
+            body.createDiv({ cls: "vrpg-preview-empty", text: "No rewards added" });
             return;
           }
           previewRewards.forEach((reward) => {
@@ -1992,14 +1992,14 @@ var require_homeScreen = __commonJS({
             row.createDiv({ cls: "vrpg-card-title", text: `${reward.icon || "\u{1F381}"} ${reward.title}` });
             row.createDiv({ cls: "vrpg-subtitle", text: `${reward.cost} XP` });
           });
-        }, { openPanel: "rewards", openLabel: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u043C\u0430\u0433\u0430\u0437\u0438\u043D" });
+        }, { openPanel: "rewards", openLabel: "Open Shop" });
       };
       const renderInventoryPreview = (widget) => {
         const items = (data.inventory || []).slice().reverse();
         const activeItems = items.filter((item) => !item.used);
-        renderPreviewWidget(widget, "vrpg-preview-inventory", "\u0418\u043D\u0432\u0435\u043D\u0442\u0430\u0440\u044C", `${activeItems.length} \u0430\u043A\u0442\u0438\u0432\u043D\u044B\u0445 \xB7 ${items.length} \u0432\u0441\u0435\u0433\u043E`, (body) => {
+        renderPreviewWidget(widget, "vrpg-preview-inventory", "Inventory", `${activeItems.length} active \xB7 ${items.length} total`, (body) => {
           if (!items.length) {
-            body.createDiv({ cls: "vrpg-preview-empty", text: "\u0418\u043D\u0432\u0435\u043D\u0442\u0430\u0440\u044C \u043F\u0443\u0441\u0442" });
+            body.createDiv({ cls: "vrpg-preview-empty", text: "Inventory empty" });
           } else {
             const loot = body.createDiv({ cls: "vrpg-preview-loot-row" });
             items.slice(0, 3).forEach((item) => {
@@ -2008,23 +2008,23 @@ var require_homeScreen = __commonJS({
               chip.createDiv({ cls: "vrpg-subtitle", text: item.title });
             });
           }
-        }, { openPanel: "inventory", openLabel: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u0438\u043D\u0432\u0435\u043D\u0442\u0430\u0440\u044C" });
+        }, { openPanel: "inventory", openLabel: "Open Inventory" });
       };
       const renderWalletPreview = (widget) => {
         const all = walletStats2(data.wallet || []);
-        renderPreviewWidget(widget, "vrpg-preview-wallet", "\u0411\u0430\u043D\u043A", `${(data.wallet || []).length} \u0437\u0430\u043F\u0438\u0441\u0435\u0439`, (body) => {
+        renderPreviewWidget(widget, "vrpg-preview-wallet", "Bank", `${(data.wallet || []).length} records`, (body) => {
           const grid = body.createDiv({ cls: "vrpg-preview-stat-grid" });
           [
-            ["\u0411\u0430\u043B\u0430\u043D\u0441", `${formatMoney2(all.balance)} \u20BD`],
-            ["\u0414\u043E\u0445\u043E\u0434\u044B", `+${formatMoney2(all.income)} \u20BD`],
-            ["\u0420\u0430\u0441\u0445\u043E\u0434\u044B", `-${formatMoney2(all.expense)} \u20BD`]
+            ["Balance", `${formatMoney2(all.balance)} $`],
+            ["Income", `+${formatMoney2(all.income)} $`],
+            ["Expenses", `-${formatMoney2(all.expense)} $`]
           ].forEach(([label, value]) => {
             const item = grid.createDiv({ cls: "vrpg-preview-stat" });
             item.createSpan({ text: label });
             item.createEl("strong", { text: value });
           });
-          if (!(data.wallet || []).length) body.createDiv({ cls: "vrpg-preview-empty", text: "\u0417\u0430\u043F\u0438\u0441\u0435\u0439 \u043F\u043E\u043A\u0430 \u043D\u0435\u0442" });
-        }, { openPanel: "wallet", openLabel: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u0431\u0430\u043D\u043A" });
+          if (!(data.wallet || []).length) body.createDiv({ cls: "vrpg-preview-empty", text: "No records yet" });
+        }, { openPanel: "wallet", openLabel: "Open Bank" });
       };
       const renderModuleWidget = (widget) => {
         if (!widget || !isHomePanelWidget(widget.id)) return;
@@ -2093,9 +2093,9 @@ var require_homeTodayScreen = __commonJS({
       const header = parent.createDiv({ cls: "vrpg-panel vrpg-day-focus vrpg-day-focus-compact" });
       const summary = header.createDiv({ cls: "vrpg-day-focus-summary" });
       summary.createDiv({ cls: "vrpg-card-title", text: key });
-      summary.createDiv({ cls: "vrpg-subtitle", text: `${stats.done}/${stats.total} \u043F\u0440\u0438\u0432\u044B\u0447\u0435\u043A \xB7 ${stats.xp} XP` });
+      summary.createDiv({ cls: "vrpg-subtitle", text: `${stats.done}/${stats.total} habits \xB7 ${stats.xp} XP` });
       const mood = header.createDiv({ cls: "vrpg-mood-row" });
-      mood.createDiv({ cls: "vrpg-section", text: "\u041D\u0430\u0441\u0442\u0440\u043E\u0435\u043D\u0438\u0435 / \u044D\u043D\u0435\u0440\u0433\u0438\u044F" });
+      mood.createDiv({ cls: "vrpg-section", text: "Mood / Energy" });
       const moodButtons = mood.createDiv({ cls: "vrpg-segmented" });
       Object.entries(moods).forEach(([id, label]) => {
         const button = moodButtons.createEl("button", { cls: today.mood === id ? "is-active" : "", text: label });
@@ -2136,19 +2136,19 @@ var require_homeHeroScreen = __commonJS({
       const stats = skillStats2(data);
       const water = waterStats2(data);
       const metrics = [
-        ["\u0422\u0435\u043B\u043E", stats.body.total ? Math.round(stats.body.done / stats.body.total * 100) : 0],
-        ["\u0420\u0430\u0437\u0443\u043C", stats.mind.total ? Math.round(stats.mind.done / stats.mind.total * 100) : 0],
-        ["\u0414\u0435\u043B\u043E", stats.craft.total ? Math.round(stats.craft.done / stats.craft.total * 100) : 0],
-        ["\u041A\u043E\u043D\u0442\u0440\u043E\u043B\u044C", stats.control.total ? Math.round(stats.control.done / stats.control.total * 100) : 0],
-        ["\u0412\u043E\u0434\u0430", water.percent],
-        ["\u0421\u0435\u0440\u0438\u044F", Math.min(100, Math.round(streak2(data) / 7 * 100))]
+        ["Body", stats.body.total ? Math.round(stats.body.done / stats.body.total * 100) : 0],
+        ["Mind", stats.mind.total ? Math.round(stats.mind.done / stats.mind.total * 100) : 0],
+        ["Craft", stats.craft.total ? Math.round(stats.craft.done / stats.craft.total * 100) : 0],
+        ["Control", stats.control.total ? Math.round(stats.control.done / stats.control.total * 100) : 0],
+        ["Water", water.percent],
+        ["Streak", Math.min(100, Math.round(streak2(data) / 7 * 100))]
       ];
       const wrap = parent.createDiv({ cls: "vrpg-hero-preview" });
       const info = wrap.createDiv({ cls: "vrpg-hero-summary" });
       info.createDiv({ cls: "vrpg-kicker", text: getHeroClassTitle2(data.player) });
       info.createDiv({ cls: "vrpg-level", text: `LEVEL ${t.level}` });
       info.createDiv({ cls: "vrpg-hero-title", text: heroTitle2(t.level) });
-      info.createDiv({ cls: "vrpg-subtitle", text: `${t.balance} XP \xB7 ${t.levelXP}/100 \u0434\u043E \u043D\u043E\u0432\u043E\u0433\u043E \u0443\u0440\u043E\u0432\u043D\u044F` });
+      info.createDiv({ cls: "vrpg-subtitle", text: `${t.balance} XP \xB7 ${t.levelXP}/100 to next level` });
       createProgressBar2(info, t.levelXP, "vrpg-hero-xp");
       const battle = wrap.createDiv({ cls: "vrpg-hero-battle" });
       const radarPanel = battle.createDiv({ cls: "vrpg-hero-radar-panel" });
@@ -2166,7 +2166,7 @@ var require_homeHeroScreen = __commonJS({
       }
       if (featureFlags.showAchievements) {
         const achPanel = parent.createDiv({ cls: "vrpg-panel vrpg-achievements" });
-        achPanel.createDiv({ cls: "vrpg-section", text: "\u0414\u043E\u0441\u0442\u0438\u0436\u0435\u043D\u0438\u044F" });
+        achPanel.createDiv({ cls: "vrpg-section", text: "Achievements" });
         for (const item of achievements2(data)) {
           const row = achPanel.createDiv({ cls: item.done ? "vrpg-achievement is-done" : "vrpg-achievement" });
           row.createSpan({ text: item.done ? "\u2713" : "\u2022" });
@@ -2201,7 +2201,7 @@ var require_homeQuestsScreen = __commonJS({
         minimum: `${Math.min(today.done, 3)}/3`,
         total: `${today.done}/${today.total}`,
         strongDays: `${doneWeek}/5`,
-        streak: `${streak2(data)} \u0434\u043D\u0435\u0439`
+        streak: `${streak2(data)} days`
       };
       const grid = parent.createDiv({ cls: "vrpg-card-grid" });
       for (const card of getQuestStatsCards2(data, values, questStatsCards, selectedKey)) {
@@ -2229,7 +2229,7 @@ var require_rewardsScreen = __commonJS({
         card.createDiv({ cls: "vrpg-card-title", text: `${reward.icon || "\u{1F381}"} ${reward.title}` });
         card.createDiv({ cls: `vrpg-rarity vrpg-rarity-${reward.rarity || "common"}`, text: rarities[reward.rarity || "common"] || rarities.common });
         card.createDiv({ cls: "vrpg-subtitle", text: `${reward.cost} XP` });
-        const button = card.createEl("button", { cls: "vrpg-primary", text: t.balance >= reward.cost ? "\u041A\u0443\u043F\u0438\u0442\u044C" : "\u041D\u0435 \u0445\u0432\u0430\u0442\u0430\u0435\u0442 XP" });
+        const button = card.createEl("button", { cls: "vrpg-primary", text: t.balance >= reward.cost ? "Buy" : "Not enough XP" });
         button.disabled = t.balance < reward.cost;
         button.onclick = () => buyReward(reward.id);
       }
@@ -2249,7 +2249,7 @@ var require_inventoryScreen = __commonJS({
       });
       const items = (data.inventory || []).slice().reverse();
       if (!items.length) {
-        parent.createDiv({ cls: "vrpg-subtitle", text: "\u0418\u043D\u0432\u0435\u043D\u0442\u0430\u0440\u044C \u043F\u0443\u0441\u0442. \u041A\u0443\u043F\u0438 \u043F\u0435\u0440\u0432\u0443\u044E \u043D\u0430\u0433\u0440\u0430\u0434\u0443 \u0432 \u043C\u0430\u0433\u0430\u0437\u0438\u043D\u0435." });
+        parent.createDiv({ cls: "vrpg-subtitle", text: "Inventory empty. Buy your first reward in the shop." });
         return;
       }
       const grid = parent.createDiv({ cls: "vrpg-card-grid" });
@@ -2257,7 +2257,7 @@ var require_inventoryScreen = __commonJS({
         const card = grid.createDiv({ cls: item.used ? "vrpg-panel is-muted" : "vrpg-panel" });
         card.createDiv({ cls: "vrpg-card-title", text: `${item.icon || "\u{1F381}"} ${item.title}` });
         card.createDiv({ cls: "vrpg-subtitle", text: `${item.cost} XP \u2022 ${item.date}` });
-        const button = card.createEl("button", { cls: "vrpg-primary", text: item.used ? "\u0412\u0435\u0440\u043D\u0443\u0442\u044C" : "\u0418\u0441\u043F\u043E\u043B\u044C\u0437\u043E\u0432\u0430\u0442\u044C" });
+        const button = card.createEl("button", { cls: "vrpg-primary", text: item.used ? "Return" : "Use" });
         button.onclick = () => toggleInventoryItemUsed(item.id);
       }
     }
@@ -2284,40 +2284,40 @@ var require_homeWalletScreen = __commonJS({
       const day = walletStats2(wallet, selectedKey);
       const top = parent.createDiv({ cls: "vrpg-bank-top" });
       [
-        ["\u041E\u0431\u0449\u0438\u0439 \u0431\u0430\u043B\u0430\u043D\u0441", `${formatMoney2(all.balance)} \u20BD`],
-        ["\u0414\u043E\u0445\u043E\u0434\u044B", `+${formatMoney2(all.income)} \u20BD`],
-        ["\u0420\u0430\u0441\u0445\u043E\u0434\u044B", `-${formatMoney2(all.expense)} \u20BD`]
+        ["Total Balance", `${formatMoney2(all.balance)} $`],
+        ["Income", `+${formatMoney2(all.income)} $`],
+        ["Expenses", `-${formatMoney2(all.expense)} $`]
       ].forEach(([label, value]) => {
         const card = top.createDiv({ cls: "vrpg-bank-metric" });
         card.createDiv({ cls: "vrpg-section", text: label });
         card.createDiv({ cls: "vrpg-stat-value", text: value });
       });
       const form = parent.createDiv({ cls: "vrpg-panel vrpg-inline-form vrpg-wallet-form" });
-      form.createDiv({ cls: "vrpg-section", text: `\u0417\u0430\u043F\u0438\u0441\u044C \u0437\u0430 ${selectedKey}` });
+      form.createDiv({ cls: "vrpg-section", text: `Record for ${selectedKey}` });
       const type = form.createEl("select", { cls: "vrpg-wallet-type" });
-      type.createEl("option", { text: "\u0417\u0430\u0440\u0430\u0431\u043E\u0442\u0430\u043B", value: "income" });
-      type.createEl("option", { text: "\u041F\u043E\u0442\u0440\u0430\u0442\u0438\u043B", value: "expense" });
-      const amount = form.createEl("input", { type: "text", placeholder: "\u0421\u0443\u043C\u043C\u0430", cls: "vrpg-wallet-amount" });
+      type.createEl("option", { text: "Earned", value: "income" });
+      type.createEl("option", { text: "Spent", value: "expense" });
+      const amount = form.createEl("input", { type: "text", placeholder: "Amount", cls: "vrpg-wallet-amount" });
       bindMoneyInput2(amount);
-      const note = form.createEl("input", { type: "text", placeholder: "\u041D\u0430 \u0447\u0442\u043E / \u043E\u0442\u043A\u0443\u0434\u0430", cls: "vrpg-wallet-note" });
-      const add = form.createEl("button", { cls: "vrpg-primary vrpg-wallet-add", text: "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C" });
+      const note = form.createEl("input", { type: "text", placeholder: "What for / source", cls: "vrpg-wallet-note" });
+      const add = form.createEl("button", { cls: "vrpg-primary vrpg-wallet-add", text: "Add" });
       add.onclick = async () => {
         await addWallet(type.value, amount.value, note.value, selectedKey);
         amount.value = "";
         note.value = "";
       };
       const dayPanel = parent.createDiv({ cls: "vrpg-panel vrpg-bank-day" });
-      dayPanel.createDiv({ cls: "vrpg-section", text: "\u0412\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u0439 \u0434\u0435\u043D\u044C" });
-      dayPanel.createDiv({ cls: "vrpg-card-title", text: `${selectedKey} \xB7 ${day.balance >= 0 ? "+" : ""}${formatMoney2(day.balance)} \u20BD` });
-      dayPanel.createDiv({ cls: "vrpg-subtitle", text: `\u0414\u043E\u0445\u043E\u0434\u044B +${formatMoney2(day.income)} \u20BD \xB7 \u0440\u0430\u0441\u0445\u043E\u0434\u044B -${formatMoney2(day.expense)} \u20BD \xB7 ${day.items.length} \u043E\u043F\u0435\u0440\u0430\u0446\u0438\u0439` });
+      dayPanel.createDiv({ cls: "vrpg-section", text: "Selected Day" });
+      dayPanel.createDiv({ cls: "vrpg-card-title", text: `${selectedKey} \xB7 ${day.balance >= 0 ? "+" : ""}${formatMoney2(day.balance)} $` });
+      dayPanel.createDiv({ cls: "vrpg-subtitle", text: `Income +${formatMoney2(day.income)} $ \xB7 expenses -${formatMoney2(day.expense)} $ \xB7 ${day.items.length} transactions` });
       if (!day.items.length) {
-        dayPanel.createDiv({ cls: "vrpg-subtitle", text: "\u0412 \u044D\u0442\u043E\u0442 \u0434\u0435\u043D\u044C \u0437\u0430\u043F\u0438\u0441\u0435\u0439 \u043F\u043E\u043A\u0430 \u043D\u0435\u0442." });
+        dayPanel.createDiv({ cls: "vrpg-subtitle", text: "No records for this day yet." });
       }
       for (const item of day.items.slice().sort((a, b) => String(b.time || "").localeCompare(String(a.time || "")))) {
         renderWalletRow(dayPanel, item);
       }
       const month = parent.createEl("details", { cls: "vrpg-bank-month" });
-      month.createEl("summary").createSpan({ text: `\u0418\u0441\u0442\u043E\u0440\u0438\u044F \u043C\u0435\u0441\u044F\u0446\u0430 \xB7 ${walletMonthLabel2(selectedKey)}` });
+      month.createEl("summary").createSpan({ text: `Month History \xB7 ${walletMonthLabel2(selectedKey)}` });
       renderWalletMonth(month, wallet, selectedKey);
     }
     module2.exports = {
@@ -2347,17 +2347,17 @@ var require_settingsScreen = __commonJS({
       const settingsPanel = !FEATURE_FLAGS2.showInterfaceSettings && ctx.settingsPanel === "interface" ? "profile" : ctx.settingsPanel;
       const navigate = ctx.navigate;
       const shell = parent.createDiv({ cls: "vrpg-hero-card vrpg-settings-shell" });
-      shell.createDiv({ cls: "vrpg-kicker", text: "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438" });
-      shell.createDiv({ cls: "vrpg-title", text: "\u0421\u0438\u0441\u0442\u0435\u043C\u0430" });
-      shell.createDiv({ cls: "vrpg-subtitle", text: "\u041F\u0435\u0440\u0441\u043E\u043D\u0430\u043B\u0438\u0437\u0430\u0446\u0438\u044F \u0433\u0435\u0440\u043E\u044F, \u0432\u043E\u0434\u044B, \u043F\u0440\u0438\u0432\u044B\u0447\u0435\u043A \u0438 \u043C\u0430\u0433\u0430\u0437\u0438\u043D\u0430." });
+      shell.createDiv({ cls: "vrpg-kicker", text: "Settings" });
+      shell.createDiv({ cls: "vrpg-title", text: "System" });
+      shell.createDiv({ cls: "vrpg-subtitle", text: "Customize hero, water, habits, and shop." });
       const nav = shell.createDiv({ cls: "vrpg-command-grid vrpg-settings-nav" });
       const panels = [
-        ["profile", "\u0413\u0435\u0440\u043E\u0439", "\u0438\u043C\u044F, \u043A\u043B\u0430\u0441\u0441, \u0444\u043E\u0442\u043E"],
-        ["interface", "\u0418\u043D\u0442\u0435\u0440\u0444\u0435\u0439\u0441", "\u0432\u0438\u0434\u0436\u0435\u0442\u044B \u0433\u043B\u0430\u0432\u043D\u043E\u0439"],
-        ["resources", "\u0412\u043E\u0434\u0430", "\u0441\u0442\u0430\u043A\u0430\u043D\u044B \u0438 \u0434\u043D\u0435\u0432\u043D\u044B\u0435 \u0446\u0435\u043B\u0438"],
-        ["habits", "\u041F\u0440\u0438\u0432\u044B\u0447\u043A\u0438", "\u0435\u0436\u0435\u0434\u043D\u0435\u0432\u043D\u044B\u0435 \u0434\u0435\u0439\u0441\u0442\u0432\u0438\u044F"],
-        ["quests", "\u041A\u0432\u0435\u0441\u0442\u044B", "\u043A\u0430\u0440\u0442\u043E\u0447\u043A\u0438 \u0441\u0442\u0430\u0442\u0438\u0441\u0442\u0438\u043A\u0438"],
-        ["rewards", "\u041D\u0430\u0433\u0440\u0430\u0434\u044B", "\u043C\u0430\u0433\u0430\u0437\u0438\u043D XP"]
+        ["profile", "Hero", "name, class, photo"],
+        ["interface", "Interface", "home widgets"],
+        ["resources", "Water", "glasses and daily goals"],
+        ["habits", "Habits", "daily actions"],
+        ["quests", "Quests", "stat cards"],
+        ["rewards", "Rewards", "XP shop"]
       ].filter(([id]) => FEATURE_FLAGS2.showInterfaceSettings || id !== "interface");
       panels.forEach(([id, title, desc]) => {
         const button = nav.createEl("button", { cls: settingsPanel === id ? "vrpg-command-action is-active" : "vrpg-command-action" });
@@ -2397,19 +2397,19 @@ var require_settingsProfileScreen = __commonJS({
       const updatePlayer = ctx.updatePlayer;
       const player = data.player || {};
       const profilePanel = parent.createDiv({ cls: "vrpg-panel" });
-      profilePanel.createDiv({ cls: "vrpg-section", text: "\u041F\u0440\u043E\u0444\u0438\u043B\u044C \u0433\u0435\u0440\u043E\u044F" });
+      profilePanel.createDiv({ cls: "vrpg-section", text: "Hero Profile" });
       const profilePreview = profilePanel.createDiv({ cls: "vrpg-settings-profile" });
       renderAvatar(profilePreview, data, "vrpg-avatar");
       const profileCopy = profilePreview.createDiv();
-      profileCopy.createDiv({ cls: "vrpg-card-title", text: player.name || "\u0413\u0435\u0440\u043E\u0439" });
+      profileCopy.createDiv({ cls: "vrpg-card-title", text: player.name || "Hero" });
       profileCopy.createDiv({ cls: "vrpg-subtitle", text: getHeroClassTitle2(player) });
       const heroName = profilePanel.createEl("input", {
         type: "text",
-        placeholder: "\u0418\u043C\u044F \u0433\u0435\u0440\u043E\u044F",
+        placeholder: "Hero Name",
         value: player.name || ""
       });
       const heroClassId = resolveHeroClassId2(player);
-      profilePanel.createDiv({ cls: "vrpg-card-title", text: "\u041A\u043B\u0430\u0441\u0441 \u0433\u0435\u0440\u043E\u044F" });
+      profilePanel.createDiv({ cls: "vrpg-card-title", text: "Hero Class" });
       const heroClass = profilePanel.createEl("select");
       for (const item of HERO_CLASSES) {
         heroClass.createEl("option", {
@@ -2430,8 +2430,8 @@ var require_settingsProfileScreen = __commonJS({
         value: player.avatarUrl || ""
       });
       const dropZone = profilePanel.createDiv({ cls: "vrpg-avatar-drop" });
-      dropZone.createDiv({ cls: "vrpg-card-title", text: "\u0424\u043E\u0442\u043E \u0433\u0435\u0440\u043E\u044F" });
-      dropZone.createDiv({ cls: "vrpg-subtitle", text: "\u041F\u0435\u0440\u0435\u0442\u0430\u0449\u0438 \u043A\u0430\u0440\u0442\u0438\u043D\u043A\u0443 \u0441\u044E\u0434\u0430 \u0438\u043B\u0438 \u0432\u044B\u0431\u0435\u0440\u0438 \u0444\u0430\u0439\u043B. \u0422\u0435\u0445\u043D\u0438\u0447\u0435\u0441\u043A\u0438\u0439 \u043F\u0443\u0442\u044C \u0431\u043E\u043B\u044C\u0448\u0435 \u043D\u0435 \u043F\u043E\u043A\u0430\u0437\u044B\u0432\u0430\u0435\u043C." });
+      dropZone.createDiv({ cls: "vrpg-card-title", text: "Hero Photo" });
+      dropZone.createDiv({ cls: "vrpg-subtitle", text: "Drag an image here or choose a file." });
       const getProfile = () => ({
         name: heroName.value,
         classId: heroClass.value
@@ -2452,12 +2452,12 @@ var require_settingsProfileScreen = __commonJS({
         reader.readAsDataURL(file);
       };
       attachAvatarDropZone(dropZone, heroAvatar, getProfile);
-      const clearAvatar = profilePanel.createEl("button", { cls: "vrpg-danger", text: "\u0423\u0431\u0440\u0430\u0442\u044C \u0444\u043E\u0442\u043E" });
+      const clearAvatar = profilePanel.createEl("button", { cls: "vrpg-danger", text: "Remove Photo" });
       clearAvatar.onclick = () => {
         heroAvatar.value = "";
         updatePlayer({ ...getProfile(), avatarUrl: "" });
       };
-      const saveHero = profilePanel.createEl("button", { cls: "vrpg-primary", text: "\u0421\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C \u0433\u0435\u0440\u043E\u044F" });
+      const saveHero = profilePanel.createEl("button", { cls: "vrpg-primary", text: "Save Hero" });
       saveHero.onclick = () => updatePlayer({
         name: heroName.value,
         classId: heroClass.value,
@@ -2476,9 +2476,9 @@ var require_settingsInterfaceScreen = __commonJS({
     var { normalizeInterfaceLayout: normalizeInterfaceLayout2 } = require_layoutConfig();
     var { getInterfaceLayout } = require_layoutSystem();
     var APP_SIZE_LABELS = {
-      compact: "\u041A\u043E\u043C\u043F\u0430\u043A\u0442\u043D\u044B\u0439",
-      comfortable: "\u0423\u0434\u043E\u0431\u043D\u044B\u0439",
-      expanded: "\u0420\u0430\u0441\u0448\u0438\u0440\u0435\u043D\u043D\u044B\u0439"
+      compact: "Compact",
+      comfortable: "Comfortable",
+      expanded: "Expanded"
     };
     function renderSettingsInterfaceScreen2(parent, ctx = {}) {
       const settings = ctx.settings || {};
@@ -2486,11 +2486,11 @@ var require_settingsInterfaceScreen = __commonJS({
       });
       const interfaceLayout = getInterfaceLayout(settings);
       const panel = parent.createDiv({ cls: "vrpg-panel vrpg-interface-panel" });
-      panel.createDiv({ cls: "vrpg-section", text: "\u0418\u043D\u0442\u0435\u0440\u0444\u0435\u0439\u0441" });
+      panel.createDiv({ cls: "vrpg-section", text: "Interface" });
       const presetPanel = panel.createDiv({ cls: "vrpg-interface-presets" });
       const presetMeta = presetPanel.createDiv({ cls: "vrpg-interface-row-meta" });
-      presetMeta.createDiv({ cls: "vrpg-card-title", text: "\u0420\u0430\u0437\u043C\u0435\u0440 \u043F\u0430\u043D\u0435\u043B\u0438" });
-      presetMeta.createDiv({ cls: "vrpg-subtitle", text: "\u0428\u0438\u0440\u0438\u043D\u0430 \u0440\u0430\u0431\u043E\u0447\u0435\u0439 \u043E\u0431\u043B\u0430\u0441\u0442\u0438 Life RPG" });
+      presetMeta.createDiv({ cls: "vrpg-card-title", text: "Panel Size" });
+      presetMeta.createDiv({ cls: "vrpg-subtitle", text: "Width of Life RPG workspace" });
       const presetControl = presetPanel.createDiv({ cls: "vrpg-size-control vrpg-app-size-control" });
       Object.entries(APP_SIZE_LABELS).forEach(([value, label]) => {
         const button = presetControl.createEl("button", {
@@ -2517,18 +2517,18 @@ var require_settingsResourcesScreen = __commonJS({
       const setWaterGoal = ctx.setWaterGoal;
       const setWaterGlassMl = ctx.setWaterGlassMl;
       const settingsPanel = parent.createDiv({ cls: "vrpg-panel" });
-      settingsPanel.createDiv({ cls: "vrpg-section", text: "\u0412\u043E\u0434\u0430" });
+      settingsPanel.createDiv({ cls: "vrpg-section", text: "Water" });
       const waterGoal = settingsPanel.createEl("input", {
         type: "number",
-        placeholder: "\u0426\u0435\u043B\u044C \u0432\u043E\u0434\u044B \u0432 \u0441\u0442\u0430\u043A\u0430\u043D\u0430\u0445",
+        placeholder: "Water goal in glasses",
         value: String(settings.waterGoal || 8)
       });
       const waterMl = settingsPanel.createEl("input", {
         type: "number",
-        placeholder: "\u041E\u0431\u044A\u0451\u043C \u0441\u0442\u0430\u043A\u0430\u043D\u0430 \u0432 \u043C\u043B",
+        placeholder: "Glass size in ml",
         value: String(settings.waterGlassMl || 250)
       });
-      const saveWater = settingsPanel.createEl("button", { cls: "vrpg-primary", text: "\u0421\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C \u0446\u0435\u043B\u044C \u0432\u043E\u0434\u044B" });
+      const saveWater = settingsPanel.createEl("button", { cls: "vrpg-primary", text: "Save Water Goal" });
       saveWater.onclick = async () => {
         await setWaterGoal(waterGoal.value);
         await setWaterGlassMl(waterMl.value);
@@ -2550,28 +2550,28 @@ var require_settingsRewardsScreen = __commonJS({
       const deleteReward = ctx.deleteReward;
       const confirm2 = ctx.confirm;
       const rewardPanel = parent.createDiv({ cls: "vrpg-panel" });
-      rewardPanel.createDiv({ cls: "vrpg-section", text: "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u043D\u0430\u0433\u0440\u0430\u0434\u0443" });
-      const rewardTitle = rewardPanel.createEl("input", { type: "text", placeholder: "\u041D\u0430\u043F\u0440\u0438\u043C\u0435\u0440: \u043A\u0438\u043D\u043E, \u043C\u0430\u0441\u0441\u0430\u0436, \u0432\u043A\u0443\u0441\u043D\u044B\u0439 \u0443\u0436\u0438\u043D" });
-      const rewardCost = rewardPanel.createEl("input", { type: "number", placeholder: "\u0426\u0435\u043D\u0430 \u0432 XP, \u043D\u0430\u043F\u0440\u0438\u043C\u0435\u0440 150" });
+      rewardPanel.createDiv({ cls: "vrpg-section", text: "Add Reward" });
+      const rewardTitle = rewardPanel.createEl("input", { type: "text", placeholder: "e.g. movie, massage, dinner out" });
+      const rewardCost = rewardPanel.createEl("input", { type: "number", placeholder: "Cost in XP, e.g. 150" });
       const rewardRarity = rewardPanel.createEl("select");
       Object.entries(rarities).forEach(([value, label]) => {
         rewardRarity.createEl("option", { text: label, value });
       });
-      const rewardButton = rewardPanel.createEl("button", { cls: "vrpg-primary", text: "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u043D\u0430\u0433\u0440\u0430\u0434\u0443" });
+      const rewardButton = rewardPanel.createEl("button", { cls: "vrpg-primary", text: "Add Reward" });
       rewardButton.onclick = () => {
         addReward(rewardTitle.value, rewardCost.value, rewardRarity.value);
         rewardTitle.value = "";
         rewardCost.value = "";
       };
       const rewardList = parent.createDiv({ cls: "vrpg-panel" });
-      rewardList.createDiv({ cls: "vrpg-section", text: "\u041C\u043E\u0438 \u043D\u0430\u0433\u0440\u0430\u0434\u044B" });
+      rewardList.createDiv({ cls: "vrpg-section", text: "My Rewards" });
       for (const reward of data.rewards) {
         const row = rewardList.createDiv({ cls: "vrpg-setting-row" });
         row.createDiv({ cls: "vrpg-card-title", text: `${reward.icon || "\u{1F381}"} ${reward.title}` });
         row.createDiv({ cls: "vrpg-subtitle", text: `${reward.cost} XP \xB7 ${rarities[reward.rarity || "common"] || rarities.common}` });
-        const remove = row.createEl("button", { cls: "vrpg-danger", text: "\u0423\u0434\u0430\u043B\u0438\u0442\u044C" });
+        const remove = row.createEl("button", { cls: "vrpg-danger", text: "Delete" });
         remove.onclick = () => {
-          if (confirm2(`\u0423\u0434\u0430\u043B\u0438\u0442\u044C \u043D\u0430\u0433\u0440\u0430\u0434\u0443 "${reward.title}" \u0438\u0437 \u043C\u0430\u0433\u0430\u0437\u0438\u043D\u0430? \u0423\u0436\u0435 \u043A\u0443\u043F\u043B\u0435\u043D\u043D\u044B\u0435 \u043F\u0440\u0435\u0434\u043C\u0435\u0442\u044B \u0432 \u0438\u043D\u0432\u0435\u043D\u0442\u0430\u0440\u0435 \u043E\u0441\u0442\u0430\u043D\u0443\u0442\u0441\u044F.`)) {
+          if (confirm2(`Delete reward "${reward.title}" from the shop? Already purchased items in inventory will remain.`)) {
             deleteReward(reward.id);
           }
         };
@@ -2595,11 +2595,11 @@ var require_settingsHabitsScreen = __commonJS({
       const updateHabit = ctx.updateHabit;
       const deleteHabit = ctx.deleteHabit;
       const confirm2 = ctx.confirm;
-      const areas = [["body", "\u0422\u0435\u043B\u043E"], ["mind", "\u0420\u0430\u0437\u0443\u043C"], ["craft", "\u0414\u0435\u043B\u043E"], ["control", "\u041A\u043E\u043D\u0442\u0440\u043E\u043B\u044C"]];
+      const areas = [["body", "Body"], ["mind", "Mind"], ["craft", "Craft"], ["control", "Control"]];
       const panel = parent.createDiv({ cls: "vrpg-panel" });
-      panel.createDiv({ cls: "vrpg-section", text: "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u043F\u0440\u0438\u0432\u044B\u0447\u043A\u0443" });
-      const input = panel.createEl("input", { type: "text", placeholder: "\u041D\u0430\u043F\u0440\u0438\u043C\u0435\u0440: \u043F\u043B\u0430\u0432\u0430\u043D\u0438\u0435, \u0430\u043D\u0433\u043B\u0438\u0439\u0441\u043A\u0438\u0439, \u0434\u043D\u0435\u0432\u043D\u0438\u043A" });
-      const icon = panel.createEl("input", { type: "text", placeholder: "\u0418\u043A\u043E\u043D\u043A\u0430, \u043D\u0430\u043F\u0440\u0438\u043C\u0435\u0440 \u{1F3C3}" });
+      panel.createDiv({ cls: "vrpg-section", text: "Add Habit" });
+      const input = panel.createEl("input", { type: "text", placeholder: "e.g. swimming, English, journaling" });
+      const icon = panel.createEl("input", { type: "text", placeholder: "Icon, e.g. \u{1F3C3}" });
       const iconPicker = panel.createDiv({ cls: "vrpg-icon-picker" });
       habitIcons.forEach((value) => {
         const pick = iconPicker.createEl("button", { text: value });
@@ -2607,12 +2607,12 @@ var require_settingsHabitsScreen = __commonJS({
           icon.value = value;
         };
       });
-      const xp = panel.createEl("input", { type: "number", placeholder: "XP \u0437\u0430 \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u0438\u0435, \u043E\u0431\u044B\u0447\u043D\u043E 10" });
+      const xp = panel.createEl("input", { type: "number", placeholder: "XP per completion, usually 10" });
       const select = panel.createEl("select");
       areas.forEach(([value, label]) => {
         select.createEl("option", { text: label, value });
       });
-      const button = panel.createEl("button", { cls: "vrpg-primary", text: "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C" });
+      const button = panel.createEl("button", { cls: "vrpg-primary", text: "Add" });
       button.onclick = () => {
         addHabit(input.value, select.value, xp.value || 10, icon.value || "\u2728");
         input.value = "";
@@ -2620,14 +2620,14 @@ var require_settingsHabitsScreen = __commonJS({
         xp.value = "";
       };
       const list = parent.createDiv({ cls: "vrpg-panel" });
-      list.createDiv({ cls: "vrpg-section", text: "\u041C\u043E\u0438 \u043F\u0440\u0438\u0432\u044B\u0447\u043A\u0438" });
+      list.createDiv({ cls: "vrpg-section", text: "My Habits" });
       for (const habit of data.habits) {
         const row = list.createDiv({ cls: "vrpg-setting-row" });
         row.createDiv({ cls: "vrpg-card-title", text: `${habit.icon || "\u2022"} ${habit.title}` });
         row.createDiv({ cls: "vrpg-subtitle", text: `${areaLabels[habit.area] || habit.area} \u2022 ${habit.xp} XP` });
-        const toggle = row.createEl("button", { cls: "vrpg-primary", text: habit.enabled === false ? "\u0412\u043A\u043B\u044E\u0447\u0438\u0442\u044C" : "\u0421\u043A\u0440\u044B\u0442\u044C" });
+        const toggle = row.createEl("button", { cls: "vrpg-primary", text: habit.enabled === false ? "Enable" : "Hide" });
         toggle.onclick = () => setHabitEnabled(habit.id, habit.enabled === false);
-        const edit = row.createEl("button", { cls: "vrpg-primary", text: "\u0420\u0435\u0434\u0430\u043A\u0442\u0438\u0440\u043E\u0432\u0430\u0442\u044C" });
+        const edit = row.createEl("button", { cls: "vrpg-primary", text: "Edit" });
         let editForm = null;
         edit.onclick = () => {
           if (editForm) {
@@ -2647,22 +2647,22 @@ var require_settingsHabitsScreen = __commonJS({
             areaSelect.createEl("option", { text: label, value });
           });
           areaSelect.value = habit.area || "body";
-          const save = editForm.createEl("button", { cls: "vrpg-primary", text: "\u0421\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C" });
+          const save = editForm.createEl("button", { cls: "vrpg-primary", text: "Save" });
           save.onclick = () => updateHabit(habit.id, {
             title: titleInput.value,
             icon: iconInput.value,
             xp: xpInput.value,
             area: areaSelect.value
           });
-          const cancel = editForm.createEl("button", { cls: "vrpg-primary", text: "\u041E\u0442\u043C\u0435\u043D\u0430" });
+          const cancel = editForm.createEl("button", { cls: "vrpg-primary", text: "Cancel" });
           cancel.onclick = () => {
             editForm.remove();
             editForm = null;
           };
         };
-        const remove = row.createEl("button", { cls: "vrpg-danger", text: "\u0423\u0434\u0430\u043B\u0438\u0442\u044C" });
+        const remove = row.createEl("button", { cls: "vrpg-danger", text: "Delete" });
         remove.onclick = () => {
-          if (confirm2(`\u0423\u0434\u0430\u043B\u0438\u0442\u044C \u043F\u0440\u0438\u0432\u044B\u0447\u043A\u0443 "${habit.title}"? \u0418\u0441\u0442\u043E\u0440\u0438\u044F \u043F\u043E \u043D\u0435\u0439 \u0442\u043E\u0436\u0435 \u0443\u0431\u0435\u0440\u0451\u0442\u0441\u044F \u0438\u0437 \u0440\u0430\u0441\u0447\u0451\u0442\u0430.`)) {
+          if (confirm2(`Delete habit "${habit.title}"? Its history will also be removed from calculations.`)) {
             deleteHabit(habit.id);
           }
         };
@@ -2809,27 +2809,27 @@ var require_settingsQuestsScreen = __commonJS({
       const deleteCustomQuestStatsCard = ctx.deleteCustomQuestStatsCard;
       const confirm2 = ctx.confirm;
       const addPanel = parent.createDiv({ cls: "vrpg-panel" });
-      addPanel.createDiv({ cls: "vrpg-section", text: "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C \u043A\u0430\u0440\u0442\u043E\u0447\u043A\u0443" });
-      addPanel.createDiv({ cls: "vrpg-card-title", text: "\u0422\u0438\u043F \u043A\u0430\u0440\u0442\u043E\u0447\u043A\u0438" });
-      addPanel.createDiv({ cls: "vrpg-subtitle", text: "\u0427\u0442\u043E \u0431\u0443\u0434\u0435\u0442 \u0441\u0447\u0438\u0442\u0430\u0442\u044C \u043A\u0430\u0440\u0442\u043E\u0447\u043A\u0430." });
+      addPanel.createDiv({ cls: "vrpg-section", text: "Add Card" });
+      addPanel.createDiv({ cls: "vrpg-card-title", text: "Card Type" });
+      addPanel.createDiv({ cls: "vrpg-subtitle", text: "What the card will track." });
       const typeSelect = addPanel.createEl("select");
       [
-        ["manual", "\u0420\u0443\u0447\u043D\u0430\u044F \u043A\u0430\u0440\u0442\u043E\u0447\u043A\u0430"],
-        ["habitCount", "\u041F\u0440\u0438\u0432\u044B\u0447\u043A\u0430: \u043A\u043E\u043B\u0438\u0447\u0435\u0441\u0442\u0432\u043E"],
-        ["habitStreak", "\u041F\u0440\u0438\u0432\u044B\u0447\u043A\u0430: \u0441\u0435\u0440\u0438\u044F"]
+        ["manual", "Manual Card"],
+        ["habitCount", "Habit: Count"],
+        ["habitStreak", "Habit: Streak"]
       ].forEach(([value, label]) => typeSelect.createEl("option", { text: label, value }));
       const addForm = addPanel.createDiv({ cls: "vrpg-setting-edit" });
       const renderAddForm = () => {
         addForm.empty();
         const type = typeSelect.value;
-        addForm.createDiv({ cls: "vrpg-card-title", text: "\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435 \u043A\u0430\u0440\u0442\u043E\u0447\u043A\u0438" });
-        addForm.createDiv({ cls: "vrpg-subtitle", text: "\u041A\u0430\u043A \u043A\u0430\u0440\u0442\u043E\u0447\u043A\u0430 \u0431\u0443\u0434\u0435\u0442 \u043D\u0430\u0437\u044B\u0432\u0430\u0442\u044C\u0441\u044F \u0432 \u043F\u0430\u043D\u0435\u043B\u0438 \u041A\u0432\u0435\u0441\u0442\u044B." });
-        const customLabel = addForm.createEl("input", { type: "text", placeholder: "\u041D\u0430\u043F\u0440\u0438\u043C\u0435\u0440: \u041D\u0435 \u043F\u0440\u043E\u043F\u0443\u0441\u043A\u0430\u0442\u044C \u0442\u0440\u0435\u043D\u0438\u0440\u043E\u0432\u043A\u0438" });
+        addForm.createDiv({ cls: "vrpg-card-title", text: "Card Name" });
+        addForm.createDiv({ cls: "vrpg-subtitle", text: "How the card will appear in the Quests panel." });
+        const customLabel = addForm.createEl("input", { type: "text", placeholder: "e.g. Don't skip workouts" });
         if (type === "manual") {
-          addForm.createDiv({ cls: "vrpg-card-title", text: "\u0417\u043D\u0430\u0447\u0435\u043D\u0438\u0435 / \u043F\u043E\u0434\u043F\u0438\u0441\u044C" });
-          addForm.createDiv({ cls: "vrpg-subtitle", text: "\u0422\u0435\u043A\u0441\u0442, \u043A\u043E\u0442\u043E\u0440\u044B\u0439 \u0431\u0443\u0434\u0435\u0442 \u043F\u043E\u043A\u0430\u0437\u0430\u043D \u0432\u043D\u0443\u0442\u0440\u0438 \u043A\u0430\u0440\u0442\u043E\u0447\u043A\u0438." });
-          const customValue = addForm.createEl("input", { type: "text", placeholder: "\u041D\u0430\u043F\u0440\u0438\u043C\u0435\u0440: 3 \u0432\u0430\u0436\u043D\u044B\u0445 \u0434\u0435\u043B\u0430" });
-          const add2 = addForm.createEl("button", { cls: "vrpg-primary", text: "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C" });
+          addForm.createDiv({ cls: "vrpg-card-title", text: "Value / Caption" });
+          addForm.createDiv({ cls: "vrpg-subtitle", text: "Text that will be shown inside the card." });
+          const customValue = addForm.createEl("input", { type: "text", placeholder: "e.g. 3 important tasks" });
+          const add2 = addForm.createEl("button", { cls: "vrpg-primary", text: "Add" });
           add2.onclick = async () => {
             await addCustomQuestStatsCard({
               type: "manual",
@@ -2842,14 +2842,14 @@ var require_settingsQuestsScreen = __commonJS({
           };
           return;
         }
-        addForm.createDiv({ cls: "vrpg-subtitle", text: "\u041F\u0440\u043E\u0433\u0440\u0435\u0441\u0441 linked-\u043A\u0432\u0435\u0441\u0442\u0430 \u0441\u0447\u0438\u0442\u0430\u0435\u0442\u0441\u044F \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u043F\u043E \u0432\u044B\u0431\u0440\u0430\u043D\u043D\u044B\u043C \u043F\u0440\u0438\u0432\u044B\u0447\u043A\u0430\u043C. \u0414\u0435\u043D\u044C \u0437\u0430\u0441\u0447\u0438\u0442\u044B\u0432\u0430\u0435\u0442\u0441\u044F, \u0435\u0441\u043B\u0438 \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D\u0430 \u0445\u043E\u0442\u044F \u0431\u044B \u043E\u0434\u043D\u0430 \u0438\u0437 \u043D\u0438\u0445." });
+        addForm.createDiv({ cls: "vrpg-subtitle", text: "Linked quest progress is calculated automatically from selected habits. A day counts if at least one of them is completed." });
         const habits = activeHabits2(data);
         if (!habits.length) {
-          addForm.createDiv({ cls: "vrpg-subtitle", text: "\u0421\u043D\u0430\u0447\u0430\u043B\u0430 \u0434\u043E\u0431\u0430\u0432\u044C \u0438\u043B\u0438 \u0432\u043A\u043B\u044E\u0447\u0438 \u0445\u043E\u0442\u044F \u0431\u044B \u043E\u0434\u043D\u0443 \u043F\u0440\u0438\u0432\u044B\u0447\u043A\u0443." });
+          addForm.createDiv({ cls: "vrpg-subtitle", text: "First add or enable at least one habit." });
           return;
         }
-        addForm.createDiv({ cls: "vrpg-card-title", text: "\u0421\u0432\u044F\u0437\u0430\u043D\u043D\u044B\u0435 \u043F\u0440\u0438\u0432\u044B\u0447\u043A\u0438" });
-        addForm.createDiv({ cls: "vrpg-subtitle", text: "\u041D\u0430\u043F\u0440\u0438\u043C\u0435\u0440: \u0431\u0435\u0433, \u0432\u0435\u043B\u043E\u0441\u0438\u043F\u0435\u0434 \u0438 \u0437\u0430\u043B \u0434\u043B\u044F \u043E\u0431\u0449\u0435\u0433\u043E \u0441\u043F\u043E\u0440\u0442\u0438\u0432\u043D\u043E\u0433\u043E \u0441\u0442\u0440\u0438\u043A\u0430." });
+        addForm.createDiv({ cls: "vrpg-card-title", text: "Linked Habits" });
+        addForm.createDiv({ cls: "vrpg-subtitle", text: "e.g. running, cycling, and gym for an overall fitness streak." });
         const habitChoices = addForm.createDiv({ cls: "vrpg-habit-choice-list" });
         const habitInputs = [];
         for (const habit of habits) {
@@ -2859,19 +2859,19 @@ var require_settingsQuestsScreen = __commonJS({
           label.createSpan({ text: `${habit.icon || "\u2022"} ${habit.title}` });
           habitInputs.push(checkbox);
         }
-        addForm.createDiv({ cls: "vrpg-card-title", text: "\u0426\u0435\u043B\u044C \u0432 \u0434\u043D\u044F\u0445" });
-        addForm.createDiv({ cls: "vrpg-subtitle", text: "\u0421\u043A\u043E\u043B\u044C\u043A\u043E \u0434\u043D\u0435\u0439 \u043D\u0443\u0436\u043D\u043E \u0432\u044B\u043F\u043E\u043B\u043D\u0438\u0442\u044C \u0434\u043B\u044F \u0437\u0430\u0432\u0435\u0440\u0448\u0435\u043D\u0438\u044F \u043A\u0432\u0435\u0441\u0442\u0430." });
-        const goalInput = addForm.createEl("input", { type: "number", placeholder: "\u041D\u0430\u043F\u0440\u0438\u043C\u0435\u0440: 7 \u0434\u043D\u0435\u0439" });
+        addForm.createDiv({ cls: "vrpg-card-title", text: "Goal in Days" });
+        addForm.createDiv({ cls: "vrpg-subtitle", text: "How many days needed to complete the quest." });
+        const goalInput = addForm.createEl("input", { type: "number", placeholder: "e.g. 7 days" });
         goalInput.value = "7";
-        addForm.createDiv({ cls: "vrpg-card-title", text: "\u041D\u0430\u0433\u0440\u0430\u0434\u0430 XP" });
-        addForm.createDiv({ cls: "vrpg-subtitle", text: "\u041F\u043E\u043A\u0430 \u0442\u043E\u043B\u044C\u043A\u043E \u043E\u0442\u043E\u0431\u0440\u0430\u0436\u0430\u0435\u0442\u0441\u044F. XP \u043D\u0435 \u043D\u0430\u0447\u0438\u0441\u043B\u044F\u0435\u0442\u0441\u044F \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438." });
-        const rewardXpInput = addForm.createEl("input", { type: "number", placeholder: "\u041D\u0430\u043F\u0440\u0438\u043C\u0435\u0440: 100" });
+        addForm.createDiv({ cls: "vrpg-card-title", text: "XP Reward" });
+        addForm.createDiv({ cls: "vrpg-subtitle", text: "Currently display-only. XP is not awarded automatically." });
+        const rewardXpInput = addForm.createEl("input", { type: "number", placeholder: "e.g. 100" });
         rewardXpInput.value = "0";
-        const add = addForm.createEl("button", { cls: "vrpg-primary", text: "\u0414\u043E\u0431\u0430\u0432\u0438\u0442\u044C" });
+        const add = addForm.createEl("button", { cls: "vrpg-primary", text: "Add" });
         add.onclick = async () => {
           const habitIds = habitInputs.filter((input) => input.checked).map((input) => input.value);
           if (!habitIds.length) {
-            new Notice2("\u0412\u044B\u0431\u0435\u0440\u0438 \u0445\u043E\u0442\u044F \u0431\u044B \u043E\u0434\u043D\u0443 \u043F\u0440\u0438\u0432\u044B\u0447\u043A\u0443");
+            new Notice2("Select at least one habit");
             return;
           }
           await addCustomQuestStatsCard({
@@ -2892,8 +2892,8 @@ var require_settingsQuestsScreen = __commonJS({
       typeSelect.onchange = renderAddForm;
       renderAddForm();
       const panel = parent.createDiv({ cls: "vrpg-panel" });
-      panel.createDiv({ cls: "vrpg-section", text: "\u041F\u0430\u043D\u0435\u043B\u044C \u041A\u0432\u0435\u0441\u0442\u043E\u0432" });
-      panel.createDiv({ cls: "vrpg-subtitle", text: "\u0423\u043F\u0440\u0430\u0432\u043B\u044F\u0439 \u043A\u0430\u0440\u0442\u043E\u0447\u043A\u0430\u043C\u0438 \u0441\u0442\u0430\u0442\u0438\u0441\u0442\u0438\u043A\u0438 \u0432 \u043F\u0430\u043D\u0435\u043B\u0438 \u041A\u0432\u0435\u0441\u0442\u044B." });
+      panel.createDiv({ cls: "vrpg-section", text: "Quests Panel" });
+      panel.createDiv({ cls: "vrpg-subtitle", text: "Manage stat cards in the Quests panel." });
       const normalized = normalizeQuestStatsSettings2(data.settings || {}, QUEST_STATS_CARDS2);
       const settings = normalized.questStatsCards;
       for (const card of QUEST_STATS_CARDS2) {
@@ -2902,10 +2902,10 @@ var require_settingsQuestsScreen = __commonJS({
         const row = panel.createDiv({ cls: "vrpg-setting-row" });
         const title = cardSettings.label || card.label;
         row.createDiv({ cls: "vrpg-card-title", text: title });
-        row.createDiv({ cls: "vrpg-subtitle", text: enabled ? "\u041F\u043E\u043A\u0430\u0437\u044B\u0432\u0430\u0435\u0442\u0441\u044F \u0432 \u043F\u0430\u043D\u0435\u043B\u0438 \u041A\u0432\u0435\u0441\u0442\u044B" : "\u0421\u043A\u0440\u044B\u0442\u0430 \u0438\u0437 \u043F\u0430\u043D\u0435\u043B\u0438 \u041A\u0432\u0435\u0441\u0442\u044B" });
-        const toggle = row.createEl("button", { cls: "vrpg-primary", text: enabled ? "\u0421\u043A\u0440\u044B\u0442\u044C" : "\u041F\u043E\u043A\u0430\u0437\u0430\u0442\u044C" });
+        row.createDiv({ cls: "vrpg-subtitle", text: enabled ? "Shown in Quests panel" : "Hidden from Quests panel" });
+        const toggle = row.createEl("button", { cls: "vrpg-primary", text: enabled ? "Hide" : "Show" });
         toggle.onclick = () => setQuestStatsCardEnabled(card.id, !enabled);
-        const edit = row.createEl("button", { cls: "vrpg-primary", text: "\u0418\u0437\u043C\u0435\u043D\u0438\u0442\u044C" });
+        const edit = row.createEl("button", { cls: "vrpg-primary", text: "Edit" });
         let editForm = null;
         edit.onclick = () => {
           if (editForm) {
@@ -2914,11 +2914,11 @@ var require_settingsQuestsScreen = __commonJS({
             return;
           }
           editForm = row.createDiv({ cls: "vrpg-setting-edit" });
-          const labelInput = editForm.createEl("input", { type: "text", placeholder: "\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435" });
+          const labelInput = editForm.createEl("input", { type: "text", placeholder: "Name" });
           labelInput.value = title;
-          const save = editForm.createEl("button", { cls: "vrpg-primary", text: "\u0421\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C" });
+          const save = editForm.createEl("button", { cls: "vrpg-primary", text: "Save" });
           save.onclick = () => updateQuestStatsCard(card.id, { label: labelInput.value });
-          const cancel = editForm.createEl("button", { cls: "vrpg-primary", text: "\u041E\u0442\u043C\u0435\u043D\u0430" });
+          const cancel = editForm.createEl("button", { cls: "vrpg-primary", text: "Cancel" });
           cancel.onclick = () => {
             editForm.remove();
             editForm = null;
@@ -2929,13 +2929,13 @@ var require_settingsQuestsScreen = __commonJS({
         const enabled = card.enabled !== false;
         const row = panel.createDiv({ cls: "vrpg-setting-row" });
         const linkedCount = Array.isArray(card.habitIds) && card.habitIds.length ? card.habitIds.length : card.habitId ? 1 : 0;
-        const linkedText = card.type === "manual" ? card.value || "\u0411\u0435\u0437 \u0437\u043D\u0430\u0447\u0435\u043D\u0438\u044F" : `${linkedCount} \u043F\u0440\u0438\u0432\u044B\u0447\u0435\u043A \u2022 ${card.value || "\u0430\u0432\u0442\u043E-\u043F\u0440\u043E\u0433\u0440\u0435\u0441\u0441"}`;
+        const linkedText = card.type === "manual" ? card.value || "No value" : `${linkedCount} habits \u2022 ${card.value || "auto-progress"}`;
         row.createDiv({ cls: "vrpg-card-title", text: card.label });
-        row.createDiv({ cls: "vrpg-subtitle", text: `${linkedText} \u2022 ${enabled ? "\u041F\u043E\u043A\u0430\u0437\u044B\u0432\u0430\u0435\u0442\u0441\u044F" : "\u0421\u043A\u0440\u044B\u0442\u0430"}` });
-        const toggle = row.createEl("button", { cls: "vrpg-primary", text: enabled ? "\u0421\u043A\u0440\u044B\u0442\u044C" : "\u041F\u043E\u043A\u0430\u0437\u0430\u0442\u044C" });
+        row.createDiv({ cls: "vrpg-subtitle", text: `${linkedText} \u2022 ${enabled ? "Shown" : "Hidden"}` });
+        const toggle = row.createEl("button", { cls: "vrpg-primary", text: enabled ? "Hide" : "Show" });
         toggle.onclick = () => updateCustomQuestStatsCard(card.id, { enabled: !enabled });
         if (card.type === "manual") {
-          const edit = row.createEl("button", { cls: "vrpg-primary", text: "\u0418\u0437\u043C\u0435\u043D\u0438\u0442\u044C" });
+          const edit = row.createEl("button", { cls: "vrpg-primary", text: "Edit" });
           let editForm = null;
           edit.onclick = () => {
             if (editForm) {
@@ -2944,25 +2944,25 @@ var require_settingsQuestsScreen = __commonJS({
               return;
             }
             editForm = row.createDiv({ cls: "vrpg-setting-edit" });
-            const labelInput = editForm.createEl("input", { type: "text", placeholder: "\u041D\u0430\u0437\u0432\u0430\u043D\u0438\u0435" });
+            const labelInput = editForm.createEl("input", { type: "text", placeholder: "Name" });
             labelInput.value = card.label;
-            const valueInput = editForm.createEl("input", { type: "text", placeholder: "\u0417\u043D\u0430\u0447\u0435\u043D\u0438\u0435 / \u043F\u043E\u0434\u043F\u0438\u0441\u044C" });
+            const valueInput = editForm.createEl("input", { type: "text", placeholder: "Value / Caption" });
             valueInput.value = card.value || "";
-            const save = editForm.createEl("button", { cls: "vrpg-primary", text: "\u0421\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C" });
+            const save = editForm.createEl("button", { cls: "vrpg-primary", text: "Save" });
             save.onclick = () => updateCustomQuestStatsCard(card.id, {
               label: labelInput.value,
               value: valueInput.value
             });
-            const cancel = editForm.createEl("button", { cls: "vrpg-primary", text: "\u041E\u0442\u043C\u0435\u043D\u0430" });
+            const cancel = editForm.createEl("button", { cls: "vrpg-primary", text: "Cancel" });
             cancel.onclick = () => {
               editForm.remove();
               editForm = null;
             };
           };
         }
-        const remove = row.createEl("button", { cls: "vrpg-danger", text: "\u0423\u0434\u0430\u043B\u0438\u0442\u044C" });
+        const remove = row.createEl("button", { cls: "vrpg-danger", text: "Delete" });
         remove.onclick = () => {
-          if (confirm2(`\u0423\u0434\u0430\u043B\u0438\u0442\u044C \u043A\u0430\u0440\u0442\u043E\u0447\u043A\u0443 "${card.label}"?`)) {
+          if (confirm2(`Delete card "${card.label}"?`)) {
             deleteCustomQuestStatsCard(card.id);
           }
         };
@@ -2978,10 +2978,10 @@ var require_settingsQuestsScreen = __commonJS({
 var require_xpSystem = __commonJS({
   "src/systems/xpSystem.js"(exports2, module2) {
     function heroTitle2(level) {
-      if (level >= 20) return "\u041C\u0430\u0441\u0442\u0435\u0440 \u0440\u0438\u0442\u043C\u0430";
-      if (level >= 10) return "\u0421\u0442\u0440\u0430\u0442\u0435\u0433";
-      if (level >= 5) return "\u0418\u0441\u043A\u0430\u0442\u0435\u043B\u044C";
-      return "\u041D\u043E\u0432\u0438\u0447\u043E\u043A";
+      if (level >= 20) return "Rhythm Master";
+      if (level >= 10) return "Strategist";
+      if (level >= 5) return "Seeker";
+      return "Novice";
     }
     function totals2(data) {
       let earned = 0;
@@ -3021,9 +3021,9 @@ var require_achievementSystem = __commonJS({
     function coreAttributes2(data) {
       const stats = skillStats2(data);
       return [
-        ["\u0422\u0435\u043B\u043E", stats.body.total ? Math.round(stats.body.done / stats.body.total * 100) : 0],
-        ["\u0420\u0430\u0437\u0443\u043C", stats.mind.total ? Math.round(stats.mind.done / stats.mind.total * 100) : 0],
-        ["\u0414\u0435\u043B\u043E", stats.craft.total ? Math.round(stats.craft.done / stats.craft.total * 100) : 0]
+        ["Body", stats.body.total ? Math.round(stats.body.done / stats.body.total * 100) : 0],
+        ["Mind", stats.mind.total ? Math.round(stats.mind.done / stats.mind.total * 100) : 0],
+        ["Craft", stats.craft.total ? Math.round(stats.craft.done / stats.craft.total * 100) : 0]
       ];
     }
     function achievements2(data) {
@@ -3035,11 +3035,11 @@ var require_achievementSystem = __commonJS({
       });
       const bought = (data.inventory || []).length > 0;
       return [
-        { id: "first-day", title: "\u041F\u0435\u0440\u0432\u044B\u0439 \u0434\u0435\u043D\u044C \u0437\u0430\u043A\u0440\u044B\u0442", done: hasCompleteDay },
-        { id: "three-streak", title: "3 \u0434\u043D\u044F \u043F\u043E\u0434\u0440\u044F\u0434", done: streak2(data) >= 3 },
-        { id: "week", title: "\u041D\u0435\u0434\u0435\u043B\u044F \u0431\u0435\u0437 \u043F\u0440\u043E\u0432\u0430\u043B\u0430", done: streak2(data) >= 7 },
-        { id: "xp100", title: "100 XP \u0437\u0430\u0440\u0430\u0431\u043E\u0442\u0430\u043D\u043E", done: t.earned >= 100 },
-        { id: "first-buy", title: "\u041F\u0435\u0440\u0432\u0430\u044F \u043F\u043E\u043A\u0443\u043F\u043A\u0430", done: bought }
+        { id: "first-day", title: "First Day Complete", done: hasCompleteDay },
+        { id: "three-streak", title: "3-Day Streak", done: streak2(data) >= 3 },
+        { id: "week", title: "Week Without Fail", done: streak2(data) >= 7 },
+        { id: "xp100", title: "100 XP Earned", done: t.earned >= 100 },
+        { id: "first-buy", title: "First Purchase", done: bought }
       ];
     }
     module2.exports = {
@@ -3253,7 +3253,7 @@ var require_walletSystem = __commonJS({
 var require_textConfig = __commonJS({
   "src/config/textConfig.js"(exports2, module2) {
     var TEXT2 = {
-      dayPanel: "\u041F\u0430\u043D\u0435\u043B\u044C \u0434\u043D\u044F"
+      dayPanel: "Day Panel"
     };
     module2.exports = {
       TEXT: TEXT2
@@ -3398,9 +3398,9 @@ var VibeRpgPlugin = class extends Plugin {
     await this.save();
     this.registerView(APP_VIEW, (leaf) => new VibeRpgAppView(leaf, this));
     this.registerView(SIDEBAR_VIEW, (leaf) => new VibeRpgSidebarView(leaf, this));
-    this.addRibbonIcon("sparkles", "\u041E\u0442\u043A\u0440\u044B\u0442\u044C Life RPG", () => this.openApp());
-    this.addCommand({ id: "open-vibe-rpg", name: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C Life RPG", callback: () => this.openApp() });
-    this.addCommand({ id: "open-vibe-rpg-sidebar", name: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u0432\u0438\u0434\u0436\u0435\u0442 Life RPG", callback: () => this.openSidebar() });
+    this.addRibbonIcon("sparkles", "Open Life RPG", () => this.openApp());
+    this.addCommand({ id: "open-vibe-rpg", name: "Open Life RPG", callback: () => this.openApp() });
+    this.addCommand({ id: "open-vibe-rpg-sidebar", name: "Open Life RPG Widget", callback: () => this.openSidebar() });
     this.app.workspace.onLayoutReady(() => this.openSidebar());
   }
   async save() {
@@ -3442,12 +3442,12 @@ var VibeRpgPlugin = class extends Plugin {
   async buyReward(rewardId) {
     const result = applyRewardPurchase(this.data, rewardId);
     if (!result.ok && result.reason === "not-enough-xp") {
-      new Notice("XP \u043D\u0435 \u0445\u0432\u0430\u0442\u0430\u0435\u0442");
+      new Notice("Not enough XP");
       return;
     }
     if (!result.ok) return;
     await this.save();
-    new Notice(`\u041A\u0443\u043F\u043B\u0435\u043D\u043E: ${result.reward.title}`);
+    new Notice(`Purchased: ${result.reward.title}`);
   }
   async addHabit(title, area, xp = 10, icon = "\u2728") {
     const clean = String(title || "").trim();
@@ -3461,7 +3461,7 @@ var VibeRpgPlugin = class extends Plugin {
     if (!habit) return;
     applyHabitDelete(this.data, id);
     await this.save();
-    new Notice(`\u0423\u0434\u0430\u043B\u0435\u043D\u043E: ${habit.title}`);
+    new Notice(`Deleted: ${habit.title}`);
   }
   async setHabitEnabled(id, enabled) {
     const habit = this.data.habits.find((h) => h.id === id);
@@ -3497,7 +3497,7 @@ var VibeRpgPlugin = class extends Plugin {
     const clean = String(title || "").trim();
     const value = Number(String(cost || "").replace(/\s/g, "").replace(",", "."));
     if (!clean || !Number.isFinite(value) || value <= 0) {
-      new Notice("\u041D\u0443\u0436\u043D\u044B \u043D\u0430\u0437\u0432\u0430\u043D\u0438\u0435 \u0438 \u0446\u0435\u043D\u0430 \u0447\u0438\u0441\u043B\u043E\u043C");
+      new Notice("Title and numeric price required");
       return;
     }
     applyRewardAdd(this.data, { title: clean, cost: value, rarity });
@@ -3508,7 +3508,7 @@ var VibeRpgPlugin = class extends Plugin {
     if (!reward) return;
     applyRewardDelete(this.data, id);
     await this.save();
-    new Notice(`\u041D\u0430\u0433\u0440\u0430\u0434\u0430 \u0443\u0434\u0430\u043B\u0435\u043D\u0430 \u0438\u0437 \u043C\u0430\u0433\u0430\u0437\u0438\u043D\u0430: ${reward.title}`);
+    new Notice(`Reward removed from shop: ${reward.title}`);
   }
   async toggleInventoryItemUsed(itemId) {
     const result = applyInventoryToggleUsed(this.data, itemId);
@@ -3518,7 +3518,7 @@ var VibeRpgPlugin = class extends Plugin {
   async addWallet(type, amount, note, key = dateKey()) {
     const value = parseMoney(amount);
     if (!Number.isFinite(value) || value <= 0) {
-      new Notice("\u041D\u0443\u0436\u043D\u0430 \u0441\u0443\u043C\u043C\u0430 \u0447\u0438\u0441\u043B\u043E\u043C");
+      new Notice("Amount must be a number");
       return;
     }
     applyWalletAdd(this.data, { type, amount: value, note, date: key });
@@ -3527,7 +3527,7 @@ var VibeRpgPlugin = class extends Plugin {
   async setWaterGoal(value) {
     const goal = Number(String(value || "").replace(/\s/g, "").replace(",", "."));
     if (!Number.isFinite(goal) || goal < 1) {
-      new Notice("\u041D\u0443\u0436\u043D\u0430 \u0446\u0435\u043B\u044C \u043E\u0442 1 \u0441\u0442\u0430\u043A\u0430\u043D\u0430");
+      new Notice("Goal must be at least 1 glass");
       return;
     }
     applySettingsUpdate(this.data, { waterGoal: Math.round(goal) });
@@ -3536,7 +3536,7 @@ var VibeRpgPlugin = class extends Plugin {
   async setWaterGlassMl(value) {
     const ml = Number(String(value || "").replace(/\s/g, "").replace(",", "."));
     if (!Number.isFinite(ml) || ml < 50) {
-      new Notice("\u041D\u0443\u0436\u0435\u043D \u043E\u0431\u044A\u0451\u043C \u0441\u0442\u0430\u043A\u0430\u043D\u0430 \u043E\u0442 50 \u043C\u043B");
+      new Notice("Glass size must be at least 50 ml");
       return;
     }
     applySettingsUpdate(this.data, { waterGlassMl: Math.round(ml) });
@@ -3561,7 +3561,7 @@ var VibeRpgPlugin = class extends Plugin {
   async updateQuestStatsCard(id, patch) {
     const result = applyQuestStatsCardUpdate(this.data, id, patch);
     if (!result.ok) {
-      new Notice("\u041A\u0430\u0440\u0442\u043E\u0447\u043A\u0430 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u0430");
+      new Notice("Card not found");
       return;
     }
     await this.save();
@@ -3569,7 +3569,7 @@ var VibeRpgPlugin = class extends Plugin {
   async addCustomQuestStatsCard(input) {
     const result = applyCustomQuestStatsCardAdd(this.data, input);
     if (!result.ok) {
-      new Notice("\u041A\u0430\u0440\u0442\u043E\u0447\u043A\u0443 \u043D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0434\u043E\u0431\u0430\u0432\u0438\u0442\u044C");
+      new Notice("Failed to add card");
       return;
     }
     await this.save();
@@ -3577,7 +3577,7 @@ var VibeRpgPlugin = class extends Plugin {
   async updateCustomQuestStatsCard(id, patch) {
     const result = applyCustomQuestStatsCardUpdate(this.data, id, patch);
     if (!result.ok) {
-      new Notice("\u041A\u0430\u0440\u0442\u043E\u0447\u043A\u0430 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u0430");
+      new Notice("Card not found");
       return;
     }
     await this.save();
@@ -3585,7 +3585,7 @@ var VibeRpgPlugin = class extends Plugin {
   async deleteCustomQuestStatsCard(id) {
     const result = applyCustomQuestStatsCardDelete(this.data, id);
     if (!result.ok) {
-      new Notice("\u041A\u0430\u0440\u0442\u043E\u0447\u043A\u0430 \u043D\u0435 \u043D\u0430\u0439\u0434\u0435\u043D\u0430");
+      new Notice("Card not found");
       return;
     }
     await this.save();
@@ -3602,7 +3602,7 @@ var VibeRpgPlugin = class extends Plugin {
       avatarUrl
     });
     await this.save();
-    new Notice("\u041F\u0440\u043E\u0444\u0438\u043B\u044C \u0433\u0435\u0440\u043E\u044F \u043E\u0431\u043D\u043E\u0432\u043B\u0451\u043D");
+    new Notice("Hero profile updated");
   }
   async deleteWallet(id) {
     applyWalletDelete(this.data, id);
@@ -3702,8 +3702,8 @@ var VibeRpgAppView = class extends ItemView {
   renderTabs(parent) {
     const tabs = parent.createDiv({ cls: "vrpg-tabs" });
     [
-      ["home", "\u0413\u043B\u0430\u0432\u043D\u0430\u044F"],
-      ["settings", "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438"]
+      ["home", "Home"],
+      ["settings", "Settings"]
     ].forEach(([id, label]) => {
       const button = tabs.createEl("button", { text: label, cls: id === this.tab ? "is-active" : "" });
       button.onclick = () => {
@@ -3716,7 +3716,7 @@ var VibeRpgAppView = class extends ItemView {
     const avatar = parent.createDiv({ cls });
     const src = String(player.avatarUrl || "").trim();
     if (src) {
-      avatar.createEl("img", { attr: { src, alt: player.name || "\u0413\u0435\u0440\u043E\u0439" } });
+      avatar.createEl("img", { attr: { src, alt: player.name || "Hero" } });
       return avatar;
     }
     const letter = String(player.name || "P").trim().slice(0, 1).toUpperCase() || "P";
@@ -3983,11 +3983,11 @@ var VibeRpgSidebarView = class extends ItemView {
     const done = active.filter((h) => today.completed[h.id]).length;
     const t = totals(data);
     const box = root.createDiv({ cls: "vrpg-sidebar" });
-    box.createDiv({ cls: "vrpg-section", text: "\u0421\u0435\u0433\u043E\u0434\u043D\u044F" });
+    box.createDiv({ cls: "vrpg-section", text: "Today" });
     box.createDiv({ cls: "vrpg-side-number", text: `${done}/${active.length}` });
     createProgressBar(box, active.length ? Math.round(done / active.length * 100) : 0);
-    box.createDiv({ cls: "vrpg-side-note", text: `\u0411\u0430\u043B\u0430\u043D\u0441: ${t.balance} XP` });
-    const open = box.createEl("button", { cls: "vrpg-primary", text: "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0435" });
+    box.createDiv({ cls: "vrpg-side-note", text: `Balance: ${t.balance} XP` });
+    const open = box.createEl("button", { cls: "vrpg-primary", text: "Open App" });
     open.onclick = () => this.plugin.openApp();
   }
 };

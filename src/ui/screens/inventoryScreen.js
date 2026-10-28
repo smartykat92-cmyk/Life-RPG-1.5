@@ -6,7 +6,7 @@ function renderHomeInventoryScreen(parent, ctx = {}) {
   const toggleInventoryItemUsed = ctx.toggleInventoryItemUsed || (() => {});
   const items = (data.inventory || []).slice().reverse();
   if (!items.length) {
-    parent.createDiv({ cls: "vrpg-subtitle", text: "Инвентарь пуст. Купи первую награду в магазине." });
+    parent.createDiv({ cls: "vrpg-subtitle", text: "Inventory empty. Buy your first reward in the shop." });
     return;
   }
   const grid = parent.createDiv({ cls: "vrpg-card-grid" });
@@ -14,7 +14,7 @@ function renderHomeInventoryScreen(parent, ctx = {}) {
     const card = grid.createDiv({ cls: item.used ? "vrpg-panel is-muted" : "vrpg-panel" });
     card.createDiv({ cls: "vrpg-card-title", text: `${item.icon || "🎁"} ${item.title}` });
     card.createDiv({ cls: "vrpg-subtitle", text: `${item.cost} XP • ${item.date}` });
-    const button = card.createEl("button", { cls: "vrpg-primary", text: item.used ? "Вернуть" : "Использовать" });
+    const button = card.createEl("button", { cls: "vrpg-primary", text: item.used ? "Return" : "Use" });
     button.onclick = () => toggleInventoryItemUsed(item.id);
   }
 }

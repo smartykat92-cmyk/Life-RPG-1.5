@@ -7,17 +7,17 @@ function renderSettingsScreen(parent, ctx = {}) {
   const settingsPanel = !FEATURE_FLAGS.showInterfaceSettings && ctx.settingsPanel === "interface" ? "profile" : ctx.settingsPanel;
   const navigate = ctx.navigate;
   const shell = parent.createDiv({ cls: "vrpg-hero-card vrpg-settings-shell" });
-  shell.createDiv({ cls: "vrpg-kicker", text: "Настройки" });
-  shell.createDiv({ cls: "vrpg-title", text: "Система" });
-  shell.createDiv({ cls: "vrpg-subtitle", text: "Персонализация героя, воды, привычек и магазина." });
+  shell.createDiv({ cls: "vrpg-kicker", text: "Settings" });
+  shell.createDiv({ cls: "vrpg-title", text: "System" });
+  shell.createDiv({ cls: "vrpg-subtitle", text: "Customize hero, water, habits, and shop." });
   const nav = shell.createDiv({ cls: "vrpg-command-grid vrpg-settings-nav" });
   const panels = [
-    ["profile", "Герой", "имя, класс, фото"],
-    ["interface", "Интерфейс", "виджеты главной"],
-    ["resources", "Вода", "стаканы и дневные цели"],
-    ["habits", "Привычки", "ежедневные действия"],
-    ["quests", "Квесты", "карточки статистики"],
-    ["rewards", "Награды", "магазин XP"]
+    ["profile", "Hero", "name, class, photo"],
+    ["interface", "Interface", "home widgets"],
+    ["resources", "Water", "glasses and daily goals"],
+    ["habits", "Habits", "daily actions"],
+    ["quests", "Quests", "stat cards"],
+    ["rewards", "Rewards", "XP shop"]
   ].filter(([id]) => FEATURE_FLAGS.showInterfaceSettings || id !== "interface");
   panels.forEach(([id, title, desc]) => {
     const button = nav.createEl("button", { cls: settingsPanel === id ? "vrpg-command-action is-active" : "vrpg-command-action" });

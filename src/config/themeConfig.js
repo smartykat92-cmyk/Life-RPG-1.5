@@ -5,7 +5,7 @@ const THEME_PRESETS = [
   {
     id: "brand-dark",
     title: "Brand Dark",
-    description: "Фирменная тёмная purple/blue палитра Life RPG",
+    description: "Brand dark purple/blue Life RPG palette",
     className: "vrpg-theme-brand-dark"
   }
 ];

@@ -6,18 +6,18 @@ function renderSettingsResourcesScreen(parent, ctx = {}) {
   const setWaterGoal = ctx.setWaterGoal;
   const setWaterGlassMl = ctx.setWaterGlassMl;
   const settingsPanel = parent.createDiv({ cls: "vrpg-panel" });
-  settingsPanel.createDiv({ cls: "vrpg-section", text: "Вода" });
+  settingsPanel.createDiv({ cls: "vrpg-section", text: "Water" });
   const waterGoal = settingsPanel.createEl("input", {
     type: "number",
-    placeholder: "Цель воды в стаканах",
+    placeholder: "Water goal in glasses",
     value: String(settings.waterGoal || 8)
   });
   const waterMl = settingsPanel.createEl("input", {
     type: "number",
-    placeholder: "Объём стакана в мл",
+    placeholder: "Glass size in ml",
     value: String(settings.waterGlassMl || 250)
   });
-  const saveWater = settingsPanel.createEl("button", { cls: "vrpg-primary", text: "Сохранить цель воды" });
+  const saveWater = settingsPanel.createEl("button", { cls: "vrpg-primary", text: "Save Water Goal" });
   saveWater.onclick = async () => {
     await setWaterGoal(waterGoal.value);
     await setWaterGlassMl(waterMl.value);

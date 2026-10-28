@@ -3,7 +3,7 @@
 
 function renderWaterWidget(parent, options = {}) {
   const stats = options.stats || {};
-  const title = options.title || "Вода";
+  const title = options.title || "Water";
   const mode = options.mode || "ring";
   const className = options.className || (mode === "panel" ? "vrpg-panel vrpg-water-panel" : "vrpg-glass-widget vrpg-water-widget");
   const root = parent.createDiv({ cls: className });
@@ -17,7 +17,7 @@ function renderWaterWidget(parent, options = {}) {
     waterRing.createDiv({ cls: "vrpg-water-value", text: `${stats.value}/${stats.goal}` });
     root.createDiv({
       cls: "vrpg-subtitle",
-      text: `${Math.round(stats.currentMl / 100) / 10}/${Math.round(stats.targetMl / 100) / 10} л сегодня`
+      text: `${Math.round(stats.currentMl / 100) / 10}/${Math.round(stats.targetMl / 100) / 10} L today`
     });
     const controls = root.createDiv({ cls: "vrpg-water-controls" });
     const minus = controls.createEl("button", { text: "-" });
@@ -29,14 +29,14 @@ function renderWaterWidget(parent, options = {}) {
   if (mode === "panel") {
     root.createDiv({ cls: "vrpg-section", text: title });
     const waterLine = root.createDiv({ cls: "vrpg-water-line" });
-    waterLine.createDiv({ cls: "vrpg-card-title", text: `${stats.value}/${stats.goal} стаканов` });
-    waterLine.createDiv({ cls: "vrpg-subtitle", text: `${stats.percent}% · ${stats.glassMl} мл стакан` });
+    waterLine.createDiv({ cls: "vrpg-card-title", text: `${stats.value}/${stats.goal} glasses` });
+    waterLine.createDiv({ cls: "vrpg-subtitle", text: `${stats.percent}% · ${stats.glassMl} ml glass` });
     const waterBar = root.createDiv({ cls: "vrpg-water-bar" });
     waterBar.createDiv({ cls: "vrpg-water-fill", attr: { style: `width:${stats.percent}%` } });
     const controls = root.createDiv({ cls: "vrpg-water-controls" });
-    const minus = controls.createEl("button", { text: "-1 стакан" });
+    const minus = controls.createEl("button", { text: "-1 glass" });
     minus.onclick = options.onDecrement;
-    const plus = controls.createEl("button", { text: "+1 стакан" });
+    const plus = controls.createEl("button", { text: "+1 glass" });
     plus.onclick = options.onIncrement;
   }
 

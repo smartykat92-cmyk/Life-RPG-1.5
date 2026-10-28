@@ -128,8 +128,8 @@ function renderHomeScreen(parent, ctx = {}) {
     .sort((a, b) => Number(a.cost || 0) - Number(b.cost || 0))
     .find(reward => Number(reward.cost || 0) > t.balance);
   const nextRewardText = nextReward
-    ? `До "${nextReward.title}" осталось ${Number(nextReward.cost || 0) - t.balance} XP`
-    : "Базовый магазин уже доступен";
+    ? `${Number(nextReward.cost || 0) - t.balance} XP until "${nextReward.title}"`
+    : "Basic shop already unlocked";
   const todayPercent = today.total ? Math.round(today.done / today.total * 100) : 0;
   const layoutWidgets = getEnabledLayoutWidgets(data);
   const widgetById = new Map(layoutWidgets.map(widget => [widget.id, widget]));
@@ -152,7 +152,7 @@ function renderHomeScreen(parent, ctx = {}) {
     const editBar = parent.createDiv({ cls: "vrpg-home-edit-bar" });
     const editButton = editBar.createEl("button", {
       cls: isHomeEditMode ? "vrpg-primary is-active" : "vrpg-primary",
-      text: isHomeEditMode ? "Готово" : "Редактировать экран"
+      text: isHomeEditMode ? "Done" : "Edit Screen"
     });
     editButton.onclick = toggleHomeEditMode;
   }
@@ -306,7 +306,7 @@ function renderHomeScreen(parent, ctx = {}) {
       text: "↕",
       attr: {
         draggable: "true",
-        title: "Перетащить виджет"
+        title: "Drag widget"
       }
     });
     handle.ondragstart = event => {
@@ -358,7 +358,7 @@ function renderHomeScreen(parent, ctx = {}) {
       cls: "vrpg-home-drag-handle",
       text: "↕",
       attr: {
-        title: "Перетащить виджет"
+        title: "Drag widget"
       }
     });
     handle.onpointerdown = event => {
@@ -431,7 +431,7 @@ function renderHomeScreen(parent, ctx = {}) {
       cls: "vrpg-home-resize-handle",
       text: "↘",
       attr: {
-        title: "Изменить размер виджета"
+        title: "Resize widget"
       }
     });
     resize.onpointerdown = event => {
@@ -546,20 +546,20 @@ function renderHomeScreen(parent, ctx = {}) {
     const xpVital = commandVitals.createDiv({ cls: "vrpg-command-vital" });
     xpVital.createDiv({ cls: "vrpg-section", text: "XP" });
     xpVital.createDiv({ cls: "vrpg-card-title", text: `${t.balance}` });
-    xpVital.createDiv({ cls: "vrpg-subtitle", text: `${t.levelXP}/100 уровня` });
+    xpVital.createDiv({ cls: "vrpg-subtitle", text: `${t.levelXP}/100 to level` });
     const streakVital = commandVitals.createDiv({ cls: "vrpg-command-vital" });
-    streakVital.createDiv({ cls: "vrpg-section", text: "Серия" });
+    streakVital.createDiv({ cls: "vrpg-section", text: "Streak" });
     streakVital.createDiv({ cls: "vrpg-card-title", text: `${streak(data)}` });
-    streakVital.createDiv({ cls: "vrpg-subtitle", text: "дней" });
+    streakVital.createDiv({ cls: "vrpg-subtitle", text: "days" });
     createProgressBar(card, todayPercent, "vrpg-command-progress");
     const commandGrid = card.createDiv({ cls: "vrpg-command-grid" });
     const commandItems = {
-      today: [isTodaySelected ? "Сегодня" : "День", "Отметить привычки"],
-      hero: ["Герой", `${t.levelXP}/100 XP уровня`],
-      quests: ["Квесты", `${today.done >= 3 ? "дневной минимум закрыт" : `${Math.min(today.done, 3)}/3 до минимума`}`],
-      rewards: ["Магазин", nextRewardText],
-      inventory: ["Инвентарь", `${data.inventory.filter(item => !item.used).length} активных`],
-      wallet: ["Банк", `${(data.wallet || []).length} записей`]
+      today: [isTodaySelected ? "Today" : "Day", "Check off habits"],
+      hero: ["Hero", `${t.levelXP}/100 XP to level`],
+      quests: ["Quests", `${today.done >= 3 ? "daily minimum met" : `${Math.min(today.done, 3)}/3 to minimum`}`],
+      rewards: ["Shop", nextRewardText],
+      inventory: ["Inventory", `${data.inventory.filter(item => !item.used).length} active`],
+      wallet: ["Bank", `${(data.wallet || []).length} records`]
     };
     const panelWidgetById = new Map(panelWidgets.map(panelWidget => [panelWidget.id, panelWidget]));
     HOME_PANEL_WIDGET_IDS.forEach(id => {
@@ -581,14 +581,14 @@ function renderHomeScreen(parent, ctx = {}) {
       attr: getWidgetAttr(widget)
     });
     prepareWidgetRoot(clock, widget);
-    clock.createDiv({ cls: "vrpg-kicker", text: "Сейчас" });
+    clock.createDiv({ cls: "vrpg-kicker", text: "Now" });
     const parts = timeParts(now);
     const clockFace = clock.createDiv({ cls: "vrpg-clock" });
     clockFace.createSpan({ text: parts.hours });
     clockFace.createSpan({ cls: "vrpg-clock-colon", text: ":" });
     clockFace.createSpan({ text: parts.minutes });
     clock.createDiv({ cls: "vrpg-phase", text: dayPhase(now) });
-    clock.createDiv({ cls: "vrpg-subtitle", text: now.toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" }) });
+    clock.createDiv({ cls: "vrpg-subtitle", text: now.toLocaleDateString("en-US", { weekday: "long", day: "numeric", month: "long" }) });
   };
 
   const renderCalendarWidget = (widget, parentEl = top) => {
@@ -611,7 +611,7 @@ function renderHomeScreen(parent, ctx = {}) {
     calendarHeader.createDiv({ cls: "vrpg-kicker", text: monthLabel(monthDate) });
     calendarHeader.createEl("button", { cls: "vrpg-icon-action", text: "›" }).onclick = () => moveMonth(1);
     const week = calendar.createDiv({ cls: "vrpg-calendar" });
-    ["П", "В", "С", "Ч", "П", "С", "В"].forEach(day => week.createSpan({ cls: "vrpg-calendar-head", text: day }));
+    ["M", "T", "W", "T", "F", "S", "S"].forEach(day => week.createSpan({ cls: "vrpg-calendar-head", text: day }));
     for (const day of calendarDays(monthDate)) {
       const key = day ? dateKey(new Date(monthDate.getFullYear(), monthDate.getMonth(), day)) : "";
       const dayButton = week.createEl("button", {
@@ -632,14 +632,14 @@ function renderHomeScreen(parent, ctx = {}) {
     }
     const dayDetails = calendar.createDiv({ cls: "vrpg-calendar-details" });
     dayDetails.createDiv({ cls: "vrpg-card-title", text: selectedKey });
-    dayDetails.createDiv({ cls: "vrpg-subtitle", text: `Привычки: ${selectedStats.done}/${selectedStats.total} · Вода: ${selectedWater.value}/${selectedWater.goal}` });
-    dayDetails.createDiv({ cls: "vrpg-subtitle", text: isGridMode ? `Неделя: ${strongDays}/7 · серия ${streak(data)}` : `Неделя: ${strongDays}/7 сильных дней · лучший день ${bestDay.xp} XP · серия ${streak(data)}` });
+    dayDetails.createDiv({ cls: "vrpg-subtitle", text: `Habits: ${selectedStats.done}/${selectedStats.total} · Water: ${selectedWater.value}/${selectedWater.goal}` });
+    dayDetails.createDiv({ cls: "vrpg-subtitle", text: isGridMode ? `Week: ${strongDays}/7 · streak ${streak(data)}` : `Week: ${strongDays}/7 strong days · best day ${bestDay.xp} XP · streak ${streak(data)}` });
   };
 
   const renderWaterLayoutWidget = (widget, parentEl = top) => {
     const waterRoot = renderWaterWidget(parentEl, {
       stats: water,
-      title: "Вода",
+      title: "Water",
       mode: "ring",
       className: getWidgetClass("vrpg-glass-widget vrpg-water-widget", widget),
       onDecrement: () => changeWater(-1, selectedKey),
@@ -662,21 +662,21 @@ function renderHomeScreen(parent, ctx = {}) {
     const body = card.createDiv({ cls: "vrpg-preview-body" });
     renderBody(body, card);
     if (options.openPanel) {
-      const open = body.createEl("button", { cls: "vrpg-primary vrpg-preview-open", text: options.openLabel || "Открыть" });
+      const open = body.createEl("button", { cls: "vrpg-primary vrpg-preview-open", text: options.openLabel || "Open" });
       open.onclick = () => navigate({ tab: "home", homePanel: options.openPanel });
     }
     return card;
   };
 
   const renderTodayPreview = widget => {
-    renderPreviewWidget(widget, "vrpg-preview-today", "Сегодня", `${today.done}/${today.total} выполнено · ${today.xp} XP`, body => {
+    renderPreviewWidget(widget, "vrpg-preview-today", "Today", `${today.done}/${today.total} completed · ${today.xp} XP`, body => {
       const topLine = body.createDiv({ cls: "vrpg-preview-progress-line" });
       topLine.createDiv({ cls: "vrpg-card-title", text: `${today.done}/${today.total}` });
-      topLine.createDiv({ cls: "vrpg-subtitle", text: today.done >= 3 ? "минимум дня закрыт" : `${Math.min(today.done, 3)}/3 до минимума` });
+      topLine.createDiv({ cls: "vrpg-subtitle", text: today.done >= 3 ? "daily minimum met" : `${Math.min(today.done, 3)}/3 to minimum` });
       createProgressBar(body, todayPercent, "vrpg-preview-progress");
       const list = body.createDiv({ cls: "vrpg-preview-task-list" });
       if (!habits.length) {
-        list.createDiv({ cls: "vrpg-preview-empty", text: "Привычки на сегодня не добавлены" });
+        list.createDiv({ cls: "vrpg-preview-empty", text: "No habits added for today" });
       } else {
         habits.slice(0, 3).forEach(habit => {
           const done = !!(selectedDay.completed && selectedDay.completed[habit.id]);
@@ -689,37 +689,37 @@ function renderHomeScreen(parent, ctx = {}) {
         });
       }
       if (habits.length > 3) {
-        body.createDiv({ cls: "vrpg-subtitle", text: `Ещё ${habits.length - 3} привычек в разделе Сегодня` });
+        body.createDiv({ cls: "vrpg-subtitle", text: `${habits.length - 3} more habits in the Today section` });
       }
-    }, { openPanel: "today", openLabel: "Открыть день" });
+    }, { openPanel: "today", openLabel: "Open Today" });
   };
 
   const renderHeroProgressPreview = widget => {
-    renderPreviewWidget(widget, "vrpg-preview-hero", "Прогресс героя", `${heroTitle(t.level)} · ${t.levelXP}/100 XP уровня`, body => {
+    renderPreviewWidget(widget, "vrpg-preview-hero", "Hero Progress", `${heroTitle(t.level)} · ${t.levelXP}/100 XP to level`, body => {
       body.createDiv({ cls: "vrpg-preview-level", text: `LEVEL ${t.level}` });
       createProgressBar(body, t.levelXP, "vrpg-preview-progress");
       const statsGrid = body.createDiv({ cls: "vrpg-preview-stat-grid" });
       [
         ["XP", `${t.balance}`],
-        ["Серия", `${streak(data)} дней`],
-        ["Неделя", `${strongDays}/7`]
+        ["Streak", `${streak(data)} days`],
+        ["Week", `${strongDays}/7`]
       ].forEach(([label, value]) => {
         const item = statsGrid.createDiv({ cls: "vrpg-preview-stat" });
         item.createSpan({ text: label });
         item.createEl("strong", { text: value });
       });
-    }, { openPanel: "hero", openLabel: "Открыть героя" });
+    }, { openPanel: "hero", openLabel: "Open Hero" });
   };
 
   const renderQuestsPreview = widget => {
-    renderPreviewWidget(widget, "vrpg-preview-quests", "Квесты", `${Math.min(today.done, 3)}/3 до минимума`, body => {
+    renderPreviewWidget(widget, "vrpg-preview-quests", "Quests", `${Math.min(today.done, 3)}/3 to minimum`, body => {
       if (!habits.length) {
-        body.createDiv({ cls: "vrpg-preview-empty", text: "Квесты не настроены" });
+        body.createDiv({ cls: "vrpg-preview-empty", text: "No quests configured" });
         return;
       }
       const rows = [
-        ["Минимум дня", `${Math.min(today.done, 3)}/3`, today.done >= 3 ? "закрыт" : "в процессе"],
-        ["Сильная неделя", `${strongDays}/7`, `лучший день ${bestDay.xp} XP`]
+        ["Daily Minimum", `${Math.min(today.done, 3)}/3`, today.done >= 3 ? "met" : "in progress"],
+        ["Strong Week", `${strongDays}/7`, `best day ${bestDay.xp} XP`]
       ];
       rows.forEach(([label, value, note]) => {
         const row = body.createDiv({ cls: "vrpg-preview-row" });
@@ -728,7 +728,7 @@ function renderHomeScreen(parent, ctx = {}) {
         copy.createDiv({ cls: "vrpg-section", text: label });
         copy.createDiv({ cls: "vrpg-subtitle", text: note });
       });
-    }, { openPanel: "quests", openLabel: "Открыть квесты" });
+    }, { openPanel: "quests", openLabel: "Open Quests" });
   };
 
   const renderRewardsPreview = widget => {
@@ -737,9 +737,9 @@ function renderHomeScreen(parent, ctx = {}) {
       .sort((a, b) => Number(a.cost || 0) - Number(b.cost || 0));
     const available = rewards.filter(reward => t.balance >= Number(reward.cost || 0));
     const previewRewards = available.length ? available.slice(0, 2) : rewards.slice(0, 2);
-    renderPreviewWidget(widget, "vrpg-preview-rewards", "Награды", available.length ? `Доступно: ${available.length}` : nextRewardText, body => {
+    renderPreviewWidget(widget, "vrpg-preview-rewards", "Rewards", available.length ? `Available: ${available.length}` : nextRewardText, body => {
       if (!previewRewards.length) {
-        body.createDiv({ cls: "vrpg-preview-empty", text: "Награды не добавлены" });
+        body.createDiv({ cls: "vrpg-preview-empty", text: "No rewards added" });
         return;
       }
       previewRewards.forEach(reward => {
@@ -747,15 +747,15 @@ function renderHomeScreen(parent, ctx = {}) {
         row.createDiv({ cls: "vrpg-card-title", text: `${reward.icon || "🎁"} ${reward.title}` });
         row.createDiv({ cls: "vrpg-subtitle", text: `${reward.cost} XP` });
       });
-    }, { openPanel: "rewards", openLabel: "Открыть магазин" });
+    }, { openPanel: "rewards", openLabel: "Open Shop" });
   };
 
   const renderInventoryPreview = widget => {
     const items = (data.inventory || []).slice().reverse();
     const activeItems = items.filter(item => !item.used);
-    renderPreviewWidget(widget, "vrpg-preview-inventory", "Инвентарь", `${activeItems.length} активных · ${items.length} всего`, body => {
+    renderPreviewWidget(widget, "vrpg-preview-inventory", "Inventory", `${activeItems.length} active · ${items.length} total`, body => {
       if (!items.length) {
-        body.createDiv({ cls: "vrpg-preview-empty", text: "Инвентарь пуст" });
+        body.createDiv({ cls: "vrpg-preview-empty", text: "Inventory empty" });
       } else {
         const loot = body.createDiv({ cls: "vrpg-preview-loot-row" });
         items.slice(0, 3).forEach(item => {
@@ -764,24 +764,24 @@ function renderHomeScreen(parent, ctx = {}) {
           chip.createDiv({ cls: "vrpg-subtitle", text: item.title });
         });
       }
-    }, { openPanel: "inventory", openLabel: "Открыть инвентарь" });
+    }, { openPanel: "inventory", openLabel: "Open Inventory" });
   };
 
   const renderWalletPreview = widget => {
     const all = walletStats(data.wallet || []);
-    renderPreviewWidget(widget, "vrpg-preview-wallet", "Банк", `${(data.wallet || []).length} записей`, body => {
+    renderPreviewWidget(widget, "vrpg-preview-wallet", "Bank", `${(data.wallet || []).length} records`, body => {
       const grid = body.createDiv({ cls: "vrpg-preview-stat-grid" });
       [
-        ["Баланс", `${formatMoney(all.balance)} ₽`],
-        ["Доходы", `+${formatMoney(all.income)} ₽`],
-        ["Расходы", `-${formatMoney(all.expense)} ₽`]
+        ["Balance", `${formatMoney(all.balance)} $`],
+        ["Income", `+${formatMoney(all.income)} $`],
+        ["Expenses", `-${formatMoney(all.expense)} $`]
       ].forEach(([label, value]) => {
         const item = grid.createDiv({ cls: "vrpg-preview-stat" });
         item.createSpan({ text: label });
         item.createEl("strong", { text: value });
       });
-      if (!(data.wallet || []).length) body.createDiv({ cls: "vrpg-preview-empty", text: "Записей пока нет" });
-    }, { openPanel: "wallet", openLabel: "Открыть банк" });
+      if (!(data.wallet || []).length) body.createDiv({ cls: "vrpg-preview-empty", text: "No records yet" });
+    }, { openPanel: "wallet", openLabel: "Open Bank" });
   };
 
   const renderModuleWidget = widget => {

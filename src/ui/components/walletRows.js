@@ -5,9 +5,9 @@ function renderWalletRow(parent, item, ctx = {}) {
   const formatMoney = ctx.formatMoney;
   const deleteWallet = ctx.deleteWallet || (() => {});
   const row = parent.createDiv({ cls: "vrpg-wallet-row" });
-  row.createDiv({ cls: item.type === "income" ? "vrpg-money-positive" : "vrpg-money-negative", text: `${item.type === "income" ? "+" : "-"}${formatMoney(item.amount)} ₽` });
-  row.createDiv({ cls: "vrpg-subtitle", text: `${item.time || "--:--"} · ${item.note || "без комментария"}` });
-  const remove = row.createEl("button", { cls: "vrpg-danger vrpg-icon-action", text: "Удалить" });
+  row.createDiv({ cls: item.type === "income" ? "vrpg-money-positive" : "vrpg-money-negative", text: `${item.type === "income" ? "+" : "-"}${formatMoney(item.amount)} $` });
+  row.createDiv({ cls: "vrpg-subtitle", text: `${item.time || "--:--"} · ${item.note || "no comment"}` });
+  const remove = row.createEl("button", { cls: "vrpg-danger vrpg-icon-action", text: "Delete" });
   remove.onclick = () => deleteWallet(item.id);
 }
 
@@ -26,7 +26,7 @@ function renderWalletMonth(parent, wallet, selectedKey, ctx = {}) {
     days.get(item.date).push(item);
   }
   if (!days.size) {
-    parent.createDiv({ cls: "vrpg-subtitle", text: "В этом месяце записей пока нет." });
+    parent.createDiv({ cls: "vrpg-subtitle", text: "No records this month yet." });
     return;
   }
   const sortedDays = Array.from(days.entries()).sort((a, b) => dateFromKey(b[0]).getTime() - dateFromKey(a[0]).getTime());
@@ -37,7 +37,7 @@ function renderWalletMonth(parent, wallet, selectedKey, ctx = {}) {
     const expense = items.filter(item => item.type === "expense").reduce((sum, item) => sum + Number(item.amount || 0), 0);
     const summary = dayDetails.createEl("summary");
     summary.createSpan({ text: dayKey });
-    summary.createSpan({ text: `${income - expense >= 0 ? "+" : ""}${formatMoney(income - expense)} ₽ · ${items.length}` });
+    summary.createSpan({ text: `${income - expense >= 0 ? "+" : ""}${formatMoney(income - expense)} $ · ${items.length}` });
     for (const item of items.slice().sort((a, b) => String(b.time || "").localeCompare(String(a.time || "")))) {
       renderWalletRow(dayDetails, item, ctx);
     }

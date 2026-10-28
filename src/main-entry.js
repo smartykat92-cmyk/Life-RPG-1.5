@@ -142,9 +142,9 @@ class VibeRpgPlugin extends Plugin {
     this.registerView(APP_VIEW, leaf => new VibeRpgAppView(leaf, this));
     this.registerView(SIDEBAR_VIEW, leaf => new VibeRpgSidebarView(leaf, this));
 
-    this.addRibbonIcon("sparkles", "Открыть Life RPG", () => this.openApp());
-    this.addCommand({ id: "open-vibe-rpg", name: "Открыть Life RPG", callback: () => this.openApp() });
-    this.addCommand({ id: "open-vibe-rpg-sidebar", name: "Открыть виджет Life RPG", callback: () => this.openSidebar() });
+    this.addRibbonIcon("sparkles", "Open Life RPG", () => this.openApp());
+    this.addCommand({ id: "open-vibe-rpg", name: "Open Life RPG", callback: () => this.openApp() });
+    this.addCommand({ id: "open-vibe-rpg-sidebar", name: "Open Life RPG Widget", callback: () => this.openSidebar() });
 
     this.app.workspace.onLayoutReady(() => this.openSidebar());
   }
@@ -195,12 +195,12 @@ class VibeRpgPlugin extends Plugin {
   async buyReward(rewardId) {
     const result = applyRewardPurchase(this.data, rewardId);
     if (!result.ok && result.reason === "not-enough-xp") {
-      new Notice("XP не хватает");
+      new Notice("Not enough XP");
       return;
     }
     if (!result.ok) return;
     await this.save();
-    new Notice(`Куплено: ${result.reward.title}`);
+    new Notice(`Purchased: ${result.reward.title}`);
   }
 
   async addHabit(title, area, xp = 10, icon = "✨") {
@@ -216,7 +216,7 @@ class VibeRpgPlugin extends Plugin {
     if (!habit) return;
     applyHabitDelete(this.data, id);
     await this.save();
-    new Notice(`Удалено: ${habit.title}`);
+    new Notice(`Deleted: ${habit.title}`);
   }
 
   async setHabitEnabled(id, enabled) {
@@ -255,7 +255,7 @@ class VibeRpgPlugin extends Plugin {
     const clean = String(title || "").trim();
     const value = Number(String(cost || "").replace(/\s/g, "").replace(",", "."));
     if (!clean || !Number.isFinite(value) || value <= 0) {
-      new Notice("Нужны название и цена числом");
+      new Notice("Title and numeric price required");
       return;
     }
     applyRewardAdd(this.data, { title: clean, cost: value, rarity });
@@ -267,7 +267,7 @@ class VibeRpgPlugin extends Plugin {
     if (!reward) return;
     applyRewardDelete(this.data, id);
     await this.save();
-    new Notice(`Награда удалена из магазина: ${reward.title}`);
+    new Notice(`Reward removed from shop: ${reward.title}`);
   }
 
   async toggleInventoryItemUsed(itemId) {
@@ -279,7 +279,7 @@ class VibeRpgPlugin extends Plugin {
   async addWallet(type, amount, note, key = dateKey()) {
     const value = parseMoney(amount);
     if (!Number.isFinite(value) || value <= 0) {
-      new Notice("Нужна сумма числом");
+      new Notice("Amount must be a number");
       return;
     }
     applyWalletAdd(this.data, { type, amount: value, note, date: key });
@@ -289,7 +289,7 @@ class VibeRpgPlugin extends Plugin {
   async setWaterGoal(value) {
     const goal = Number(String(value || "").replace(/\s/g, "").replace(",", "."));
     if (!Number.isFinite(goal) || goal < 1) {
-      new Notice("Нужна цель от 1 стакана");
+      new Notice("Goal must be at least 1 glass");
       return;
     }
     applySettingsUpdate(this.data, { waterGoal: Math.round(goal) });
@@ -299,7 +299,7 @@ class VibeRpgPlugin extends Plugin {
   async setWaterGlassMl(value) {
     const ml = Number(String(value || "").replace(/\s/g, "").replace(",", "."));
     if (!Number.isFinite(ml) || ml < 50) {
-      new Notice("Нужен объём стакана от 50 мл");
+      new Notice("Glass size must be at least 50 ml");
       return;
     }
     applySettingsUpdate(this.data, { waterGlassMl: Math.round(ml) });
@@ -328,7 +328,7 @@ class VibeRpgPlugin extends Plugin {
   async updateQuestStatsCard(id, patch) {
     const result = applyQuestStatsCardUpdate(this.data, id, patch);
     if (!result.ok) {
-      new Notice("Карточка не найдена");
+      new Notice("Card not found");
       return;
     }
     await this.save();
@@ -337,7 +337,7 @@ class VibeRpgPlugin extends Plugin {
   async addCustomQuestStatsCard(input) {
     const result = applyCustomQuestStatsCardAdd(this.data, input);
     if (!result.ok) {
-      new Notice("Карточку не удалось добавить");
+      new Notice("Failed to add card");
       return;
     }
     await this.save();
@@ -346,7 +346,7 @@ class VibeRpgPlugin extends Plugin {
   async updateCustomQuestStatsCard(id, patch) {
     const result = applyCustomQuestStatsCardUpdate(this.data, id, patch);
     if (!result.ok) {
-      new Notice("Карточка не найдена");
+      new Notice("Card not found");
       return;
     }
     await this.save();
@@ -355,7 +355,7 @@ class VibeRpgPlugin extends Plugin {
   async deleteCustomQuestStatsCard(id) {
     const result = applyCustomQuestStatsCardDelete(this.data, id);
     if (!result.ok) {
-      new Notice("Карточка не найдена");
+      new Notice("Card not found");
       return;
     }
     await this.save();
@@ -373,7 +373,7 @@ class VibeRpgPlugin extends Plugin {
       avatarUrl
     });
     await this.save();
-    new Notice("Профиль героя обновлён");
+    new Notice("Hero profile updated");
   }
 
   async deleteWallet(id) {
@@ -483,8 +483,8 @@ class VibeRpgAppView extends ItemView {
   renderTabs(parent) {
     const tabs = parent.createDiv({ cls: "vrpg-tabs" });
     [
-      ["home", "Главная"],
-      ["settings", "Настройки"]
+      ["home", "Home"],
+      ["settings", "Settings"]
     ].forEach(([id, label]) => {
       const button = tabs.createEl("button", { text: label, cls: id === this.tab ? "is-active" : "" });
       button.onclick = () => {
@@ -498,7 +498,7 @@ class VibeRpgAppView extends ItemView {
     const avatar = parent.createDiv({ cls });
     const src = String(player.avatarUrl || "").trim();
     if (src) {
-      avatar.createEl("img", { attr: { src, alt: player.name || "Герой" } });
+      avatar.createEl("img", { attr: { src, alt: player.name || "Hero" } });
       return avatar;
     }
     const letter = String(player.name || "P").trim().slice(0, 1).toUpperCase() || "P";
@@ -785,11 +785,11 @@ class VibeRpgSidebarView extends ItemView {
     const t = totals(data);
 
     const box = root.createDiv({ cls: "vrpg-sidebar" });
-    box.createDiv({ cls: "vrpg-section", text: "Сегодня" });
+    box.createDiv({ cls: "vrpg-section", text: "Today" });
     box.createDiv({ cls: "vrpg-side-number", text: `${done}/${active.length}` });
     createProgressBar(box, active.length ? Math.round(done / active.length * 100) : 0);
-    box.createDiv({ cls: "vrpg-side-note", text: `Баланс: ${t.balance} XP` });
-    const open = box.createEl("button", { cls: "vrpg-primary", text: "Открыть приложение" });
+    box.createDiv({ cls: "vrpg-side-note", text: `Balance: ${t.balance} XP` });
+    const open = box.createEl("button", { cls: "vrpg-primary", text: "Open App" });
     open.onclick = () => this.plugin.openApp();
   }
 }

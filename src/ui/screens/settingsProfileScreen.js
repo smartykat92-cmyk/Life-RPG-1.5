@@ -16,19 +16,19 @@ function renderSettingsProfileScreen(parent, ctx = {}) {
 
   const player = data.player || {};
   const profilePanel = parent.createDiv({ cls: "vrpg-panel" });
-  profilePanel.createDiv({ cls: "vrpg-section", text: "Профиль героя" });
+  profilePanel.createDiv({ cls: "vrpg-section", text: "Hero Profile" });
   const profilePreview = profilePanel.createDiv({ cls: "vrpg-settings-profile" });
   renderAvatar(profilePreview, data, "vrpg-avatar");
   const profileCopy = profilePreview.createDiv();
-  profileCopy.createDiv({ cls: "vrpg-card-title", text: player.name || "Герой" });
+  profileCopy.createDiv({ cls: "vrpg-card-title", text: player.name || "Hero" });
   profileCopy.createDiv({ cls: "vrpg-subtitle", text: getHeroClassTitle(player) });
   const heroName = profilePanel.createEl("input", {
     type: "text",
-    placeholder: "Имя героя",
+    placeholder: "Hero Name",
     value: player.name || ""
   });
   const heroClassId = resolveHeroClassId(player);
-  profilePanel.createDiv({ cls: "vrpg-card-title", text: "Класс героя" });
+  profilePanel.createDiv({ cls: "vrpg-card-title", text: "Hero Class" });
   const heroClass = profilePanel.createEl("select");
   for (const item of HERO_CLASSES) {
     heroClass.createEl("option", {
@@ -49,8 +49,8 @@ function renderSettingsProfileScreen(parent, ctx = {}) {
     value: player.avatarUrl || ""
   });
   const dropZone = profilePanel.createDiv({ cls: "vrpg-avatar-drop" });
-  dropZone.createDiv({ cls: "vrpg-card-title", text: "Фото героя" });
-  dropZone.createDiv({ cls: "vrpg-subtitle", text: "Перетащи картинку сюда или выбери файл. Технический путь больше не показываем." });
+  dropZone.createDiv({ cls: "vrpg-card-title", text: "Hero Photo" });
+  dropZone.createDiv({ cls: "vrpg-subtitle", text: "Drag an image here or choose a file." });
   const getProfile = () => ({
     name: heroName.value,
     classId: heroClass.value
@@ -71,12 +71,12 @@ function renderSettingsProfileScreen(parent, ctx = {}) {
     reader.readAsDataURL(file);
   };
   attachAvatarDropZone(dropZone, heroAvatar, getProfile);
-  const clearAvatar = profilePanel.createEl("button", { cls: "vrpg-danger", text: "Убрать фото" });
+  const clearAvatar = profilePanel.createEl("button", { cls: "vrpg-danger", text: "Remove Photo" });
   clearAvatar.onclick = () => {
     heroAvatar.value = "";
     updatePlayer({ ...getProfile(), avatarUrl: "" });
   };
-  const saveHero = profilePanel.createEl("button", { cls: "vrpg-primary", text: "Сохранить героя" });
+  const saveHero = profilePanel.createEl("button", { cls: "vrpg-primary", text: "Save Hero" });
   saveHero.onclick = () => updatePlayer({
     name: heroName.value,
     classId: heroClass.value,

@@ -2,11 +2,11 @@
 // Toggle cards with enabled true/false; values are still calculated in renderHomeQuests.
 
 const QUEST_STATS_CARDS = [
-  { id: "dailyXp", label: "XP за день", enabled: true },
-  { id: "minimum", label: "Минимум дня", enabled: true },
-  { id: "total", label: "Привычки дня", enabled: true },
-  { id: "strongDays", label: "Сильных дней за неделю", enabled: true },
-  { id: "streak", label: "Серия", enabled: true }
+  { id: "dailyXp", label: "Daily XP", enabled: true },
+  { id: "minimum", label: "Day's Minimum", enabled: true },
+  { id: "total", label: "Today's Habits", enabled: true },
+  { id: "strongDays", label: "Strong Days This Week", enabled: true },
+  { id: "streak", label: "Streak", enabled: true }
 ];
 
 function createDefaultQuestStatsCards() {

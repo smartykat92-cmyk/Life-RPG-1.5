@@ -3,10 +3,10 @@
 // Keep behavior compatible with the previous main.js implementation.
 
 function heroTitle(level) {
-  if (level >= 20) return "Мастер ритма";
-  if (level >= 10) return "Стратег";
-  if (level >= 5) return "Искатель";
-  return "Новичок";
+  if (level >= 20) return "Rhythm Master";
+  if (level >= 10) return "Strategist";
+  if (level >= 5) return "Seeker";
+  return "Novice";
 }
 
 function totals(data) {

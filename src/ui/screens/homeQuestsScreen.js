@@ -19,7 +19,7 @@ function renderHomeQuestsScreen(parent, ctx = {}) {
     minimum: `${Math.min(today.done, 3)}/3`,
     total: `${today.done}/${today.total}`,
     strongDays: `${doneWeek}/5`,
-    streak: `${streak(data)} дней`
+    streak: `${streak(data)} days`
   };
   const grid = parent.createDiv({ cls: "vrpg-card-grid" });
   for (const card of getQuestStatsCards(data, values, questStatsCards, selectedKey)) {

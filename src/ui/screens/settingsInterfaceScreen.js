@@ -5,9 +5,9 @@ const { normalizeInterfaceLayout } = require("../../config/layoutConfig");
 const { getInterfaceLayout } = require("../../systems/layoutSystem");
 
 const APP_SIZE_LABELS = {
-  compact: "Компактный",
-  comfortable: "Удобный",
-  expanded: "Расширенный"
+  compact: "Compact",
+  comfortable: "Comfortable",
+  expanded: "Expanded"
 };
 
 function renderSettingsInterfaceScreen(parent, ctx = {}) {
@@ -15,12 +15,12 @@ function renderSettingsInterfaceScreen(parent, ctx = {}) {
   const updateInterfaceLayout = ctx.updateInterfaceLayout || (() => {});
   const interfaceLayout = getInterfaceLayout(settings);
   const panel = parent.createDiv({ cls: "vrpg-panel vrpg-interface-panel" });
-  panel.createDiv({ cls: "vrpg-section", text: "Интерфейс" });
+  panel.createDiv({ cls: "vrpg-section", text: "Interface" });
 
   const presetPanel = panel.createDiv({ cls: "vrpg-interface-presets" });
   const presetMeta = presetPanel.createDiv({ cls: "vrpg-interface-row-meta" });
-  presetMeta.createDiv({ cls: "vrpg-card-title", text: "Размер панели" });
-  presetMeta.createDiv({ cls: "vrpg-subtitle", text: "Ширина рабочей области Life RPG" });
+  presetMeta.createDiv({ cls: "vrpg-card-title", text: "Panel Size" });
+  presetMeta.createDiv({ cls: "vrpg-subtitle", text: "Width of Life RPG workspace" });
   const presetControl = presetPanel.createDiv({ cls: "vrpg-size-control vrpg-app-size-control" });
   Object.entries(APP_SIZE_LABELS).forEach(([value, label]) => {
     const button = presetControl.createEl("button", {

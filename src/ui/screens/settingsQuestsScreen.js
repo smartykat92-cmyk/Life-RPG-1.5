@@ -16,27 +16,27 @@ function renderSettingsQuestsScreen(parent, ctx = {}) {
   const confirm = ctx.confirm;
 
   const addPanel = parent.createDiv({ cls: "vrpg-panel" });
-  addPanel.createDiv({ cls: "vrpg-section", text: "Добавить карточку" });
-  addPanel.createDiv({ cls: "vrpg-card-title", text: "Тип карточки" });
-  addPanel.createDiv({ cls: "vrpg-subtitle", text: "Что будет считать карточка." });
+  addPanel.createDiv({ cls: "vrpg-section", text: "Add Card" });
+  addPanel.createDiv({ cls: "vrpg-card-title", text: "Card Type" });
+  addPanel.createDiv({ cls: "vrpg-subtitle", text: "What the card will track." });
   const typeSelect = addPanel.createEl("select");
   [
-    ["manual", "Ручная карточка"],
-    ["habitCount", "Привычка: количество"],
-    ["habitStreak", "Привычка: серия"]
+    ["manual", "Manual Card"],
+    ["habitCount", "Habit: Count"],
+    ["habitStreak", "Habit: Streak"]
   ].forEach(([value, label]) => typeSelect.createEl("option", { text: label, value }));
   const addForm = addPanel.createDiv({ cls: "vrpg-setting-edit" });
   const renderAddForm = () => {
     addForm.empty();
     const type = typeSelect.value;
-    addForm.createDiv({ cls: "vrpg-card-title", text: "Название карточки" });
-    addForm.createDiv({ cls: "vrpg-subtitle", text: "Как карточка будет называться в панели Квесты." });
-    const customLabel = addForm.createEl("input", { type: "text", placeholder: "Например: Не пропускать тренировки" });
+    addForm.createDiv({ cls: "vrpg-card-title", text: "Card Name" });
+    addForm.createDiv({ cls: "vrpg-subtitle", text: "How the card will appear in the Quests panel." });
+    const customLabel = addForm.createEl("input", { type: "text", placeholder: "e.g. Don't skip workouts" });
     if (type === "manual") {
-      addForm.createDiv({ cls: "vrpg-card-title", text: "Значение / подпись" });
-      addForm.createDiv({ cls: "vrpg-subtitle", text: "Текст, который будет показан внутри карточки." });
-      const customValue = addForm.createEl("input", { type: "text", placeholder: "Например: 3 важных дела" });
-      const add = addForm.createEl("button", { cls: "vrpg-primary", text: "Добавить" });
+      addForm.createDiv({ cls: "vrpg-card-title", text: "Value / Caption" });
+      addForm.createDiv({ cls: "vrpg-subtitle", text: "Text that will be shown inside the card." });
+      const customValue = addForm.createEl("input", { type: "text", placeholder: "e.g. 3 important tasks" });
+      const add = addForm.createEl("button", { cls: "vrpg-primary", text: "Add" });
       add.onclick = async () => {
         await addCustomQuestStatsCard({
           type: "manual",
@@ -50,15 +50,15 @@ function renderSettingsQuestsScreen(parent, ctx = {}) {
       return;
     }
 
-    addForm.createDiv({ cls: "vrpg-subtitle", text: "Прогресс linked-квеста считается автоматически по выбранным привычкам. День засчитывается, если выполнена хотя бы одна из них." });
+    addForm.createDiv({ cls: "vrpg-subtitle", text: "Linked quest progress is calculated automatically from selected habits. A day counts if at least one of them is completed." });
     const habits = activeHabits(data);
     if (!habits.length) {
-      addForm.createDiv({ cls: "vrpg-subtitle", text: "Сначала добавь или включи хотя бы одну привычку." });
+      addForm.createDiv({ cls: "vrpg-subtitle", text: "First add or enable at least one habit." });
       return;
     }
 
-    addForm.createDiv({ cls: "vrpg-card-title", text: "Связанные привычки" });
-    addForm.createDiv({ cls: "vrpg-subtitle", text: "Например: бег, велосипед и зал для общего спортивного стрика." });
+    addForm.createDiv({ cls: "vrpg-card-title", text: "Linked Habits" });
+    addForm.createDiv({ cls: "vrpg-subtitle", text: "e.g. running, cycling, and gym for an overall fitness streak." });
     const habitChoices = addForm.createDiv({ cls: "vrpg-habit-choice-list" });
     const habitInputs = [];
     for (const habit of habits) {
@@ -68,21 +68,21 @@ function renderSettingsQuestsScreen(parent, ctx = {}) {
       label.createSpan({ text: `${habit.icon || "•"} ${habit.title}` });
       habitInputs.push(checkbox);
     }
-    addForm.createDiv({ cls: "vrpg-card-title", text: "Цель в днях" });
-    addForm.createDiv({ cls: "vrpg-subtitle", text: "Сколько дней нужно выполнить для завершения квеста." });
-    const goalInput = addForm.createEl("input", { type: "number", placeholder: "Например: 7 дней" });
+    addForm.createDiv({ cls: "vrpg-card-title", text: "Goal in Days" });
+    addForm.createDiv({ cls: "vrpg-subtitle", text: "How many days needed to complete the quest." });
+    const goalInput = addForm.createEl("input", { type: "number", placeholder: "e.g. 7 days" });
     goalInput.value = "7";
-    addForm.createDiv({ cls: "vrpg-card-title", text: "Награда XP" });
-    addForm.createDiv({ cls: "vrpg-subtitle", text: "Пока только отображается. XP не начисляется автоматически." });
-    const rewardXpInput = addForm.createEl("input", { type: "number", placeholder: "Например: 100" });
+    addForm.createDiv({ cls: "vrpg-card-title", text: "XP Reward" });
+    addForm.createDiv({ cls: "vrpg-subtitle", text: "Currently display-only. XP is not awarded automatically." });
+    const rewardXpInput = addForm.createEl("input", { type: "number", placeholder: "e.g. 100" });
     rewardXpInput.value = "0";
-    const add = addForm.createEl("button", { cls: "vrpg-primary", text: "Добавить" });
+    const add = addForm.createEl("button", { cls: "vrpg-primary", text: "Add" });
     add.onclick = async () => {
       const habitIds = habitInputs
         .filter(input => input.checked)
         .map(input => input.value);
       if (!habitIds.length) {
-        new Notice("Выбери хотя бы одну привычку");
+        new Notice("Select at least one habit");
         return;
       }
       await addCustomQuestStatsCard({
@@ -104,8 +104,8 @@ function renderSettingsQuestsScreen(parent, ctx = {}) {
   renderAddForm();
 
   const panel = parent.createDiv({ cls: "vrpg-panel" });
-  panel.createDiv({ cls: "vrpg-section", text: "Панель Квестов" });
-  panel.createDiv({ cls: "vrpg-subtitle", text: "Управляй карточками статистики в панели Квесты." });
+  panel.createDiv({ cls: "vrpg-section", text: "Quests Panel" });
+  panel.createDiv({ cls: "vrpg-subtitle", text: "Manage stat cards in the Quests panel." });
   const normalized = normalizeQuestStatsSettings(data.settings || {}, QUEST_STATS_CARDS);
   const settings = normalized.questStatsCards;
   for (const card of QUEST_STATS_CARDS) {
@@ -114,10 +114,10 @@ function renderSettingsQuestsScreen(parent, ctx = {}) {
     const row = panel.createDiv({ cls: "vrpg-setting-row" });
     const title = cardSettings.label || card.label;
     row.createDiv({ cls: "vrpg-card-title", text: title });
-    row.createDiv({ cls: "vrpg-subtitle", text: enabled ? "Показывается в панели Квесты" : "Скрыта из панели Квесты" });
-    const toggle = row.createEl("button", { cls: "vrpg-primary", text: enabled ? "Скрыть" : "Показать" });
+    row.createDiv({ cls: "vrpg-subtitle", text: enabled ? "Shown in Quests panel" : "Hidden from Quests panel" });
+    const toggle = row.createEl("button", { cls: "vrpg-primary", text: enabled ? "Hide" : "Show" });
     toggle.onclick = () => setQuestStatsCardEnabled(card.id, !enabled);
-    const edit = row.createEl("button", { cls: "vrpg-primary", text: "Изменить" });
+    const edit = row.createEl("button", { cls: "vrpg-primary", text: "Edit" });
     let editForm = null;
     edit.onclick = () => {
       if (editForm) {
@@ -126,11 +126,11 @@ function renderSettingsQuestsScreen(parent, ctx = {}) {
         return;
       }
       editForm = row.createDiv({ cls: "vrpg-setting-edit" });
-      const labelInput = editForm.createEl("input", { type: "text", placeholder: "Название" });
+      const labelInput = editForm.createEl("input", { type: "text", placeholder: "Name" });
       labelInput.value = title;
-      const save = editForm.createEl("button", { cls: "vrpg-primary", text: "Сохранить" });
+      const save = editForm.createEl("button", { cls: "vrpg-primary", text: "Save" });
       save.onclick = () => updateQuestStatsCard(card.id, { label: labelInput.value });
-      const cancel = editForm.createEl("button", { cls: "vrpg-primary", text: "Отмена" });
+      const cancel = editForm.createEl("button", { cls: "vrpg-primary", text: "Cancel" });
       cancel.onclick = () => {
         editForm.remove();
         editForm = null;
@@ -142,13 +142,13 @@ function renderSettingsQuestsScreen(parent, ctx = {}) {
     const enabled = card.enabled !== false;
     const row = panel.createDiv({ cls: "vrpg-setting-row" });
     const linkedCount = Array.isArray(card.habitIds) && card.habitIds.length ? card.habitIds.length : (card.habitId ? 1 : 0);
-    const linkedText = card.type === "manual" ? card.value || "Без значения" : `${linkedCount} привычек • ${card.value || "авто-прогресс"}`;
+    const linkedText = card.type === "manual" ? card.value || "No value" : `${linkedCount} habits • ${card.value || "auto-progress"}`;
     row.createDiv({ cls: "vrpg-card-title", text: card.label });
-    row.createDiv({ cls: "vrpg-subtitle", text: `${linkedText} • ${enabled ? "Показывается" : "Скрыта"}` });
-    const toggle = row.createEl("button", { cls: "vrpg-primary", text: enabled ? "Скрыть" : "Показать" });
+    row.createDiv({ cls: "vrpg-subtitle", text: `${linkedText} • ${enabled ? "Shown" : "Hidden"}` });
+    const toggle = row.createEl("button", { cls: "vrpg-primary", text: enabled ? "Hide" : "Show" });
     toggle.onclick = () => updateCustomQuestStatsCard(card.id, { enabled: !enabled });
     if (card.type === "manual") {
-      const edit = row.createEl("button", { cls: "vrpg-primary", text: "Изменить" });
+      const edit = row.createEl("button", { cls: "vrpg-primary", text: "Edit" });
       let editForm = null;
       edit.onclick = () => {
         if (editForm) {
@@ -157,25 +157,25 @@ function renderSettingsQuestsScreen(parent, ctx = {}) {
           return;
         }
         editForm = row.createDiv({ cls: "vrpg-setting-edit" });
-        const labelInput = editForm.createEl("input", { type: "text", placeholder: "Название" });
+        const labelInput = editForm.createEl("input", { type: "text", placeholder: "Name" });
         labelInput.value = card.label;
-        const valueInput = editForm.createEl("input", { type: "text", placeholder: "Значение / подпись" });
+        const valueInput = editForm.createEl("input", { type: "text", placeholder: "Value / Caption" });
         valueInput.value = card.value || "";
-        const save = editForm.createEl("button", { cls: "vrpg-primary", text: "Сохранить" });
+        const save = editForm.createEl("button", { cls: "vrpg-primary", text: "Save" });
         save.onclick = () => updateCustomQuestStatsCard(card.id, {
           label: labelInput.value,
           value: valueInput.value
         });
-        const cancel = editForm.createEl("button", { cls: "vrpg-primary", text: "Отмена" });
+        const cancel = editForm.createEl("button", { cls: "vrpg-primary", text: "Cancel" });
         cancel.onclick = () => {
           editForm.remove();
           editForm = null;
         };
       };
     }
-    const remove = row.createEl("button", { cls: "vrpg-danger", text: "Удалить" });
+    const remove = row.createEl("button", { cls: "vrpg-danger", text: "Delete" });
     remove.onclick = () => {
-      if (confirm(`Удалить карточку "${card.label}"?`)) {
+      if (confirm(`Delete card "${card.label}"?`)) {
         deleteCustomQuestStatsCard(card.id);
       }
     };

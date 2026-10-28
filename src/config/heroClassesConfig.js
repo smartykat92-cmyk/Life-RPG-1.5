@@ -7,26 +7,26 @@ const HERO_CLASSES = [
   {
     id: "habit_warrior",
     icon: "⚔️",
-    title: "Воин привычек",
-    description: "Регулярность, ежедневные действия и стабильный прогресс."
+    title: "Habit Warrior",
+    description: "Consistency, daily actions, and steady progress."
   },
   {
     id: "discipline_mage",
     icon: "🧙",
-    title: "Маг дисциплины",
-    description: "Самоконтроль, концентрация и выполнение целей несмотря на обстоятельства."
+    title: "Discipline Mage",
+    description: "Self-control, focus, and achieving goals despite obstacles."
   },
   {
     id: "balance_keeper",
     icon: "🌿",
-    title: "Хранитель баланса",
-    description: "Гармоничное развитие всех сфер жизни."
+    title: "Balance Keeper",
+    description: "Harmonious growth across all areas of life."
   },
   {
     id: "change_architect",
     icon: "🔥",
-    title: "Архитектор перемен",
-    description: "Создание новых привычек и изменение своей жизни шаг за шагом."
+    title: "Change Architect",
+    description: "Building new habits and transforming your life step by step."
   }
 ];
 

@@ -61,7 +61,7 @@ function normalizeQuestStatsSettings(settings = {}, config = QUEST_STATS_CARDS) 
       .filter(card => card && typeof card === "object" && card.id)
       .map(card => ({
         id: String(card.id),
-        label: String(card.label || "Своя карточка").trim() || "Своя карточка",
+        label: String(card.label || "Custom Card").trim() || "Custom Card",
         value: String(card.value || "").trim(),
         habitId: card.habitId ? String(card.habitId) : "",
         habitIds: safeHabitIds(card.habitIds, card.habitId),
@@ -105,7 +105,7 @@ function applyCustomQuestStatsCardAdd(data, input = {}) {
   const normalized = normalizeQuestStatsSettings(data.settings || {});
   const card = {
     id: uid("questCard"),
-    label: String(input.label || "Своя карточка").trim() || "Своя карточка",
+    label: String(input.label || "Custom Card").trim() || "Custom Card",
     value: String(input.value || "").trim(),
     habitId: input.habitId ? String(input.habitId) : "",
     habitIds: safeHabitIds(input.habitIds, input.habitId),
@@ -130,7 +130,7 @@ function applyCustomQuestStatsCardUpdate(data, id, patch = {}) {
 
   const next = { ...cards[index] };
   if (Object.prototype.hasOwnProperty.call(patch, "label")) {
-    next.label = String(patch.label || "Своя карточка").trim() || "Своя карточка";
+    next.label = String(patch.label || "Custom Card").trim() || "Custom Card";
   }
   if (Object.prototype.hasOwnProperty.call(patch, "value")) {
     next.value = String(patch.value || "").trim();
@@ -256,11 +256,11 @@ function resolveCustomQuestCardValue(data, card, selectedDateKey = dateKey()) {
   if (card.type === "habitCount") {
     const days = card.period === "today" ? 1 : goal;
     const done = countAnyHabitDoneInLastDays(data, habitIds, selectedDateKey, days);
-    return `${done}/${goal} дней`;
+    return `${done}/${goal} days`;
   }
   if (card.type === "habitStreak") {
     const streak = habitStreakForAnyHabit(data, habitIds, selectedDateKey);
-    return `${streak}/${goal} дней`;
+    return `${streak}/${goal} days`;
   }
   return card.value || "";
 }

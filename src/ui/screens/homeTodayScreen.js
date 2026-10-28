@@ -18,9 +18,9 @@ function renderHomeTodayScreen(parent, ctx = {}) {
   const header = parent.createDiv({ cls: "vrpg-panel vrpg-day-focus vrpg-day-focus-compact" });
   const summary = header.createDiv({ cls: "vrpg-day-focus-summary" });
   summary.createDiv({ cls: "vrpg-card-title", text: key });
-  summary.createDiv({ cls: "vrpg-subtitle", text: `${stats.done}/${stats.total} привычек · ${stats.xp} XP` });
+  summary.createDiv({ cls: "vrpg-subtitle", text: `${stats.done}/${stats.total} habits · ${stats.xp} XP` });
   const mood = header.createDiv({ cls: "vrpg-mood-row" });
-  mood.createDiv({ cls: "vrpg-section", text: "Настроение / энергия" });
+  mood.createDiv({ cls: "vrpg-section", text: "Mood / Energy" });
   const moodButtons = mood.createDiv({ cls: "vrpg-segmented" });
   Object.entries(moods).forEach(([id, label]) => {
     const button = moodButtons.createEl("button", { cls: today.mood === id ? "is-active" : "", text: label });

@@ -12,10 +12,10 @@ const { DEFAULT_INTERFACE_THEME } = require("./config/themeConfig");
 
 const DEFAULT_DATA = {
   player: {
-    name: "Герой",
+    name: "Hero",
     classId: DEFAULT_HERO_CLASS_ID,
-    className: "Воин привычек",
-    goal: "закрывать минимум 3 привычки в день",
+    className: "Habit Warrior",
+    goal: "complete at least 3 habits per day",
     avatarUrl: ""
   },
   settings: {
@@ -28,20 +28,20 @@ const DEFAULT_DATA = {
     interfaceTheme: DEFAULT_INTERFACE_THEME
   },
   habits: [
-    { id: "gym", title: "Зал", area: "body", icon: "🏋️", xp: 10, enabled: true },
-    { id: "walk", title: "Прогулка", area: "body", icon: "🚶", xp: 10, enabled: true },
-    { id: "stretch", title: "Растяжка", area: "body", icon: "🧘", xp: 10, enabled: true },
-    { id: "run", title: "Бег", area: "body", icon: "🏃", xp: 10, enabled: true },
-    { id: "bike", title: "Велосипед", area: "body", icon: "🚴", xp: 10, enabled: true },
-    { id: "focus", title: "20 минут в тишине", area: "mind", icon: "🧠", xp: 10, enabled: true },
-    { id: "work", title: "Работа / проект", area: "craft", icon: "🛠️", xp: 10, enabled: true },
-    { id: "control", title: "День без залипания", area: "control", icon: "🛡️", xp: 10, enabled: true }
+    { id: "gym", title: "Gym", area: "body", icon: "🏋️", xp: 10, enabled: true },
+    { id: "walk", title: "Walk", area: "body", icon: "🚶", xp: 10, enabled: true },
+    { id: "stretch", title: "Stretch", area: "body", icon: "🧘", xp: 10, enabled: true },
+    { id: "run", title: "Run", area: "body", icon: "🏃", xp: 10, enabled: true },
+    { id: "bike", title: "Bike", area: "body", icon: "🚴", xp: 10, enabled: true },
+    { id: "focus", title: "20 Minutes Quiet Focus", area: "mind", icon: "🧠", xp: 10, enabled: true },
+    { id: "work", title: "Work / Project", area: "craft", icon: "🛠️", xp: 10, enabled: true },
+    { id: "control", title: "No Doom Scrolling", area: "control", icon: "🛡️", xp: 10, enabled: true }
   ],
   rewards: [
-    { id: "youtube", title: "30 минут YouTube", cost: 100, icon: "▶️", rarity: "common" },
-    { id: "coffee", title: "Кофе / напиток", cost: 100, icon: "☕", rarity: "common" },
-    { id: "dinner", title: "Кафе / вкусный ужин", cost: 250, icon: "🍜", rarity: "rare" },
-    { id: "game", title: "Вечер игры", cost: 250, icon: "🎮", rarity: "rare" }
+    { id: "youtube", title: "30 Minutes YouTube", cost: 100, icon: "▶️", rarity: "common" },
+    { id: "coffee", title: "Coffee / Drink", cost: 100, icon: "☕", rarity: "common" },
+    { id: "dinner", title: "Dinner Out", cost: 250, icon: "🍜", rarity: "rare" },
+    { id: "game", title: "Game Night", cost: 250, icon: "🎮", rarity: "rare" }
   ],
   days: {},
   inventory: [],

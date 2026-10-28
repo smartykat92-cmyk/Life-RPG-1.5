@@ -2,7 +2,7 @@
 // Holds visible labels that are safe to reuse from render code.
 
 const TEXT = {
-  dayPanel: "Панель дня"
+  dayPanel: "Day Panel"
 };
 
 module.exports = {

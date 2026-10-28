@@ -6,23 +6,23 @@ const APP_VIEW = "vibe-rpg-app-view";
 const SIDEBAR_VIEW = "vibe-rpg-sidebar-view";
 
 const AREA_LABELS = {
-  body: "Тело",
-  mind: "Разум",
-  craft: "Дело",
-  control: "Контроль"
+  body: "Body",
+  mind: "Mind",
+  craft: "Craft",
+  control: "Control"
 };
 
 const MOODS = {
-  low: "Низкая",
-  normal: "Норм",
-  high: "Высокая"
+  low: "Low",
+  normal: "Normal",
+  high: "High"
 };
 
 const RARITIES = {
-  common: "Обычная",
-  rare: "Редкая",
-  epic: "Эпическая",
-  legendary: "Легендарная"
+  common: "Common",
+  rare: "Rare",
+  epic: "Epic",
+  legendary: "Legendary"
 };
 
 const HABIT_ICONS = ["🏋️", "🚶", "🧘", "🏃", "🚴", "🧠", "🛠️", "🛡️", "📚", "✍️", "🎧", "💧", "🧹", "💬", "🎯", "🔥"];
