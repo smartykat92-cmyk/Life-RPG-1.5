@@ -1,4 +1,4 @@
-// Active Home shell and module dispatcher for Vibe RPG.
+// Active Home shell and module dispatcher for Grindstone.
 // Receives data, helpers, and callbacks from main-entry; does not access plugin state directly.
 
 const {
@@ -20,7 +20,7 @@ const {
   normalizeHomeLayout
 } = require("../../config/layoutConfig");
 
-const HOME_PANEL_WIDGET_IDS = ["today", "hero", "quests", "rewards", "inventory", "wallet"];
+const HOME_PANEL_WIDGET_IDS = ["today", "hero", "quests", "rewards", "inventory", "log"];
 const ENABLE_HOME_FREEFORM = false;
 const ENABLE_HOME_FREEFORM_RESIZE = false;
 
@@ -75,7 +75,7 @@ function renderHomeScreen(parent, ctx = {}) {
   const totals = ctx.totals;
   const dateKey = ctx.dateKey;
   const readDayStats = ctx.readDayStats;
-  const waterStats = ctx.waterStats;
+  const displayDateFromKey = ctx.displayDateFromKey;
   const streak = ctx.streak;
   const getHeroClassTitle = ctx.getHeroClassTitle;
   const getDay = ctx.getDay || (() => ({ completed: {}, mood: "normal" }));
@@ -87,8 +87,7 @@ function renderHomeScreen(parent, ctx = {}) {
     control: { done: 0, total: 0 }
   }));
   const heroTitle = ctx.heroTitle || (level => `Level ${level}`);
-  const walletStats = ctx.walletStats || (() => ({ income: 0, expense: 0, balance: 0, items: [] }));
-  const formatMoney = ctx.formatMoney || (value => String(value || 0));
+  const renderHomeLog = ctx.renderHomeLog;
   const createProgressBar = ctx.createProgressBar;
   const text = ctx.text;
   const timeParts = ctx.timeParts;
@@ -96,19 +95,17 @@ function renderHomeScreen(parent, ctx = {}) {
   const monthLabel = ctx.monthLabel;
   const dateFromKey = ctx.dateFromKey || (() => new Date());
   const calendarDays = ctx.calendarDays;
-  const renderWaterWidget = ctx.renderWaterWidget;
+  const coreAttributes = ctx.coreAttributes;
   const renderAvatar = ctx.renderAvatar;
   const navigate = ctx.navigate;
   const toggleHomeEditMode = ctx.toggleHomeEditMode || (() => {});
   const updateHomeLayout = ctx.updateHomeLayout || (() => {});
-  const changeWater = ctx.changeWater;
   const toggleHabit = ctx.toggleHabit || (() => {});
   const t = totals(data);
   const now = new Date();
   const selectedKey = ctx.selectedDateKey || dateKey(now);
   const selectedDate = dateFromKey(selectedKey);
   const selectedStats = readDayStats(data, selectedKey);
-  const selectedWater = waterStats(data, selectedKey);
   const weekKeys = [];
   for (let i = 6; i >= 0; i--) {
     const date = new Date(now);
@@ -121,22 +118,21 @@ function renderHomeScreen(parent, ctx = {}) {
   const today = selectedStats;
   const selectedDay = getDay(data, selectedKey);
   const habits = activeHabits(data);
-  const water = selectedWater;
   const isTodaySelected = selectedKey === dateKey(now);
   const nextReward = data.rewards
     .slice()
     .sort((a, b) => Number(a.cost || 0) - Number(b.cost || 0))
-    .find(reward => Number(reward.cost || 0) > t.balance);
+    .find(reward => Number(reward.cost || 0) > t.gold);
   const nextRewardText = nextReward
-    ? `${Number(nextReward.cost || 0) - t.balance} XP until "${nextReward.title}"`
-    : "Basic shop already unlocked";
+    ? `${Number(nextReward.cost || 0) - t.gold} Gold until "${nextReward.title}"`
+    : "All rewards available";
   const todayPercent = today.total ? Math.round(today.done / today.total * 100) : 0;
   const layoutWidgets = getEnabledLayoutWidgets(data);
   const widgetById = new Map(layoutWidgets.map(widget => [widget.id, widget]));
   const panelWidgets = layoutWidgets.filter(widget => isHomePanelWidget(widget.id));
   const activePanelWidget = getActivePanelWidget(panelWidgets, ctx.homePanel);
   const activePanelId = activePanelWidget ? activePanelWidget.id : "";
-  const visibleWidgetIds = new Set(["command", "clock", "calendar", "water"]);
+  const visibleWidgetIds = new Set(["command", "clock", "calendar"]);
   if (activePanelWidget) visibleWidgetIds.add(activePanelWidget.id);
   const rawHomeEditMode = !!ctx.isHomeEditMode;
   const homeLayoutMode = getHomeLayoutMode(data.settings || {});
@@ -543,10 +539,10 @@ function renderHomeScreen(parent, ctx = {}) {
     profileText.createDiv({ cls: "vrpg-title", text: data.player.name || `Level ${t.level}` });
     profileText.createDiv({ cls: "vrpg-subtitle", text: `${getHeroClassTitle(data.player)} · Level ${t.level}` });
     const commandVitals = commandHeader.createDiv({ cls: "vrpg-command-vitals" });
-    const xpVital = commandVitals.createDiv({ cls: "vrpg-command-vital" });
-    xpVital.createDiv({ cls: "vrpg-section", text: "XP" });
-    xpVital.createDiv({ cls: "vrpg-card-title", text: `${t.balance}` });
-    xpVital.createDiv({ cls: "vrpg-subtitle", text: `${t.levelXP}/100 to level` });
+    const goldVital = commandVitals.createDiv({ cls: "vrpg-command-vital" });
+    goldVital.createDiv({ cls: "vrpg-section", text: "Gold" });
+    goldVital.createDiv({ cls: "vrpg-card-title", text: `${t.gold}` });
+    goldVital.createDiv({ cls: "vrpg-subtitle", text: `${t.levelXP}/100 to level` });
     const streakVital = commandVitals.createDiv({ cls: "vrpg-command-vital" });
     streakVital.createDiv({ cls: "vrpg-section", text: "Streak" });
     streakVital.createDiv({ cls: "vrpg-card-title", text: `${streak(data)}` });
@@ -554,12 +550,12 @@ function renderHomeScreen(parent, ctx = {}) {
     createProgressBar(card, todayPercent, "vrpg-command-progress");
     const commandGrid = card.createDiv({ cls: "vrpg-command-grid" });
     const commandItems = {
-      today: [isTodaySelected ? "Today" : "Day", "Check off habits"],
+      today: [isTodaySelected ? "Today" : "Day", "Check off dailies"],
       hero: ["Hero", `${t.levelXP}/100 XP to level`],
-      quests: ["Quests", `${today.done >= 3 ? "daily minimum met" : `${Math.min(today.done, 3)}/3 to minimum`}`],
+      quests: ["Quests", `${(data.quests || []).filter(q => !q.completed && !q.abandoned).length} active`],
       rewards: ["Shop", nextRewardText],
       inventory: ["Inventory", `${data.inventory.filter(item => !item.used).length} active`],
-      wallet: ["Bank", `${(data.wallet || []).length} records`]
+      log: ["Log", `${(data.log || []).length} entries`]
     };
     const panelWidgetById = new Map(panelWidgets.map(panelWidget => [panelWidget.id, panelWidget]));
     HOME_PANEL_WIDGET_IDS.forEach(id => {
@@ -632,21 +628,8 @@ function renderHomeScreen(parent, ctx = {}) {
     }
     const dayDetails = calendar.createDiv({ cls: "vrpg-calendar-details" });
     dayDetails.createDiv({ cls: "vrpg-card-title", text: selectedKey });
-    dayDetails.createDiv({ cls: "vrpg-subtitle", text: `Habits: ${selectedStats.done}/${selectedStats.total} · Water: ${selectedWater.value}/${selectedWater.goal}` });
+    dayDetails.createDiv({ cls: "vrpg-subtitle", text: `Dailies: ${selectedStats.done}/${selectedStats.total} · ${selectedStats.xp} XP earned` });
     dayDetails.createDiv({ cls: "vrpg-subtitle", text: isGridMode ? `Week: ${strongDays}/7 · streak ${streak(data)}` : `Week: ${strongDays}/7 strong days · best day ${bestDay.xp} XP · streak ${streak(data)}` });
-  };
-
-  const renderWaterLayoutWidget = (widget, parentEl = top) => {
-    const waterRoot = renderWaterWidget(parentEl, {
-      stats: water,
-      title: "Water",
-      mode: "ring",
-      className: getWidgetClass("vrpg-glass-widget vrpg-water-widget", widget),
-      onDecrement: () => changeWater(-1, selectedKey),
-      onIncrement: () => changeWater(1, selectedKey)
-    });
-    waterRoot.setAttribute("data-widget-id", widget.id);
-    prepareWidgetRoot(waterRoot, widget);
   };
 
   const renderPreviewWidget = (widget, className, title, subtitle, renderBody, options = {}) => {
@@ -700,7 +683,7 @@ function renderHomeScreen(parent, ctx = {}) {
       createProgressBar(body, t.levelXP, "vrpg-preview-progress");
       const statsGrid = body.createDiv({ cls: "vrpg-preview-stat-grid" });
       [
-        ["XP", `${t.balance}`],
+        ["Gold", `${t.gold}`],
         ["Streak", `${streak(data)} days`],
         ["Week", `${strongDays}/7`]
       ].forEach(([label, value]) => {
@@ -735,7 +718,7 @@ function renderHomeScreen(parent, ctx = {}) {
     const rewards = (data.rewards || [])
       .slice()
       .sort((a, b) => Number(a.cost || 0) - Number(b.cost || 0));
-    const available = rewards.filter(reward => t.balance >= Number(reward.cost || 0));
+    const available = rewards.filter(reward => t.gold >= Number(reward.cost || 0));
     const previewRewards = available.length ? available.slice(0, 2) : rewards.slice(0, 2);
     renderPreviewWidget(widget, "vrpg-preview-rewards", "Rewards", available.length ? `Available: ${available.length}` : nextRewardText, body => {
       if (!previewRewards.length) {
@@ -745,7 +728,7 @@ function renderHomeScreen(parent, ctx = {}) {
       previewRewards.forEach(reward => {
         const row = body.createDiv({ cls: "vrpg-preview-row" });
         row.createDiv({ cls: "vrpg-card-title", text: `${reward.icon || "🎁"} ${reward.title}` });
-        row.createDiv({ cls: "vrpg-subtitle", text: `${reward.cost} XP` });
+        row.createDiv({ cls: "vrpg-subtitle", text: `${reward.cost} Gold` });
       });
     }, { openPanel: "rewards", openLabel: "Open Shop" });
   };
@@ -767,21 +750,20 @@ function renderHomeScreen(parent, ctx = {}) {
     }, { openPanel: "inventory", openLabel: "Open Inventory" });
   };
 
-  const renderWalletPreview = widget => {
-    const all = walletStats(data.wallet || []);
-    renderPreviewWidget(widget, "vrpg-preview-wallet", "Bank", `${(data.wallet || []).length} records`, body => {
-      const grid = body.createDiv({ cls: "vrpg-preview-stat-grid" });
-      [
-        ["Balance", `${formatMoney(all.balance)} $`],
-        ["Income", `+${formatMoney(all.income)} $`],
-        ["Expenses", `-${formatMoney(all.expense)} $`]
-      ].forEach(([label, value]) => {
-        const item = grid.createDiv({ cls: "vrpg-preview-stat" });
-        item.createSpan({ text: label });
-        item.createEl("strong", { text: value });
-      });
-      if (!(data.wallet || []).length) body.createDiv({ cls: "vrpg-preview-empty", text: "No records yet" });
-    }, { openPanel: "wallet", openLabel: "Open Bank" });
+  const renderLogPreview = widget => {
+    const log = Array.isArray(data.log) ? data.log : [];
+    const recent = log.slice(-3).reverse();
+    renderPreviewWidget(widget, "vrpg-preview-log", "Adventure Log", `${log.length} entries`, body => {
+      if (!recent.length) {
+        body.createDiv({ cls: "vrpg-preview-empty", text: "No entries yet" });
+      } else {
+        recent.forEach(entry => {
+          const row = body.createDiv({ cls: "vrpg-preview-row" });
+          row.createDiv({ cls: "vrpg-card-title", text: entry.title || entry.type || "Event" });
+          row.createDiv({ cls: "vrpg-subtitle", text: entry.type ? entry.type.replace(/-/g, " ") : "" });
+        });
+      }
+    }, { openPanel: "log", openLabel: "Open Log" });
   };
 
   const renderModuleWidget = widget => {
@@ -795,7 +777,6 @@ function renderHomeScreen(parent, ctx = {}) {
     if (widgetById.has("command")) renderCommandWidget(widgetById.get("command"), mainColumn);
     if (activePanelWidget) renderHomeModuleScreen(mainColumn, { ...ctx, homePanel: activePanelWidget.id, prepareWidgetRoot }, activePanelWidget);
     if (widgetById.has("clock")) renderClockWidget(widgetById.get("clock"), sideColumn);
-    if (widgetById.has("water")) renderWaterLayoutWidget(widgetById.get("water"), sideColumn);
     if (widgetById.has("calendar")) renderCalendarWidget(widgetById.get("calendar"), sideColumn);
     return;
   }
@@ -804,7 +785,6 @@ function renderHomeScreen(parent, ctx = {}) {
     if (widget.id === "command") renderCommandWidget(widget);
     if (widget.id === "clock") renderClockWidget(widget);
     if (widget.id === "calendar") renderCalendarWidget(widget);
-    if (widget.id === "water") renderWaterLayoutWidget(widget);
     if (activePanelWidget && widget.id === activePanelWidget.id) {
       renderHomeModuleScreen(top, { ...ctx, homePanel: activePanelWidget.id, prepareWidgetRoot }, activePanelWidget);
     }
@@ -823,7 +803,7 @@ function renderHomeModuleScreen(parent, ctx = {}, widget = null) {
   if (ctx.homePanel === "quests") ctx.renderHomeQuests(body);
   if (ctx.homePanel === "rewards") ctx.renderHomeRewards(body);
   if (ctx.homePanel === "inventory") ctx.renderHomeInventory(body);
-  if (ctx.homePanel === "wallet") ctx.renderHomeWallet(body);
+  if (ctx.homePanel === "log") ctx.renderHomeLog(body);
 }
 
 module.exports = {

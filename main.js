@@ -11,8 +11,16 @@ var require_constants = __commonJS({
     var AREA_LABELS2 = {
       body: "Body",
       mind: "Mind",
+      spirit: "Spirit",
       craft: "Craft",
-      control: "Control"
+      hearth: "Hearth"
+    };
+    var DAILY_XP = 10;
+    var QUEST_XP_STANDARD = 50;
+    var QUEST_XP_MAJOR = 100;
+    var QUEST_PRIORITIES = {
+      standard: "Standard",
+      major: "Major"
     };
     var MOODS2 = {
       low: "Low",
@@ -25,14 +33,30 @@ var require_constants = __commonJS({
       epic: "Epic",
       legendary: "Legendary"
     };
-    var HABIT_ICONS2 = ["\u{1F3CB}\uFE0F", "\u{1F6B6}", "\u{1F9D8}", "\u{1F3C3}", "\u{1F6B4}", "\u{1F9E0}", "\u{1F6E0}\uFE0F", "\u{1F6E1}\uFE0F", "\u{1F4DA}", "\u270D\uFE0F", "\u{1F3A7}", "\u{1F4A7}", "\u{1F9F9}", "\u{1F4AC}", "\u{1F3AF}", "\u{1F525}"];
+    var HABIT_ICONS2 = ["\u{1F3CB}\uFE0F", "\u{1F6B6}", "\u{1F9D8}", "\u{1F3C3}", "\u{1F6B4}", "\u{1F9E0}", "\u{1F6E0}\uFE0F", "\u{1F6E1}\uFE0F", "\u{1F4DA}", "\u270D\uFE0F", "\u{1F3A7}", "\u{1F9F9}", "\u{1F4AC}", "\u{1F3AF}", "\u{1F525}", "\u{1F64F}", "\u{1F3E1}", "\u{1F41D}", "\u{1F331}", "\u{1F468}\u200D\u{1F469}\u200D\u{1F467}\u200D\u{1F466}"];
+    var DAYS_OF_WEEK = {
+      sun: "Sun",
+      mon: "Mon",
+      tue: "Tue",
+      wed: "Wed",
+      thu: "Thu",
+      fri: "Fri",
+      sat: "Sat"
+    };
+    var ALL_DAYS = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
     module2.exports = {
       APP_VIEW: APP_VIEW2,
       SIDEBAR_VIEW: SIDEBAR_VIEW2,
       AREA_LABELS: AREA_LABELS2,
       MOODS: MOODS2,
       RARITIES: RARITIES2,
-      HABIT_ICONS: HABIT_ICONS2
+      HABIT_ICONS: HABIT_ICONS2,
+      DAILY_XP,
+      QUEST_XP_STANDARD,
+      QUEST_XP_MAJOR,
+      QUEST_PRIORITIES,
+      DAYS_OF_WEEK,
+      ALL_DAYS
     };
   }
 });
@@ -48,13 +72,31 @@ var require_utils = __commonJS({
       const mm = String(date.getMonth() + 1).padStart(2, "0");
       return `${dd}.${mm}.${date.getFullYear()}`;
     }
+    function displayDate2(date = /* @__PURE__ */ new Date()) {
+      const dd = String(date.getDate()).padStart(2, "0");
+      const mm = String(date.getMonth() + 1).padStart(2, "0");
+      return `${mm}/${dd}/${date.getFullYear()}`;
+    }
+    function displayDateFromKey2(key) {
+      const date = dateFromKey2(key);
+      return displayDate2(date);
+    }
     function timeKey(date = /* @__PURE__ */ new Date()) {
-      return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+      let hours = date.getHours();
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      const ampm = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12 || 12;
+      return `${hours}:${minutes} ${ampm}`;
     }
     function timeParts2(date = /* @__PURE__ */ new Date()) {
+      let hours = date.getHours();
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      const ampm = hours >= 12 ? "PM" : "AM";
+      hours = hours % 12 || 12;
       return {
-        hours: String(date.getHours()).padStart(2, "0"),
-        minutes: String(date.getMinutes()).padStart(2, "0")
+        hours: String(hours),
+        minutes,
+        ampm
       };
     }
     function dayPhase2(date = /* @__PURE__ */ new Date()) {
@@ -64,25 +106,12 @@ var require_utils = __commonJS({
       if (hour < 18) return "afternoon";
       return "evening";
     }
-    function parseMoney2(value) {
-      const normalized = String(value || "").replace(/[\s.']/g, "").replace(",", ".");
-      const amount = Number(normalized);
-      return Number.isFinite(amount) ? amount : NaN;
-    }
-    function formatMoney2(value) {
-      const amount = Math.round(Number(value || 0));
-      return String(amount).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
     function monthLabel2(date = /* @__PURE__ */ new Date()) {
       return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
     }
     function dateFromKey2(key) {
       const [day, month, year] = String(key || "").split(".").map(Number);
       return new Date(year || 1970, (month || 1) - 1, day || 1);
-    }
-    function walletMonthLabel2(key) {
-      const date = dateFromKey2(key);
-      return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
     }
     function calendarDays2(date = /* @__PURE__ */ new Date()) {
       const year = date.getFullYear();
@@ -101,42 +130,15 @@ var require_utils = __commonJS({
     module2.exports = {
       clone,
       dateKey: dateKey2,
+      displayDate: displayDate2,
+      displayDateFromKey: displayDateFromKey2,
       timeKey,
       timeParts: timeParts2,
       dayPhase: dayPhase2,
-      parseMoney: parseMoney2,
-      formatMoney: formatMoney2,
       monthLabel: monthLabel2,
       dateFromKey: dateFromKey2,
-      walletMonthLabel: walletMonthLabel2,
       calendarDays: calendarDays2,
       uid
-    };
-  }
-});
-
-// src/config/questStatsConfig.js
-var require_questStatsConfig = __commonJS({
-  "src/config/questStatsConfig.js"(exports2, module2) {
-    var QUEST_STATS_CARDS2 = [
-      { id: "dailyXp", label: "Daily XP", enabled: true },
-      { id: "minimum", label: "Day's Minimum", enabled: true },
-      { id: "total", label: "Today's Habits", enabled: true },
-      { id: "strongDays", label: "Strong Days This Week", enabled: true },
-      { id: "streak", label: "Streak", enabled: true }
-    ];
-    function createDefaultQuestStatsCards() {
-      return QUEST_STATS_CARDS2.reduce((result, card) => {
-        result[card.id] = {
-          enabled: card.enabled !== false,
-          label: card.label
-        };
-        return result;
-      }, {});
-    }
-    module2.exports = {
-      QUEST_STATS_CARDS: QUEST_STATS_CARDS2,
-      createDefaultQuestStatsCards
     };
   }
 });
@@ -267,21 +269,6 @@ var require_layoutConfig = __commonJS({
         category: "home"
       },
       {
-        id: "water",
-        title: "Water",
-        description: "Water balance for the selected day",
-        defaultEnabled: true,
-        defaultSize: "small",
-        allowedSizes: ["small", "medium"],
-        defaultGeometry: { x: 8, y: 5, w: 4, h: 3 },
-        minW: 3,
-        minH: 2,
-        maxW: 4,
-        maxH: 4,
-        rendererKey: "water",
-        category: "home"
-      },
-      {
         id: "today",
         title: "Today",
         description: "Habits, mood, and progress for the selected day",
@@ -314,7 +301,7 @@ var require_layoutConfig = __commonJS({
       {
         id: "quests",
         title: "Quests",
-        description: "Progress cards and linked quests",
+        description: "Active quests with deadlines and priorities",
         defaultEnabled: true,
         defaultSize: "medium",
         allowedSizes: ["medium", "large", "full"],
@@ -329,7 +316,7 @@ var require_layoutConfig = __commonJS({
       {
         id: "rewards",
         title: "Rewards",
-        description: "Reward shop for XP",
+        description: "Reward shop for Gold",
         defaultEnabled: true,
         defaultSize: "medium",
         allowedSizes: ["medium", "large", "full"],
@@ -357,9 +344,9 @@ var require_layoutConfig = __commonJS({
         category: "home"
       },
       {
-        id: "wallet",
-        title: "Bank",
-        description: "Income, expenses, and transaction history",
+        id: "log",
+        title: "Adventure Log",
+        description: "Activity feed of completed quests, purchases, and achievements",
         defaultEnabled: true,
         defaultSize: "medium",
         allowedSizes: ["medium", "large", "full"],
@@ -368,7 +355,7 @@ var require_layoutConfig = __commonJS({
         minH: 3,
         maxW: 12,
         maxH: 8,
-        rendererKey: "wallet",
+        rendererKey: "log",
         category: "home"
       }
     ];
@@ -588,40 +575,37 @@ var require_themeConfig = __commonJS({
 // src/defaults.js
 var require_defaults = __commonJS({
   "src/defaults.js"(exports2, module2) {
-    var { createDefaultQuestStatsCards } = require_questStatsConfig();
     var { DEFAULT_HERO_CLASS_ID } = require_heroClassesConfig();
     var {
       getDefaultHomeLayout,
       getDefaultInterfaceLayout
     } = require_layoutConfig();
     var { DEFAULT_INTERFACE_THEME } = require_themeConfig();
+    var { DAILY_XP } = require_constants();
     var DEFAULT_DATA = {
       player: {
         name: "Hero",
         classId: DEFAULT_HERO_CLASS_ID,
         className: "Habit Warrior",
-        goal: "complete at least 3 habits per day",
+        goal: "complete at least 3 dailies per day",
         avatarUrl: ""
       },
       settings: {
-        waterGoal: 8,
-        waterGlassMl: 250,
-        questStatsCards: createDefaultQuestStatsCards(),
-        customQuestStatsCards: [],
         homeLayout: getDefaultHomeLayout(),
         interfaceLayout: getDefaultInterfaceLayout(),
         interfaceTheme: DEFAULT_INTERFACE_THEME
       },
       habits: [
-        { id: "gym", title: "Gym", area: "body", icon: "\u{1F3CB}\uFE0F", xp: 10, enabled: true },
-        { id: "walk", title: "Walk", area: "body", icon: "\u{1F6B6}", xp: 10, enabled: true },
-        { id: "stretch", title: "Stretch", area: "body", icon: "\u{1F9D8}", xp: 10, enabled: true },
-        { id: "run", title: "Run", area: "body", icon: "\u{1F3C3}", xp: 10, enabled: true },
-        { id: "bike", title: "Bike", area: "body", icon: "\u{1F6B4}", xp: 10, enabled: true },
-        { id: "focus", title: "20 Minutes Quiet Focus", area: "mind", icon: "\u{1F9E0}", xp: 10, enabled: true },
-        { id: "work", title: "Work / Project", area: "craft", icon: "\u{1F6E0}\uFE0F", xp: 10, enabled: true },
-        { id: "control", title: "No Doom Scrolling", area: "control", icon: "\u{1F6E1}\uFE0F", xp: 10, enabled: true }
+        { id: "gym", title: "Gym", area: "body", icon: "\u{1F3CB}\uFE0F", xp: DAILY_XP, enabled: true, days: null },
+        { id: "walk", title: "Walk", area: "body", icon: "\u{1F6B6}", xp: DAILY_XP, enabled: true, days: null },
+        { id: "stretch", title: "Stretch", area: "body", icon: "\u{1F9D8}", xp: DAILY_XP, enabled: true, days: null },
+        { id: "focus", title: "20 Minutes Quiet Focus", area: "mind", icon: "\u{1F9E0}", xp: DAILY_XP, enabled: true, days: null },
+        { id: "bible", title: "Bible Study", area: "spirit", icon: "\u{1F64F}", xp: DAILY_XP, enabled: true, days: null },
+        { id: "journal", title: "Journaling", area: "spirit", icon: "\u270D\uFE0F", xp: DAILY_XP, enabled: true, days: null },
+        { id: "project", title: "Work / Project", area: "craft", icon: "\u{1F6E0}\uFE0F", xp: DAILY_XP, enabled: true, days: null },
+        { id: "chores", title: "Household Chores", area: "hearth", icon: "\u{1F3E1}", xp: DAILY_XP, enabled: true, days: null }
       ],
+      quests: [],
       rewards: [
         { id: "youtube", title: "30 Minutes YouTube", cost: 100, icon: "\u25B6\uFE0F", rarity: "common" },
         { id: "coffee", title: "Coffee / Drink", cost: 100, icon: "\u2615", rarity: "common" },
@@ -630,280 +614,10 @@ var require_defaults = __commonJS({
       ],
       days: {},
       inventory: [],
-      wallet: []
+      log: [],
+      gold: 0
     };
     module2.exports = { DEFAULT_DATA };
-  }
-});
-
-// src/systems/questStatsSystem.js
-var require_questStatsSystem = __commonJS({
-  "src/systems/questStatsSystem.js"(exports2, module2) {
-    var { QUEST_STATS_CARDS: QUEST_STATS_CARDS2 } = require_questStatsConfig();
-    var { dateKey: dateKey2, uid } = require_utils();
-    var CUSTOM_CARD_TYPES = ["manual", "habitCount", "habitStreak"];
-    function safeGoal(value) {
-      const goal = Math.round(Number(value));
-      return Number.isFinite(goal) && goal >= 1 ? goal : 1;
-    }
-    function safeRewardXp(value) {
-      const xp = Math.round(Number(value));
-      return Number.isFinite(xp) && xp >= 0 ? xp : 0;
-    }
-    function safeType(value) {
-      return CUSTOM_CARD_TYPES.includes(value) ? value : "manual";
-    }
-    function safeHabitIds(value, fallback = "") {
-      const input = Array.isArray(value) ? value : [];
-      const ids = input.map((id) => String(id || "").trim()).filter(Boolean);
-      const fallbackId = String(fallback || "").trim();
-      if (fallbackId && !ids.includes(fallbackId)) ids.unshift(fallbackId);
-      return ids;
-    }
-    function normalizeQuestStatsSettings2(settings = {}, config = QUEST_STATS_CARDS2) {
-      const rawCards = settings.questStatsCards && typeof settings.questStatsCards === "object" ? settings.questStatsCards : {};
-      const questStatsCards = {};
-      for (const card of config) {
-        const raw = rawCards[card.id];
-        if (typeof raw === "boolean") {
-          questStatsCards[card.id] = {
-            enabled: raw,
-            label: card.label
-          };
-          continue;
-        }
-        if (raw && typeof raw === "object") {
-          questStatsCards[card.id] = {
-            enabled: Object.prototype.hasOwnProperty.call(raw, "enabled") ? raw.enabled !== false : card.enabled !== false,
-            label: String(raw.label || card.label).trim() || card.label
-          };
-          continue;
-        }
-        questStatsCards[card.id] = {
-          enabled: card.enabled !== false,
-          label: card.label
-        };
-      }
-      const customQuestStatsCards = Array.isArray(settings.customQuestStatsCards) ? settings.customQuestStatsCards.filter((card) => card && typeof card === "object" && card.id).map((card) => ({
-        id: String(card.id),
-        label: String(card.label || "Custom Card").trim() || "Custom Card",
-        value: String(card.value || "").trim(),
-        habitId: card.habitId ? String(card.habitId) : "",
-        habitIds: safeHabitIds(card.habitIds, card.habitId),
-        goal: safeGoal(card.goal || 1),
-        rewardXp: safeRewardXp(card.rewardXp || 0),
-        period: String(card.period || "week"),
-        enabled: card.enabled !== false,
-        custom: true,
-        type: safeType(card.type || "manual")
-      })) : [];
-      return {
-        questStatsCards,
-        customQuestStatsCards
-      };
-    }
-    function applyQuestStatsCardUpdate2(data, id, patch = {}) {
-      const card = QUEST_STATS_CARDS2.find((item) => item.id === id);
-      if (!card) return { ok: false, data, card: null, reason: "unknown-card" };
-      const normalized = normalizeQuestStatsSettings2(data.settings || {});
-      const current = normalized.questStatsCards[id] || { enabled: card.enabled !== false, label: card.label };
-      const next = { ...current };
-      if (Object.prototype.hasOwnProperty.call(patch, "enabled")) next.enabled = patch.enabled !== false;
-      if (Object.prototype.hasOwnProperty.call(patch, "label")) {
-        next.label = String(patch.label || card.label).trim() || card.label;
-      }
-      data.settings.questStatsCards = {
-        ...normalized.questStatsCards,
-        [id]: next
-      };
-      data.settings.customQuestStatsCards = normalized.customQuestStatsCards;
-      return { ok: true, data, card: next };
-    }
-    function applyCustomQuestStatsCardAdd2(data, input = {}) {
-      const normalized = normalizeQuestStatsSettings2(data.settings || {});
-      const card = {
-        id: uid("questCard"),
-        label: String(input.label || "Custom Card").trim() || "Custom Card",
-        value: String(input.value || "").trim(),
-        habitId: input.habitId ? String(input.habitId) : "",
-        habitIds: safeHabitIds(input.habitIds, input.habitId),
-        goal: safeGoal(input.goal || 1),
-        rewardXp: safeRewardXp(input.rewardXp || 0),
-        period: String(input.period || "week"),
-        enabled: input.enabled !== false,
-        custom: true,
-        type: safeType(input.type || "manual")
-      };
-      data.settings.questStatsCards = normalized.questStatsCards;
-      data.settings.customQuestStatsCards = [...normalized.customQuestStatsCards, card];
-      return { ok: true, data, card };
-    }
-    function applyCustomQuestStatsCardUpdate2(data, id, patch = {}) {
-      const normalized = normalizeQuestStatsSettings2(data.settings || {});
-      const cards = normalized.customQuestStatsCards.slice();
-      const index = cards.findIndex((card) => card.id === id);
-      if (index === -1) return { ok: false, data, card: null, reason: "unknown-card" };
-      const next = { ...cards[index] };
-      if (Object.prototype.hasOwnProperty.call(patch, "label")) {
-        next.label = String(patch.label || "Custom Card").trim() || "Custom Card";
-      }
-      if (Object.prototype.hasOwnProperty.call(patch, "value")) {
-        next.value = String(patch.value || "").trim();
-      }
-      if (Object.prototype.hasOwnProperty.call(patch, "type")) {
-        next.type = safeType(patch.type || next.type);
-      }
-      if (Object.prototype.hasOwnProperty.call(patch, "habitId")) {
-        next.habitId = patch.habitId ? String(patch.habitId) : "";
-        next.habitIds = safeHabitIds(next.habitIds, next.habitId);
-      }
-      if (Object.prototype.hasOwnProperty.call(patch, "habitIds")) {
-        next.habitIds = safeHabitIds(patch.habitIds, next.habitId);
-      }
-      if (Object.prototype.hasOwnProperty.call(patch, "goal")) {
-        next.goal = safeGoal(patch.goal);
-      }
-      if (Object.prototype.hasOwnProperty.call(patch, "rewardXp")) {
-        next.rewardXp = safeRewardXp(patch.rewardXp);
-      }
-      if (Object.prototype.hasOwnProperty.call(patch, "period")) {
-        next.period = String(patch.period || "week");
-      }
-      if (Object.prototype.hasOwnProperty.call(patch, "enabled")) {
-        next.enabled = patch.enabled !== false;
-      }
-      cards[index] = next;
-      data.settings.questStatsCards = normalized.questStatsCards;
-      data.settings.customQuestStatsCards = cards;
-      return { ok: true, data, card: next };
-    }
-    function applyCustomQuestStatsCardDelete2(data, id) {
-      const normalized = normalizeQuestStatsSettings2(data.settings || {});
-      const before = normalized.customQuestStatsCards.length;
-      const cards = normalized.customQuestStatsCards.filter((card) => card.id !== id);
-      if (cards.length === before) return { ok: false, data, cardId: id, reason: "unknown-card" };
-      data.settings.questStatsCards = normalized.questStatsCards;
-      data.settings.customQuestStatsCards = cards;
-      return { ok: true, data, cardId: id };
-    }
-    function parseDateKey(key = dateKey2()) {
-      const [day, month, year] = String(key || "").split(".").map(Number);
-      const date = new Date(year, month - 1, day);
-      if (!Number.isFinite(date.getTime())) return /* @__PURE__ */ new Date();
-      return date;
-    }
-    function shiftDateKey(key, deltaDays) {
-      const date = parseDateKey(key);
-      date.setDate(date.getDate() + deltaDays);
-      return dateKey2(date);
-    }
-    function habitExists(data, habitId) {
-      return !!(data.habits || []).find((habit) => habit.id === habitId);
-    }
-    function getQuestHabitIds(card = {}) {
-      return safeHabitIds(card.habitIds, card.habitId);
-    }
-    function isHabitDoneOnDate(data, habitId, key) {
-      if (!data || !habitId || !key || !habitExists(data, habitId)) return false;
-      const day = data.days && data.days[key];
-      return !!(day && day.completed && day.completed[habitId]);
-    }
-    function isAnyHabitDoneOnDate(data, habitIds = [], key) {
-      return habitIds.some((habitId) => isHabitDoneOnDate(data, habitId, key));
-    }
-    function countHabitDoneInLastDays(data, habitId, selectedDateKey = dateKey2(), days = 7) {
-      const totalDays = Math.max(1, Math.round(Number(days)) || 7);
-      let done = 0;
-      for (let index = 0; index < totalDays; index++) {
-        const key = shiftDateKey(selectedDateKey, -index);
-        if (isHabitDoneOnDate(data, habitId, key)) done++;
-      }
-      return done;
-    }
-    function countAnyHabitDoneInLastDays(data, habitIds = [], selectedDateKey = dateKey2(), days = 7) {
-      const totalDays = Math.max(1, Math.round(Number(days)) || 7);
-      let done = 0;
-      for (let index = 0; index < totalDays; index++) {
-        const key = shiftDateKey(selectedDateKey, -index);
-        if (isAnyHabitDoneOnDate(data, habitIds, key)) done++;
-      }
-      return done;
-    }
-    function habitStreakForHabit(data, habitId, selectedDateKey = dateKey2()) {
-      let value = 0;
-      let offset = 0;
-      while (true) {
-        const key = shiftDateKey(selectedDateKey, -offset);
-        if (!isHabitDoneOnDate(data, habitId, key)) break;
-        value++;
-        offset++;
-      }
-      return value;
-    }
-    function habitStreakForAnyHabit(data, habitIds = [], selectedDateKey = dateKey2()) {
-      let value = 0;
-      let offset = 0;
-      while (true) {
-        const key = shiftDateKey(selectedDateKey, -offset);
-        if (!isAnyHabitDoneOnDate(data, habitIds, key)) break;
-        value++;
-        offset++;
-      }
-      return value;
-    }
-    function resolveCustomQuestCardValue(data, card, selectedDateKey = dateKey2()) {
-      const goal = safeGoal(card.goal || 1);
-      const habitIds = getQuestHabitIds(card);
-      if (card.type === "habitCount") {
-        const days = card.period === "today" ? 1 : goal;
-        const done = countAnyHabitDoneInLastDays(data, habitIds, selectedDateKey, days);
-        return `${done}/${goal} days`;
-      }
-      if (card.type === "habitStreak") {
-        const streak2 = habitStreakForAnyHabit(data, habitIds, selectedDateKey);
-        return `${streak2}/${goal} days`;
-      }
-      return card.value || "";
-    }
-    function getQuestStatsCards2(data, computedValues = {}, config = QUEST_STATS_CARDS2, selectedDateKey = dateKey2()) {
-      const normalized = normalizeQuestStatsSettings2(data.settings || {}, config);
-      const systemCards = [];
-      for (const card of config) {
-        if (card.enabled === false) continue;
-        const settings = normalized.questStatsCards[card.id] || {};
-        if (settings.enabled === false) continue;
-        systemCards.push({
-          id: card.id,
-          label: settings.label || card.label,
-          value: computedValues[card.id] || "",
-          custom: false,
-          type: "system"
-        });
-      }
-      const customCards = normalized.customQuestStatsCards.filter((card) => card.enabled !== false).map((card) => ({
-        id: card.id,
-        label: card.label,
-        value: resolveCustomQuestCardValue(data, card, selectedDateKey),
-        note: card.rewardXp > 0 ? `\u{1F3C6} ${card.rewardXp} XP` : "",
-        custom: true,
-        type: card.type
-      }));
-      return [...systemCards, ...customCards];
-    }
-    module2.exports = {
-      normalizeQuestStatsSettings: normalizeQuestStatsSettings2,
-      applyQuestStatsCardUpdate: applyQuestStatsCardUpdate2,
-      applyCustomQuestStatsCardAdd: applyCustomQuestStatsCardAdd2,
-      applyCustomQuestStatsCardUpdate: applyCustomQuestStatsCardUpdate2,
-      applyCustomQuestStatsCardDelete: applyCustomQuestStatsCardDelete2,
-      isHabitDoneOnDate,
-      countHabitDoneInLastDays,
-      countAnyHabitDoneInLastDays,
-      habitStreakForHabit,
-      habitStreakForAnyHabit,
-      resolveCustomQuestCardValue,
-      getQuestStatsCards: getQuestStatsCards2
-    };
   }
 });
 
@@ -911,14 +625,12 @@ var require_questStatsSystem = __commonJS({
 var require_storage = __commonJS({
   "src/storage.js"(exports2, module2) {
     var { DEFAULT_DATA } = require_defaults();
-    var { QUEST_STATS_CARDS: QUEST_STATS_CARDS2 } = require_questStatsConfig();
     var { getHeroClass, resolveHeroClassId: resolveHeroClassId2 } = require_heroClassesConfig();
     var {
       normalizeHomeLayout: normalizeHomeLayout2,
       normalizeInterfaceLayout: normalizeInterfaceLayout2
     } = require_layoutConfig();
     var { normalizeInterfaceTheme } = require_themeConfig();
-    var { normalizeQuestStatsSettings: normalizeQuestStatsSettings2 } = require_questStatsSystem();
     var { clone, dateKey: dateKey2 } = require_utils();
     function mergeData2(data) {
       const next = clone(DEFAULT_DATA);
@@ -928,27 +640,27 @@ var require_storage = __commonJS({
       next.player.classId = classId;
       next.player.className = getHeroClass(classId).title;
       const settings = data.settings && typeof data.settings === "object" ? data.settings : {};
-      const questStatsSettings = normalizeQuestStatsSettings2(settings, QUEST_STATS_CARDS2);
       next.settings = {
         ...next.settings,
         ...settings,
-        questStatsCards: questStatsSettings.questStatsCards,
-        customQuestStatsCards: questStatsSettings.customQuestStatsCards,
         interfaceLayout: normalizeInterfaceLayout2(settings.interfaceLayout),
         interfaceTheme: normalizeInterfaceTheme(settings.interfaceTheme),
         homeLayout: normalizeHomeLayout2(settings.homeLayout, normalizeInterfaceLayout2(settings.interfaceLayout))
       };
+      delete next.settings.questStatsCards;
+      delete next.settings.customQuestStatsCards;
       next.habits = Array.isArray(data.habits) ? data.habits : next.habits;
       next.rewards = Array.isArray(data.rewards) ? data.rewards : next.rewards;
       next.days = data.days && typeof data.days === "object" ? data.days : next.days;
       next.inventory = Array.isArray(data.inventory) ? data.inventory : next.inventory;
-      next.wallet = Array.isArray(data.wallet) ? data.wallet : next.wallet;
+      next.quests = Array.isArray(data.quests) ? data.quests : next.quests;
+      next.log = Array.isArray(data.log) ? data.log : next.log;
+      next.gold = typeof data.gold === "number" ? data.gold : next.gold;
       return next;
     }
     function getDay2(data, key = dateKey2()) {
       if (!data.days[key]) data.days[key] = { completed: {}, note: "" };
       if (!data.days[key].completed) data.days[key].completed = {};
-      if (!Number.isFinite(Number(data.days[key].water))) data.days[key].water = 0;
       return data.days[key];
     }
     module2.exports = {
@@ -1044,105 +756,6 @@ var require_radarChart = __commonJS({
     }
     module2.exports = {
       renderRadarChart: renderRadarChart2
-    };
-  }
-});
-
-// src/ui/components/waterWidget.js
-var require_waterWidget = __commonJS({
-  "src/ui/components/waterWidget.js"(exports2, module2) {
-    function renderWaterWidget2(parent, options = {}) {
-      const stats = options.stats || {};
-      const title = options.title || "Water";
-      const mode = options.mode || "ring";
-      const className = options.className || (mode === "panel" ? "vrpg-panel vrpg-water-panel" : "vrpg-glass-widget vrpg-water-widget");
-      const root = parent.createDiv({ cls: className });
-      if (mode === "ring" || mode === "compact") {
-        root.createDiv({ cls: "vrpg-kicker", text: title });
-        const waterRing = root.createDiv({
-          cls: "vrpg-water-ring",
-          attr: { style: `--water:${stats.percent}%` }
-        });
-        waterRing.createDiv({ cls: "vrpg-water-value", text: `${stats.value}/${stats.goal}` });
-        root.createDiv({
-          cls: "vrpg-subtitle",
-          text: `${Math.round(stats.currentMl / 100) / 10}/${Math.round(stats.targetMl / 100) / 10} L today`
-        });
-        const controls = root.createDiv({ cls: "vrpg-water-controls" });
-        const minus = controls.createEl("button", { text: "-" });
-        minus.onclick = options.onDecrement;
-        const plus = controls.createEl("button", { text: "+" });
-        plus.onclick = options.onIncrement;
-      }
-      if (mode === "panel") {
-        root.createDiv({ cls: "vrpg-section", text: title });
-        const waterLine = root.createDiv({ cls: "vrpg-water-line" });
-        waterLine.createDiv({ cls: "vrpg-card-title", text: `${stats.value}/${stats.goal} glasses` });
-        waterLine.createDiv({ cls: "vrpg-subtitle", text: `${stats.percent}% \xB7 ${stats.glassMl} ml glass` });
-        const waterBar = root.createDiv({ cls: "vrpg-water-bar" });
-        waterBar.createDiv({ cls: "vrpg-water-fill", attr: { style: `width:${stats.percent}%` } });
-        const controls = root.createDiv({ cls: "vrpg-water-controls" });
-        const minus = controls.createEl("button", { text: "-1 glass" });
-        minus.onclick = options.onDecrement;
-        const plus = controls.createEl("button", { text: "+1 glass" });
-        plus.onclick = options.onIncrement;
-      }
-      return root;
-    }
-    module2.exports = {
-      renderWaterWidget: renderWaterWidget2
-    };
-  }
-});
-
-// src/ui/components/walletRows.js
-var require_walletRows = __commonJS({
-  "src/ui/components/walletRows.js"(exports2, module2) {
-    function renderWalletRow(parent, item, ctx = {}) {
-      const formatMoney2 = ctx.formatMoney;
-      const deleteWallet = ctx.deleteWallet || (() => {
-      });
-      const row = parent.createDiv({ cls: "vrpg-wallet-row" });
-      row.createDiv({ cls: item.type === "income" ? "vrpg-money-positive" : "vrpg-money-negative", text: `${item.type === "income" ? "+" : "-"}${formatMoney2(item.amount)} $` });
-      row.createDiv({ cls: "vrpg-subtitle", text: `${item.time || "--:--"} \xB7 ${item.note || "no comment"}` });
-      const remove = row.createEl("button", { cls: "vrpg-danger vrpg-icon-action", text: "Delete" });
-      remove.onclick = () => deleteWallet(item.id);
-    }
-    function renderWalletMonth(parent, wallet, selectedKey, ctx = {}) {
-      const dateKey2 = ctx.dateKey;
-      const dateFromKey2 = ctx.dateFromKey;
-      const formatMoney2 = ctx.formatMoney;
-      const selectedDate = dateFromKey2(selectedKey || dateKey2());
-      const month = selectedDate.getMonth();
-      const year = selectedDate.getFullYear();
-      const days = /* @__PURE__ */ new Map();
-      for (const item of wallet) {
-        const itemDate = dateFromKey2(item.date);
-        if (itemDate.getMonth() !== month || itemDate.getFullYear() !== year) continue;
-        if (!days.has(item.date)) days.set(item.date, []);
-        days.get(item.date).push(item);
-      }
-      if (!days.size) {
-        parent.createDiv({ cls: "vrpg-subtitle", text: "No records this month yet." });
-        return;
-      }
-      const sortedDays = Array.from(days.entries()).sort((a, b) => dateFromKey2(b[0]).getTime() - dateFromKey2(a[0]).getTime());
-      for (const [dayKey, items] of sortedDays) {
-        const dayDetails = parent.createEl("details", { cls: "vrpg-bank-dayline" });
-        dayDetails.open = dayKey === selectedKey;
-        const income = items.filter((item) => item.type === "income").reduce((sum, item) => sum + Number(item.amount || 0), 0);
-        const expense = items.filter((item) => item.type === "expense").reduce((sum, item) => sum + Number(item.amount || 0), 0);
-        const summary = dayDetails.createEl("summary");
-        summary.createSpan({ text: dayKey });
-        summary.createSpan({ text: `${income - expense >= 0 ? "+" : ""}${formatMoney2(income - expense)} $ \xB7 ${items.length}` });
-        for (const item of items.slice().sort((a, b) => String(b.time || "").localeCompare(String(a.time || "")))) {
-          renderWalletRow(dayDetails, item, ctx);
-        }
-      }
-    }
-    module2.exports = {
-      renderWalletRow,
-      renderWalletMonth
     };
   }
 });
@@ -1320,7 +933,7 @@ var require_homeScreen = __commonJS({
     var {
       normalizeHomeLayout: normalizeHomeLayout2
     } = require_layoutConfig();
-    var HOME_PANEL_WIDGET_IDS = ["today", "hero", "quests", "rewards", "inventory", "wallet"];
+    var HOME_PANEL_WIDGET_IDS = ["today", "hero", "quests", "rewards", "inventory", "log"];
     var ENABLE_HOME_FREEFORM = false;
     var ENABLE_HOME_FREEFORM_RESIZE = false;
     function isHomePanelWidget(id) {
@@ -1367,7 +980,7 @@ var require_homeScreen = __commonJS({
       const totals2 = ctx.totals;
       const dateKey2 = ctx.dateKey;
       const readDayStats2 = ctx.readDayStats;
-      const waterStats2 = ctx.waterStats;
+      const displayDateFromKey2 = ctx.displayDateFromKey;
       const streak2 = ctx.streak;
       const getHeroClassTitle2 = ctx.getHeroClassTitle;
       const getDay2 = ctx.getDay || (() => ({ completed: {}, mood: "normal" }));
@@ -1379,8 +992,7 @@ var require_homeScreen = __commonJS({
         control: { done: 0, total: 0 }
       }));
       const heroTitle2 = ctx.heroTitle || ((level) => `Level ${level}`);
-      const walletStats2 = ctx.walletStats || (() => ({ income: 0, expense: 0, balance: 0, items: [] }));
-      const formatMoney2 = ctx.formatMoney || ((value) => String(value || 0));
+      const renderHomeLog = ctx.renderHomeLog;
       const createProgressBar2 = ctx.createProgressBar;
       const text = ctx.text;
       const timeParts2 = ctx.timeParts;
@@ -1388,14 +1000,13 @@ var require_homeScreen = __commonJS({
       const monthLabel2 = ctx.monthLabel;
       const dateFromKey2 = ctx.dateFromKey || (() => /* @__PURE__ */ new Date());
       const calendarDays2 = ctx.calendarDays;
-      const renderWaterWidget2 = ctx.renderWaterWidget;
+      const coreAttributes2 = ctx.coreAttributes;
       const renderAvatar = ctx.renderAvatar;
       const navigate = ctx.navigate;
       const toggleHomeEditMode = ctx.toggleHomeEditMode || (() => {
       });
       const updateHomeLayout = ctx.updateHomeLayout || (() => {
       });
-      const changeWater = ctx.changeWater;
       const toggleHabit = ctx.toggleHabit || (() => {
       });
       const t = totals2(data);
@@ -1403,7 +1014,6 @@ var require_homeScreen = __commonJS({
       const selectedKey = ctx.selectedDateKey || dateKey2(now);
       const selectedDate = dateFromKey2(selectedKey);
       const selectedStats = readDayStats2(data, selectedKey);
-      const selectedWater = waterStats2(data, selectedKey);
       const weekKeys = [];
       for (let i = 6; i >= 0; i--) {
         const date = new Date(now);
@@ -1416,17 +1026,16 @@ var require_homeScreen = __commonJS({
       const today = selectedStats;
       const selectedDay = getDay2(data, selectedKey);
       const habits = activeHabits2(data);
-      const water = selectedWater;
       const isTodaySelected = selectedKey === dateKey2(now);
-      const nextReward = data.rewards.slice().sort((a, b) => Number(a.cost || 0) - Number(b.cost || 0)).find((reward) => Number(reward.cost || 0) > t.balance);
-      const nextRewardText = nextReward ? `${Number(nextReward.cost || 0) - t.balance} XP until "${nextReward.title}"` : "Basic shop already unlocked";
+      const nextReward = data.rewards.slice().sort((a, b) => Number(a.cost || 0) - Number(b.cost || 0)).find((reward) => Number(reward.cost || 0) > t.gold);
+      const nextRewardText = nextReward ? `${Number(nextReward.cost || 0) - t.gold} Gold until "${nextReward.title}"` : "All rewards available";
       const todayPercent = today.total ? Math.round(today.done / today.total * 100) : 0;
       const layoutWidgets = getEnabledLayoutWidgets(data);
       const widgetById = new Map(layoutWidgets.map((widget) => [widget.id, widget]));
       const panelWidgets = layoutWidgets.filter((widget) => isHomePanelWidget(widget.id));
       const activePanelWidget = getActivePanelWidget(panelWidgets, ctx.homePanel);
       const activePanelId = activePanelWidget ? activePanelWidget.id : "";
-      const visibleWidgetIds = /* @__PURE__ */ new Set(["command", "clock", "calendar", "water"]);
+      const visibleWidgetIds = /* @__PURE__ */ new Set(["command", "clock", "calendar"]);
       if (activePanelWidget) visibleWidgetIds.add(activePanelWidget.id);
       const rawHomeEditMode = !!ctx.isHomeEditMode;
       const homeLayoutMode = getHomeLayoutMode(data.settings || {});
@@ -1798,10 +1407,10 @@ var require_homeScreen = __commonJS({
         profileText.createDiv({ cls: "vrpg-title", text: data.player.name || `Level ${t.level}` });
         profileText.createDiv({ cls: "vrpg-subtitle", text: `${getHeroClassTitle2(data.player)} \xB7 Level ${t.level}` });
         const commandVitals = commandHeader.createDiv({ cls: "vrpg-command-vitals" });
-        const xpVital = commandVitals.createDiv({ cls: "vrpg-command-vital" });
-        xpVital.createDiv({ cls: "vrpg-section", text: "XP" });
-        xpVital.createDiv({ cls: "vrpg-card-title", text: `${t.balance}` });
-        xpVital.createDiv({ cls: "vrpg-subtitle", text: `${t.levelXP}/100 to level` });
+        const goldVital = commandVitals.createDiv({ cls: "vrpg-command-vital" });
+        goldVital.createDiv({ cls: "vrpg-section", text: "Gold" });
+        goldVital.createDiv({ cls: "vrpg-card-title", text: `${t.gold}` });
+        goldVital.createDiv({ cls: "vrpg-subtitle", text: `${t.levelXP}/100 to level` });
         const streakVital = commandVitals.createDiv({ cls: "vrpg-command-vital" });
         streakVital.createDiv({ cls: "vrpg-section", text: "Streak" });
         streakVital.createDiv({ cls: "vrpg-card-title", text: `${streak2(data)}` });
@@ -1809,12 +1418,12 @@ var require_homeScreen = __commonJS({
         createProgressBar2(card, todayPercent, "vrpg-command-progress");
         const commandGrid = card.createDiv({ cls: "vrpg-command-grid" });
         const commandItems = {
-          today: [isTodaySelected ? "Today" : "Day", "Check off habits"],
+          today: [isTodaySelected ? "Today" : "Day", "Check off dailies"],
           hero: ["Hero", `${t.levelXP}/100 XP to level`],
-          quests: ["Quests", `${today.done >= 3 ? "daily minimum met" : `${Math.min(today.done, 3)}/3 to minimum`}`],
+          quests: ["Quests", `${(data.quests || []).filter((q) => !q.completed && !q.abandoned).length} active`],
           rewards: ["Shop", nextRewardText],
           inventory: ["Inventory", `${data.inventory.filter((item) => !item.used).length} active`],
-          wallet: ["Bank", `${(data.wallet || []).length} records`]
+          log: ["Log", `${(data.log || []).length} entries`]
         };
         const panelWidgetById = new Map(panelWidgets.map((panelWidget) => [panelWidget.id, panelWidget]));
         HOME_PANEL_WIDGET_IDS.forEach((id) => {
@@ -1885,20 +1494,8 @@ var require_homeScreen = __commonJS({
         }
         const dayDetails = calendar.createDiv({ cls: "vrpg-calendar-details" });
         dayDetails.createDiv({ cls: "vrpg-card-title", text: selectedKey });
-        dayDetails.createDiv({ cls: "vrpg-subtitle", text: `Habits: ${selectedStats.done}/${selectedStats.total} \xB7 Water: ${selectedWater.value}/${selectedWater.goal}` });
+        dayDetails.createDiv({ cls: "vrpg-subtitle", text: `Dailies: ${selectedStats.done}/${selectedStats.total} \xB7 ${selectedStats.xp} XP earned` });
         dayDetails.createDiv({ cls: "vrpg-subtitle", text: isGridMode ? `Week: ${strongDays}/7 \xB7 streak ${streak2(data)}` : `Week: ${strongDays}/7 strong days \xB7 best day ${bestDay.xp} XP \xB7 streak ${streak2(data)}` });
-      };
-      const renderWaterLayoutWidget = (widget, parentEl = top) => {
-        const waterRoot = renderWaterWidget2(parentEl, {
-          stats: water,
-          title: "Water",
-          mode: "ring",
-          className: getWidgetClass("vrpg-glass-widget vrpg-water-widget", widget),
-          onDecrement: () => changeWater(-1, selectedKey),
-          onIncrement: () => changeWater(1, selectedKey)
-        });
-        waterRoot.setAttribute("data-widget-id", widget.id);
-        prepareWidgetRoot(waterRoot, widget);
       };
       const renderPreviewWidget = (widget, className, title, subtitle, renderBody, options = {}) => {
         const card = top.createDiv({
@@ -1949,7 +1546,7 @@ var require_homeScreen = __commonJS({
           createProgressBar2(body, t.levelXP, "vrpg-preview-progress");
           const statsGrid = body.createDiv({ cls: "vrpg-preview-stat-grid" });
           [
-            ["XP", `${t.balance}`],
+            ["Gold", `${t.gold}`],
             ["Streak", `${streak2(data)} days`],
             ["Week", `${strongDays}/7`]
           ].forEach(([label, value]) => {
@@ -1980,7 +1577,7 @@ var require_homeScreen = __commonJS({
       };
       const renderRewardsPreview = (widget) => {
         const rewards = (data.rewards || []).slice().sort((a, b) => Number(a.cost || 0) - Number(b.cost || 0));
-        const available = rewards.filter((reward) => t.balance >= Number(reward.cost || 0));
+        const available = rewards.filter((reward) => t.gold >= Number(reward.cost || 0));
         const previewRewards = available.length ? available.slice(0, 2) : rewards.slice(0, 2);
         renderPreviewWidget(widget, "vrpg-preview-rewards", "Rewards", available.length ? `Available: ${available.length}` : nextRewardText, (body) => {
           if (!previewRewards.length) {
@@ -1990,7 +1587,7 @@ var require_homeScreen = __commonJS({
           previewRewards.forEach((reward) => {
             const row = body.createDiv({ cls: "vrpg-preview-row" });
             row.createDiv({ cls: "vrpg-card-title", text: `${reward.icon || "\u{1F381}"} ${reward.title}` });
-            row.createDiv({ cls: "vrpg-subtitle", text: `${reward.cost} XP` });
+            row.createDiv({ cls: "vrpg-subtitle", text: `${reward.cost} Gold` });
           });
         }, { openPanel: "rewards", openLabel: "Open Shop" });
       };
@@ -2010,21 +1607,20 @@ var require_homeScreen = __commonJS({
           }
         }, { openPanel: "inventory", openLabel: "Open Inventory" });
       };
-      const renderWalletPreview = (widget) => {
-        const all = walletStats2(data.wallet || []);
-        renderPreviewWidget(widget, "vrpg-preview-wallet", "Bank", `${(data.wallet || []).length} records`, (body) => {
-          const grid = body.createDiv({ cls: "vrpg-preview-stat-grid" });
-          [
-            ["Balance", `${formatMoney2(all.balance)} $`],
-            ["Income", `+${formatMoney2(all.income)} $`],
-            ["Expenses", `-${formatMoney2(all.expense)} $`]
-          ].forEach(([label, value]) => {
-            const item = grid.createDiv({ cls: "vrpg-preview-stat" });
-            item.createSpan({ text: label });
-            item.createEl("strong", { text: value });
-          });
-          if (!(data.wallet || []).length) body.createDiv({ cls: "vrpg-preview-empty", text: "No records yet" });
-        }, { openPanel: "wallet", openLabel: "Open Bank" });
+      const renderLogPreview = (widget) => {
+        const log = Array.isArray(data.log) ? data.log : [];
+        const recent = log.slice(-3).reverse();
+        renderPreviewWidget(widget, "vrpg-preview-log", "Adventure Log", `${log.length} entries`, (body) => {
+          if (!recent.length) {
+            body.createDiv({ cls: "vrpg-preview-empty", text: "No entries yet" });
+          } else {
+            recent.forEach((entry) => {
+              const row = body.createDiv({ cls: "vrpg-preview-row" });
+              row.createDiv({ cls: "vrpg-card-title", text: entry.title || entry.type || "Event" });
+              row.createDiv({ cls: "vrpg-subtitle", text: entry.type ? entry.type.replace(/-/g, " ") : "" });
+            });
+          }
+        }, { openPanel: "log", openLabel: "Open Log" });
       };
       const renderModuleWidget = (widget) => {
         if (!widget || !isHomePanelWidget(widget.id)) return;
@@ -2036,7 +1632,6 @@ var require_homeScreen = __commonJS({
         if (widgetById.has("command")) renderCommandWidget(widgetById.get("command"), mainColumn);
         if (activePanelWidget) renderHomeModuleScreen2(mainColumn, { ...ctx, homePanel: activePanelWidget.id, prepareWidgetRoot }, activePanelWidget);
         if (widgetById.has("clock")) renderClockWidget(widgetById.get("clock"), sideColumn);
-        if (widgetById.has("water")) renderWaterLayoutWidget(widgetById.get("water"), sideColumn);
         if (widgetById.has("calendar")) renderCalendarWidget(widgetById.get("calendar"), sideColumn);
         return;
       }
@@ -2044,7 +1639,6 @@ var require_homeScreen = __commonJS({
         if (widget.id === "command") renderCommandWidget(widget);
         if (widget.id === "clock") renderClockWidget(widget);
         if (widget.id === "calendar") renderCalendarWidget(widget);
-        if (widget.id === "water") renderWaterLayoutWidget(widget);
         if (activePanelWidget && widget.id === activePanelWidget.id) {
           renderHomeModuleScreen2(top, { ...ctx, homePanel: activePanelWidget.id, prepareWidgetRoot }, activePanelWidget);
         }
@@ -2062,7 +1656,7 @@ var require_homeScreen = __commonJS({
       if (ctx.homePanel === "quests") ctx.renderHomeQuests(body);
       if (ctx.homePanel === "rewards") ctx.renderHomeRewards(body);
       if (ctx.homePanel === "inventory") ctx.renderHomeInventory(body);
-      if (ctx.homePanel === "wallet") ctx.renderHomeWallet(body);
+      if (ctx.homePanel === "log") ctx.renderHomeLog(body);
     }
     module2.exports = {
       renderHomeScreen: renderHomeScreen2,
@@ -2078,6 +1672,7 @@ var require_homeTodayScreen = __commonJS({
       const data = ctx.data || {};
       const selectedDateKey = ctx.selectedDateKey;
       const dateKey2 = ctx.dateKey;
+      const displayDateFromKey2 = ctx.displayDateFromKey;
       const getDay2 = ctx.getDay;
       const readDayStats2 = ctx.readDayStats;
       const activeHabits2 = ctx.activeHabits;
@@ -2089,11 +1684,17 @@ var require_homeTodayScreen = __commonJS({
       const key = selectedDateKey || dateKey2();
       const today = getDay2(data, key);
       const stats = readDayStats2(data, key, today);
-      const habits = activeHabits2(data);
+      const dateFromKey2 = ctx.dateFromKey;
+      const selectedDate = dateFromKey2 ? dateFromKey2(key) : /* @__PURE__ */ new Date();
+      const habits = activeHabits2(data, selectedDate);
       const header = parent.createDiv({ cls: "vrpg-panel vrpg-day-focus vrpg-day-focus-compact" });
       const summary = header.createDiv({ cls: "vrpg-day-focus-summary" });
-      summary.createDiv({ cls: "vrpg-card-title", text: key });
-      summary.createDiv({ cls: "vrpg-subtitle", text: `${stats.done}/${stats.total} habits \xB7 ${stats.xp} XP` });
+      const displayKey = displayDateFromKey2 ? displayDateFromKey2(key) : key;
+      summary.createDiv({ cls: "vrpg-card-title", text: displayKey });
+      summary.createDiv({ cls: "vrpg-subtitle", text: `${stats.done}/${stats.total} dailies \xB7 ${stats.xp} XP` });
+      const bountyDone = stats.done >= 3;
+      const bountyRow = header.createDiv({ cls: bountyDone ? "vrpg-bounty is-done" : "vrpg-bounty" });
+      bountyRow.createSpan({ text: bountyDone ? "\u{1F3AF} Daily Bounty Complete!" : `\u{1F3AF} Daily Bounty: ${Math.min(stats.done, 3)}/3` });
       const mood = header.createDiv({ cls: "vrpg-mood-row" });
       mood.createDiv({ cls: "vrpg-section", text: "Mood / Energy" });
       const moodButtons = mood.createDiv({ cls: "vrpg-segmented" });
@@ -2110,6 +1711,9 @@ var require_homeTodayScreen = __commonJS({
         });
         button.onclick = () => toggleHabit(habit.id, key);
       }
+      if (habits.length === 0) {
+        list.createDiv({ cls: "vrpg-subtitle", text: "No dailies scheduled for today." });
+      }
     }
     module2.exports = {
       renderHomeTodayScreen: renderHomeTodayScreen2
@@ -2123,32 +1727,21 @@ var require_homeHeroScreen = __commonJS({
     function renderHomeHeroScreen2(parent, ctx = {}) {
       const data = ctx.data || {};
       const totals2 = ctx.totals;
-      const skillStats2 = ctx.skillStats;
-      const waterStats2 = ctx.waterStats;
+      const coreAttributes2 = ctx.coreAttributes;
       const streak2 = ctx.streak;
       const getHeroClassTitle2 = ctx.getHeroClassTitle;
       const heroTitle2 = ctx.heroTitle;
       const createProgressBar2 = ctx.createProgressBar;
       const renderRadar = ctx.renderRadar;
-      const featureFlags = ctx.featureFlags || {};
       const achievements2 = ctx.achievements;
       const t = totals2(data);
-      const stats = skillStats2(data);
-      const water = waterStats2(data);
-      const metrics = [
-        ["Body", stats.body.total ? Math.round(stats.body.done / stats.body.total * 100) : 0],
-        ["Mind", stats.mind.total ? Math.round(stats.mind.done / stats.mind.total * 100) : 0],
-        ["Craft", stats.craft.total ? Math.round(stats.craft.done / stats.craft.total * 100) : 0],
-        ["Control", stats.control.total ? Math.round(stats.control.done / stats.control.total * 100) : 0],
-        ["Water", water.percent],
-        ["Streak", Math.min(100, Math.round(streak2(data) / 7 * 100))]
-      ];
+      const metrics = coreAttributes2(data);
       const wrap = parent.createDiv({ cls: "vrpg-hero-preview" });
       const info = wrap.createDiv({ cls: "vrpg-hero-summary" });
       info.createDiv({ cls: "vrpg-kicker", text: getHeroClassTitle2(data.player) });
       info.createDiv({ cls: "vrpg-level", text: `LEVEL ${t.level}` });
       info.createDiv({ cls: "vrpg-hero-title", text: heroTitle2(t.level) });
-      info.createDiv({ cls: "vrpg-subtitle", text: `${t.balance} XP \xB7 ${t.levelXP}/100 to next level` });
+      info.createDiv({ cls: "vrpg-subtitle", text: `${t.gold} Gold \xB7 ${t.levelXP}/100 XP to next level` });
       createProgressBar2(info, t.levelXP, "vrpg-hero-xp");
       const battle = wrap.createDiv({ cls: "vrpg-hero-battle" });
       const radarPanel = battle.createDiv({ cls: "vrpg-hero-radar-panel" });
@@ -2164,14 +1757,26 @@ var require_homeHeroScreen = __commonJS({
           attr: { style: `width:${Math.max(0, Math.min(100, value))}%` }
         });
       }
-      if (featureFlags.showAchievements) {
-        const achPanel = parent.createDiv({ cls: "vrpg-panel vrpg-achievements" });
-        achPanel.createDiv({ cls: "vrpg-section", text: "Achievements" });
-        for (const item of achievements2(data)) {
-          const row = achPanel.createDiv({ cls: item.done ? "vrpg-achievement is-done" : "vrpg-achievement" });
-          row.createSpan({ text: item.done ? "\u2713" : "\u2022" });
-          row.createEl("strong", { text: item.title });
-        }
+      const currentStreak = streak2(data);
+      const streakPanel = parent.createDiv({ cls: "vrpg-panel vrpg-streak" });
+      streakPanel.createDiv({ cls: "vrpg-section", text: "\u{1F525} Streak" });
+      streakPanel.createDiv({ cls: "vrpg-level", text: `${currentStreak} days` });
+      if (currentStreak >= 7) {
+        streakPanel.createDiv({ cls: "vrpg-subtitle", text: "Power streak! Keep it going!" });
+      } else if (currentStreak >= 3) {
+        streakPanel.createDiv({ cls: "vrpg-subtitle", text: "Building momentum!" });
+      } else {
+        streakPanel.createDiv({ cls: "vrpg-subtitle", text: "Complete 50%+ dailies to build your streak." });
+      }
+      const achPanel = parent.createDiv({ cls: "vrpg-panel vrpg-achievements" });
+      achPanel.createDiv({ cls: "vrpg-section", text: "Achievements" });
+      const achList = achievements2(data);
+      const earned = achList.filter((a) => a.done);
+      achPanel.createDiv({ cls: "vrpg-subtitle", text: `${earned.length}/${achList.length} unlocked` });
+      for (const item of achList) {
+        const row = achPanel.createDiv({ cls: item.done ? "vrpg-achievement is-done" : "vrpg-achievement" });
+        row.createSpan({ text: item.icon || (item.done ? "\u2713" : "\u2022") });
+        row.createEl("strong", { text: item.title });
       }
     }
     module2.exports = {
@@ -2180,32 +1785,171 @@ var require_homeHeroScreen = __commonJS({
   }
 });
 
+// src/systems/questSystem.js
+var require_questSystem = __commonJS({
+  "src/systems/questSystem.js"(exports2, module2) {
+    var { uid } = require_utils();
+    var { QUEST_XP_STANDARD, QUEST_XP_MAJOR } = require_constants();
+    function activeQuests(data) {
+      const quests = Array.isArray(data.quests) ? data.quests : [];
+      return quests.filter((q) => !q.completed && !q.abandoned);
+    }
+    function completedQuests(data) {
+      const quests = Array.isArray(data.quests) ? data.quests : [];
+      return quests.filter((q) => q.completed);
+    }
+    function questXP(quest) {
+      return quest.priority === "major" ? QUEST_XP_MAJOR : QUEST_XP_STANDARD;
+    }
+    function applyQuestAdd2(data, questInput) {
+      if (!Array.isArray(data.quests)) data.quests = [];
+      const quest = {
+        id: uid("quest"),
+        title: questInput.title,
+        description: questInput.description || "",
+        area: questInput.area || "craft",
+        priority: questInput.priority || "standard",
+        deadline: questInput.deadline || null,
+        // ISO date string or null
+        completed: false,
+        completedDate: null,
+        abandoned: false,
+        createdDate: (/* @__PURE__ */ new Date()).toISOString()
+      };
+      data.quests.push(quest);
+      if (!Array.isArray(data.log)) data.log = [];
+      data.log.push({
+        type: "quest-added",
+        questId: quest.id,
+        title: quest.title,
+        timestamp: (/* @__PURE__ */ new Date()).toISOString()
+      });
+      return { data, quest };
+    }
+    function applyQuestComplete2(data, questId) {
+      const quest = (data.quests || []).find((q) => q.id === questId);
+      if (!quest || quest.completed) return { data, quest };
+      quest.completed = true;
+      quest.completedDate = (/* @__PURE__ */ new Date()).toISOString();
+      if (!Array.isArray(data.log)) data.log = [];
+      data.log.push({
+        type: "quest-completed",
+        questId: quest.id,
+        title: quest.title,
+        xp: questXP(quest),
+        timestamp: (/* @__PURE__ */ new Date()).toISOString()
+      });
+      return { data, quest };
+    }
+    function applyQuestAbandon2(data, questId) {
+      const quest = (data.quests || []).find((q) => q.id === questId);
+      if (!quest || quest.completed || quest.abandoned) return { data, quest };
+      quest.abandoned = true;
+      if (!Array.isArray(data.log)) data.log = [];
+      data.log.push({
+        type: "quest-abandoned",
+        questId: quest.id,
+        title: quest.title,
+        timestamp: (/* @__PURE__ */ new Date()).toISOString()
+      });
+      return { data, quest };
+    }
+    function applyQuestUpdate2(data, questId, patch) {
+      const quest = (data.quests || []).find((q) => q.id === questId);
+      if (!quest) return { data, quest };
+      const allowed = ["title", "description", "area", "priority", "deadline"];
+      for (const key of allowed) {
+        if (Object.prototype.hasOwnProperty.call(patch, key)) quest[key] = patch[key];
+      }
+      return { data, quest };
+    }
+    function applyQuestDelete2(data, questId) {
+      if (!Array.isArray(data.quests)) return { data, questId };
+      data.quests = data.quests.filter((q) => q.id !== questId);
+      return { data, questId };
+    }
+    function sortedByDeadline(quests) {
+      return [...quests].sort((a, b) => {
+        if (!a.deadline && !b.deadline) return 0;
+        if (!a.deadline) return 1;
+        if (!b.deadline) return -1;
+        return new Date(a.deadline) - new Date(b.deadline);
+      });
+    }
+    function isOverdue(quest) {
+      if (!quest.deadline || quest.completed || quest.abandoned) return false;
+      return new Date(quest.deadline) < /* @__PURE__ */ new Date();
+    }
+    module2.exports = {
+      activeQuests,
+      completedQuests,
+      questXP,
+      applyQuestAdd: applyQuestAdd2,
+      applyQuestComplete: applyQuestComplete2,
+      applyQuestAbandon: applyQuestAbandon2,
+      applyQuestUpdate: applyQuestUpdate2,
+      applyQuestDelete: applyQuestDelete2,
+      sortedByDeadline,
+      isOverdue
+    };
+  }
+});
+
 // src/ui/screens/homeQuestsScreen.js
 var require_homeQuestsScreen = __commonJS({
   "src/ui/screens/homeQuestsScreen.js"(exports2, module2) {
+    var { AREA_LABELS: AREA_LABELS2, QUEST_PRIORITIES } = require_constants();
+    var { activeQuests, completedQuests, questXP, sortedByDeadline, isOverdue } = require_questSystem();
     function renderHomeQuestsScreen2(parent, ctx = {}) {
       const data = ctx.data || {};
-      const selectedKey = ctx.selectedDateKey;
-      const dayStats2 = ctx.dayStats;
-      const sortedDayKeys2 = ctx.sortedDayKeys;
-      const streak2 = ctx.streak;
-      const getQuestStatsCards2 = ctx.getQuestStatsCards;
-      const questStatsCards = ctx.questStatsCards || [];
-      const createStatCard2 = ctx.createStatCard;
-      const today = dayStats2(data, selectedKey);
-      const keys = sortedDayKeys2(data);
-      const week = keys.slice(-7).map((key) => dayStats2(data, key));
-      const doneWeek = week.filter((day) => day.percent >= 50).length;
-      const values = {
-        dailyXp: `${today.xp} XP`,
-        minimum: `${Math.min(today.done, 3)}/3`,
-        total: `${today.done}/${today.total}`,
-        strongDays: `${doneWeek}/5`,
-        streak: `${streak2(data)} days`
-      };
-      const grid = parent.createDiv({ cls: "vrpg-card-grid" });
-      for (const card of getQuestStatsCards2(data, values, questStatsCards, selectedKey)) {
-        createStatCard2(grid, { className: "vrpg-panel", label: card.label, value: card.value, note: card.note });
+      const completeQuest = ctx.completeQuest || (() => {
+      });
+      const abandonQuest = ctx.abandonQuest || (() => {
+      });
+      const displayDate2 = ctx.displayDate;
+      const active = sortedByDeadline(activeQuests(data));
+      const done = completedQuests(data);
+      const activePanel = parent.createDiv({ cls: "vrpg-panel" });
+      activePanel.createDiv({ cls: "vrpg-section", text: "\u2694\uFE0F Active Quests" });
+      if (active.length === 0) {
+        activePanel.createDiv({ cls: "vrpg-subtitle", text: "No active quests. Add one in Settings \u2192 Quests." });
+      }
+      for (const quest of active) {
+        const overdue = isOverdue(quest);
+        const card = activePanel.createDiv({ cls: overdue ? "vrpg-quest-card is-overdue" : "vrpg-quest-card" });
+        const header = card.createDiv({ cls: "vrpg-quest-header" });
+        const priorityTag = quest.priority === "major" ? "\u2B50 MAJOR" : "STANDARD";
+        header.createDiv({ cls: `vrpg-quest-priority vrpg-priority-${quest.priority}`, text: priorityTag });
+        card.createDiv({ cls: "vrpg-card-title", text: quest.title });
+        if (quest.description) {
+          card.createDiv({ cls: "vrpg-subtitle", text: quest.description });
+        }
+        const meta = card.createDiv({ cls: "vrpg-quest-meta" });
+        meta.createSpan({ text: `${AREA_LABELS2[quest.area] || quest.area}` });
+        meta.createSpan({ text: ` \xB7 ${questXP(quest)} XP / Gold` });
+        if (quest.deadline) {
+          const deadlineDate = new Date(quest.deadline);
+          const deadlineStr = displayDate2 ? displayDate2(deadlineDate) : quest.deadline;
+          meta.createSpan({ cls: overdue ? "vrpg-overdue" : "", text: ` \xB7 Due: ${deadlineStr}` });
+        }
+        const actions = card.createDiv({ cls: "vrpg-quest-actions" });
+        const doneBtn = actions.createEl("button", { cls: "vrpg-primary", text: "\u2713 Complete" });
+        doneBtn.onclick = () => completeQuest(quest.id);
+        const abandonBtn = actions.createEl("button", { cls: "vrpg-danger", text: "\u2717 Abandon" });
+        abandonBtn.onclick = () => abandonQuest(quest.id);
+      }
+      if (done.length > 0) {
+        const donePanel = parent.createDiv({ cls: "vrpg-panel" });
+        donePanel.createDiv({ cls: "vrpg-section", text: "\u2705 Completed Quests" });
+        const recentDone = done.slice(-5).reverse();
+        for (const quest of recentDone) {
+          const row = donePanel.createDiv({ cls: "vrpg-quest-done" });
+          row.createSpan({ text: `${quest.title}` });
+          row.createSpan({ cls: "vrpg-subtitle", text: ` \xB7 ${questXP(quest)} XP earned` });
+        }
+        if (done.length > 5) {
+          donePanel.createDiv({ cls: "vrpg-subtitle", text: `...and ${done.length - 5} more` });
+        }
       }
     }
     module2.exports = {
@@ -2267,61 +2011,84 @@ var require_inventoryScreen = __commonJS({
   }
 });
 
-// src/ui/screens/homeWalletScreen.js
-var require_homeWalletScreen = __commonJS({
-  "src/ui/screens/homeWalletScreen.js"(exports2, module2) {
-    function renderHomeWalletScreen2(parent, ctx = {}) {
-      const wallet = ctx.wallet || [];
-      const selectedKey = ctx.selectedDateKey || ctx.dateKey();
-      const walletStats2 = ctx.walletStats;
-      const formatMoney2 = ctx.formatMoney;
-      const bindMoneyInput2 = ctx.bindMoneyInput;
-      const walletMonthLabel2 = ctx.walletMonthLabel;
-      const addWallet = ctx.addWallet;
-      const renderWalletRow = ctx.renderWalletRow;
-      const renderWalletMonth = ctx.renderWalletMonth;
-      const all = walletStats2(wallet);
-      const day = walletStats2(wallet, selectedKey);
-      const top = parent.createDiv({ cls: "vrpg-bank-top" });
-      [
-        ["Total Balance", `${formatMoney2(all.balance)} $`],
-        ["Income", `+${formatMoney2(all.income)} $`],
-        ["Expenses", `-${formatMoney2(all.expense)} $`]
-      ].forEach(([label, value]) => {
-        const card = top.createDiv({ cls: "vrpg-bank-metric" });
-        card.createDiv({ cls: "vrpg-section", text: label });
-        card.createDiv({ cls: "vrpg-stat-value", text: value });
-      });
-      const form = parent.createDiv({ cls: "vrpg-panel vrpg-inline-form vrpg-wallet-form" });
-      form.createDiv({ cls: "vrpg-section", text: `Record for ${selectedKey}` });
-      const type = form.createEl("select", { cls: "vrpg-wallet-type" });
-      type.createEl("option", { text: "Earned", value: "income" });
-      type.createEl("option", { text: "Spent", value: "expense" });
-      const amount = form.createEl("input", { type: "text", placeholder: "Amount", cls: "vrpg-wallet-amount" });
-      bindMoneyInput2(amount);
-      const note = form.createEl("input", { type: "text", placeholder: "What for / source", cls: "vrpg-wallet-note" });
-      const add = form.createEl("button", { cls: "vrpg-primary vrpg-wallet-add", text: "Add" });
-      add.onclick = async () => {
-        await addWallet(type.value, amount.value, note.value, selectedKey);
-        amount.value = "";
-        note.value = "";
-      };
-      const dayPanel = parent.createDiv({ cls: "vrpg-panel vrpg-bank-day" });
-      dayPanel.createDiv({ cls: "vrpg-section", text: "Selected Day" });
-      dayPanel.createDiv({ cls: "vrpg-card-title", text: `${selectedKey} \xB7 ${day.balance >= 0 ? "+" : ""}${formatMoney2(day.balance)} $` });
-      dayPanel.createDiv({ cls: "vrpg-subtitle", text: `Income +${formatMoney2(day.income)} $ \xB7 expenses -${formatMoney2(day.expense)} $ \xB7 ${day.items.length} transactions` });
-      if (!day.items.length) {
-        dayPanel.createDiv({ cls: "vrpg-subtitle", text: "No records for this day yet." });
+// src/ui/screens/homeLogScreen.js
+var require_homeLogScreen = __commonJS({
+  "src/ui/screens/homeLogScreen.js"(exports2, module2) {
+    function renderHomeLogScreen2(parent, ctx = {}) {
+      const data = ctx.data || {};
+      const displayDateFromKey2 = ctx.displayDateFromKey;
+      const panel = parent.createDiv({ cls: "vrpg-panel" });
+      panel.createDiv({ cls: "vrpg-section", text: "\u{1F4DC} Adventure Log" });
+      const log = Array.isArray(data.log) ? data.log : [];
+      if (log.length === 0) {
+        panel.createDiv({ cls: "vrpg-subtitle", text: "No entries yet. Complete dailies and quests to fill your log." });
+        return;
       }
-      for (const item of day.items.slice().sort((a, b) => String(b.time || "").localeCompare(String(a.time || "")))) {
-        renderWalletRow(dayPanel, item);
+      const entries = [...log].reverse().slice(0, 50);
+      for (const entry of entries) {
+        const row = panel.createDiv({ cls: "vrpg-log-entry" });
+        const icon = logIcon(entry.type);
+        const text = logText(entry);
+        const time = entry.timestamp ? formatLogTime(entry.timestamp) : "";
+        row.createSpan({ cls: "vrpg-log-icon", text: icon });
+        row.createSpan({ cls: "vrpg-log-text", text });
+        if (time) {
+          row.createSpan({ cls: "vrpg-log-time", text: time });
+        }
       }
-      const month = parent.createEl("details", { cls: "vrpg-bank-month" });
-      month.createEl("summary").createSpan({ text: `Month History \xB7 ${walletMonthLabel2(selectedKey)}` });
-      renderWalletMonth(month, wallet, selectedKey);
+    }
+    function logIcon(type) {
+      switch (type) {
+        case "quest-completed":
+          return "\u2694\uFE0F";
+        case "quest-added":
+          return "\u{1F4DC}";
+        case "quest-abandoned":
+          return "\u274C";
+        case "reward-purchased":
+          return "\u{1F6D2}";
+        case "achievement-unlocked":
+          return "\u{1F3C6}";
+        case "level-up":
+          return "\u2B06\uFE0F";
+        default:
+          return "\u2022";
+      }
+    }
+    function logText(entry) {
+      switch (entry.type) {
+        case "quest-completed":
+          return `Completed quest: ${entry.title} (+${entry.xp || 0} XP)`;
+        case "quest-added":
+          return `New quest accepted: ${entry.title}`;
+        case "quest-abandoned":
+          return `Abandoned quest: ${entry.title}`;
+        case "reward-purchased":
+          return `Purchased: ${entry.title} (-${entry.cost || 0} Gold)`;
+        case "achievement-unlocked":
+          return `Achievement unlocked: ${entry.title}`;
+        case "level-up":
+          return `Leveled up to ${entry.level}!`;
+        default:
+          return entry.title || entry.type || "Unknown event";
+      }
+    }
+    function formatLogTime(timestamp) {
+      try {
+        const date = new Date(timestamp);
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        let hours = date.getHours();
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        const ampm = hours >= 12 ? "PM" : "AM";
+        hours = hours % 12 || 12;
+        return `${month}/${day} ${hours}:${minutes} ${ampm}`;
+      } catch (e) {
+        return "";
+      }
     }
     module2.exports = {
-      renderHomeWalletScreen: renderHomeWalletScreen2
+      renderHomeLogScreen: renderHomeLogScreen2
     };
   }
 });
@@ -2329,12 +2096,12 @@ var require_homeWalletScreen = __commonJS({
 // src/config/featureFlags.js
 var require_featureFlags = __commonJS({
   "src/config/featureFlags.js"(exports2, module2) {
-    var FEATURE_FLAGS2 = {
+    var FEATURE_FLAGS = {
       showAchievements: false,
       showInterfaceSettings: true
     };
     module2.exports = {
-      FEATURE_FLAGS: FEATURE_FLAGS2
+      FEATURE_FLAGS
     };
   }
 });
@@ -2342,23 +2109,22 @@ var require_featureFlags = __commonJS({
 // src/ui/screens/settingsScreen.js
 var require_settingsScreen = __commonJS({
   "src/ui/screens/settingsScreen.js"(exports2, module2) {
-    var { FEATURE_FLAGS: FEATURE_FLAGS2 } = require_featureFlags();
+    var { FEATURE_FLAGS } = require_featureFlags();
     function renderSettingsScreen2(parent, ctx = {}) {
-      const settingsPanel = !FEATURE_FLAGS2.showInterfaceSettings && ctx.settingsPanel === "interface" ? "profile" : ctx.settingsPanel;
+      const settingsPanel = !FEATURE_FLAGS.showInterfaceSettings && ctx.settingsPanel === "interface" ? "profile" : ctx.settingsPanel;
       const navigate = ctx.navigate;
       const shell = parent.createDiv({ cls: "vrpg-hero-card vrpg-settings-shell" });
       shell.createDiv({ cls: "vrpg-kicker", text: "Settings" });
       shell.createDiv({ cls: "vrpg-title", text: "System" });
-      shell.createDiv({ cls: "vrpg-subtitle", text: "Customize hero, water, habits, and shop." });
+      shell.createDiv({ cls: "vrpg-subtitle", text: "Customize hero, dailies, quests, and shop." });
       const nav = shell.createDiv({ cls: "vrpg-command-grid vrpg-settings-nav" });
       const panels = [
         ["profile", "Hero", "name, class, photo"],
         ["interface", "Interface", "home widgets"],
-        ["resources", "Water", "glasses and daily goals"],
-        ["habits", "Habits", "daily actions"],
-        ["quests", "Quests", "stat cards"],
-        ["rewards", "Rewards", "XP shop"]
-      ].filter(([id]) => FEATURE_FLAGS2.showInterfaceSettings || id !== "interface");
+        ["habits", "Dailies", "daily actions"],
+        ["quests", "Quests", "quest management"],
+        ["rewards", "Rewards", "Gold shop"]
+      ].filter(([id]) => FEATURE_FLAGS.showInterfaceSettings || id !== "interface");
       panels.forEach(([id, title, desc]) => {
         const button = nav.createEl("button", { cls: settingsPanel === id ? "vrpg-command-action is-active" : "vrpg-command-action" });
         button.createEl("strong", { text: title });
@@ -2370,7 +2136,6 @@ var require_settingsScreen = __commonJS({
       const body = shell.createDiv({ cls: "vrpg-home-module" });
       if (settingsPanel === "profile") ctx.renderSettingsProfile(body);
       if (settingsPanel === "interface") ctx.renderSettingsInterface(body);
-      if (settingsPanel === "resources") ctx.renderSettingsResources(body);
       if (settingsPanel === "habits") ctx.renderSettingsHabits(body);
       if (settingsPanel === "quests") ctx.renderSettingsQuests(body);
       if (settingsPanel === "rewards") ctx.renderSettingsRewards(body);
@@ -2513,26 +2278,6 @@ var require_settingsInterfaceScreen = __commonJS({
 var require_settingsResourcesScreen = __commonJS({
   "src/ui/screens/settingsResourcesScreen.js"(exports2, module2) {
     function renderSettingsResourcesScreen2(parent, ctx = {}) {
-      const settings = ctx.settings || {};
-      const setWaterGoal = ctx.setWaterGoal;
-      const setWaterGlassMl = ctx.setWaterGlassMl;
-      const settingsPanel = parent.createDiv({ cls: "vrpg-panel" });
-      settingsPanel.createDiv({ cls: "vrpg-section", text: "Water" });
-      const waterGoal = settingsPanel.createEl("input", {
-        type: "number",
-        placeholder: "Water goal in glasses",
-        value: String(settings.waterGoal || 8)
-      });
-      const waterMl = settingsPanel.createEl("input", {
-        type: "number",
-        placeholder: "Glass size in ml",
-        value: String(settings.waterGlassMl || 250)
-      });
-      const saveWater = settingsPanel.createEl("button", { cls: "vrpg-primary", text: "Save Water Goal" });
-      saveWater.onclick = async () => {
-        await setWaterGoal(waterGoal.value);
-        await setWaterGlassMl(waterMl.value);
-      };
     }
     module2.exports = {
       renderSettingsResourcesScreen: renderSettingsResourcesScreen2
@@ -2552,7 +2297,7 @@ var require_settingsRewardsScreen = __commonJS({
       const rewardPanel = parent.createDiv({ cls: "vrpg-panel" });
       rewardPanel.createDiv({ cls: "vrpg-section", text: "Add Reward" });
       const rewardTitle = rewardPanel.createEl("input", { type: "text", placeholder: "e.g. movie, massage, dinner out" });
-      const rewardCost = rewardPanel.createEl("input", { type: "number", placeholder: "Cost in XP, e.g. 150" });
+      const rewardCost = rewardPanel.createEl("input", { type: "number", placeholder: "Cost in Gold, e.g. 150" });
       const rewardRarity = rewardPanel.createEl("select");
       Object.entries(rarities).forEach(([value, label]) => {
         rewardRarity.createEl("option", { text: label, value });
@@ -2568,7 +2313,7 @@ var require_settingsRewardsScreen = __commonJS({
       for (const reward of data.rewards) {
         const row = rewardList.createDiv({ cls: "vrpg-setting-row" });
         row.createDiv({ cls: "vrpg-card-title", text: `${reward.icon || "\u{1F381}"} ${reward.title}` });
-        row.createDiv({ cls: "vrpg-subtitle", text: `${reward.cost} XP \xB7 ${rarities[reward.rarity || "common"] || rarities.common}` });
+        row.createDiv({ cls: "vrpg-subtitle", text: `${reward.cost} Gold \xB7 ${rarities[reward.rarity || "common"] || rarities.common}` });
         const remove = row.createEl("button", { cls: "vrpg-danger", text: "Delete" });
         remove.onclick = () => {
           if (confirm2(`Delete reward "${reward.title}" from the shop? Already purchased items in inventory will remain.`)) {
@@ -2586,6 +2331,7 @@ var require_settingsRewardsScreen = __commonJS({
 // src/ui/screens/settingsHabitsScreen.js
 var require_settingsHabitsScreen = __commonJS({
   "src/ui/screens/settingsHabitsScreen.js"(exports2, module2) {
+    var { DAYS_OF_WEEK, ALL_DAYS } = require_constants();
     function renderSettingsHabitsScreen2(parent, ctx = {}) {
       const data = ctx.data || {};
       const habitIcons = ctx.habitIcons || [];
@@ -2595,9 +2341,9 @@ var require_settingsHabitsScreen = __commonJS({
       const updateHabit = ctx.updateHabit;
       const deleteHabit = ctx.deleteHabit;
       const confirm2 = ctx.confirm;
-      const areas = [["body", "Body"], ["mind", "Mind"], ["craft", "Craft"], ["control", "Control"]];
+      const areas = [["body", "Body"], ["mind", "Mind"], ["spirit", "Spirit"], ["craft", "Craft"], ["hearth", "Hearth"]];
       const panel = parent.createDiv({ cls: "vrpg-panel" });
-      panel.createDiv({ cls: "vrpg-section", text: "Add Habit" });
+      panel.createDiv({ cls: "vrpg-section", text: "Add Daily" });
       const input = panel.createEl("input", { type: "text", placeholder: "e.g. swimming, English, journaling" });
       const icon = panel.createEl("input", { type: "text", placeholder: "Icon, e.g. \u{1F3C3}" });
       const iconPicker = panel.createDiv({ cls: "vrpg-icon-picker" });
@@ -2607,24 +2353,37 @@ var require_settingsHabitsScreen = __commonJS({
           icon.value = value;
         };
       });
-      const xp = panel.createEl("input", { type: "number", placeholder: "XP per completion, usually 10" });
       const select = panel.createEl("select");
       areas.forEach(([value, label]) => {
         select.createEl("option", { text: label, value });
       });
+      panel.createDiv({ cls: "vrpg-subtitle", text: "Schedule (leave unchecked for every day)" });
+      const daysRow = panel.createDiv({ cls: "vrpg-days-picker" });
+      const dayCheckboxes = {};
+      ALL_DAYS.forEach((dayKey) => {
+        const label = daysRow.createEl("label", { cls: "vrpg-day-check" });
+        const cb = label.createEl("input", { type: "checkbox" });
+        cb.value = dayKey;
+        label.createSpan({ text: DAYS_OF_WEEK[dayKey] });
+        dayCheckboxes[dayKey] = cb;
+      });
       const button = panel.createEl("button", { cls: "vrpg-primary", text: "Add" });
       button.onclick = () => {
-        addHabit(input.value, select.value, xp.value || 10, icon.value || "\u2728");
+        const selectedDays = ALL_DAYS.filter((d) => dayCheckboxes[d].checked);
+        addHabit(input.value, select.value, icon.value || "\u2728", selectedDays.length > 0 ? selectedDays : null);
         input.value = "";
         icon.value = "";
-        xp.value = "";
+        ALL_DAYS.forEach((d) => {
+          dayCheckboxes[d].checked = false;
+        });
       };
       const list = parent.createDiv({ cls: "vrpg-panel" });
-      list.createDiv({ cls: "vrpg-section", text: "My Habits" });
+      list.createDiv({ cls: "vrpg-section", text: "My Dailies" });
       for (const habit of data.habits) {
         const row = list.createDiv({ cls: "vrpg-setting-row" });
         row.createDiv({ cls: "vrpg-card-title", text: `${habit.icon || "\u2022"} ${habit.title}` });
-        row.createDiv({ cls: "vrpg-subtitle", text: `${areaLabels[habit.area] || habit.area} \u2022 ${habit.xp} XP` });
+        const daysText = habit.days && Array.isArray(habit.days) && habit.days.length > 0 ? habit.days.map((d) => DAYS_OF_WEEK[d] || d).join(", ") : "Every day";
+        row.createDiv({ cls: "vrpg-subtitle", text: `${areaLabels[habit.area] || habit.area} \xB7 10 XP \xB7 ${daysText}` });
         const toggle = row.createEl("button", { cls: "vrpg-primary", text: habit.enabled === false ? "Enable" : "Hide" });
         toggle.onclick = () => setHabitEnabled(habit.id, habit.enabled === false);
         const edit = row.createEl("button", { cls: "vrpg-primary", text: "Edit" });
@@ -2640,20 +2399,34 @@ var require_settingsHabitsScreen = __commonJS({
           titleInput.value = habit.title || "";
           const iconInput = editForm.createEl("input", { type: "text" });
           iconInput.value = habit.icon || "\u2728";
-          const xpInput = editForm.createEl("input", { type: "number" });
-          xpInput.value = String(habit.xp || 10);
           const areaSelect = editForm.createEl("select");
           areas.forEach(([value, label]) => {
             areaSelect.createEl("option", { text: label, value });
           });
           areaSelect.value = habit.area || "body";
-          const save = editForm.createEl("button", { cls: "vrpg-primary", text: "Save" });
-          save.onclick = () => updateHabit(habit.id, {
-            title: titleInput.value,
-            icon: iconInput.value,
-            xp: xpInput.value,
-            area: areaSelect.value
+          editForm.createDiv({ cls: "vrpg-subtitle", text: "Schedule (leave unchecked for every day)" });
+          const editDaysRow = editForm.createDiv({ cls: "vrpg-days-picker" });
+          const editDayCbs = {};
+          ALL_DAYS.forEach((dayKey) => {
+            const dayLabel = editDaysRow.createEl("label", { cls: "vrpg-day-check" });
+            const cb = dayLabel.createEl("input", { type: "checkbox" });
+            cb.value = dayKey;
+            if (habit.days && Array.isArray(habit.days) && habit.days.includes(dayKey)) {
+              cb.checked = true;
+            }
+            dayLabel.createSpan({ text: DAYS_OF_WEEK[dayKey] });
+            editDayCbs[dayKey] = cb;
           });
+          const save = editForm.createEl("button", { cls: "vrpg-primary", text: "Save" });
+          save.onclick = () => {
+            const editSelectedDays = ALL_DAYS.filter((d) => editDayCbs[d].checked);
+            updateHabit(habit.id, {
+              title: titleInput.value,
+              icon: iconInput.value,
+              area: areaSelect.value,
+              days: editSelectedDays.length > 0 ? editSelectedDays : null
+            });
+          };
           const cancel = editForm.createEl("button", { cls: "vrpg-primary", text: "Cancel" });
           cancel.onclick = () => {
             editForm.remove();
@@ -2662,7 +2435,7 @@ var require_settingsHabitsScreen = __commonJS({
         };
         const remove = row.createEl("button", { cls: "vrpg-danger", text: "Delete" });
         remove.onclick = () => {
-          if (confirm2(`Delete habit "${habit.title}"? Its history will also be removed from calculations.`)) {
+          if (confirm2(`Delete daily "${habit.title}"? Its history will also be removed from calculations.`)) {
             deleteHabit(habit.id);
           }
         };
@@ -2674,13 +2447,164 @@ var require_settingsHabitsScreen = __commonJS({
   }
 });
 
+// src/ui/screens/settingsQuestsScreen.js
+var require_settingsQuestsScreen = __commonJS({
+  "src/ui/screens/settingsQuestsScreen.js"(exports2, module2) {
+    var { AREA_LABELS: AREA_LABELS2, QUEST_PRIORITIES } = require_constants();
+    function renderSettingsQuestsScreen2(parent, ctx = {}) {
+      const data = ctx.data || {};
+      const addQuest = ctx.addQuest || (() => {
+      });
+      const updateQuest = ctx.updateQuest || (() => {
+      });
+      const deleteQuest = ctx.deleteQuest || (() => {
+      });
+      const confirm2 = ctx.confirm;
+      const areas = Object.entries(AREA_LABELS2);
+      const priorities = Object.entries(QUEST_PRIORITIES);
+      const addPanel = parent.createDiv({ cls: "vrpg-panel" });
+      addPanel.createDiv({ cls: "vrpg-section", text: "Add Quest" });
+      const titleInput = addPanel.createEl("input", { type: "text", placeholder: "Quest title, e.g. Complete WGU course" });
+      addPanel.createDiv({ cls: "vrpg-subtitle", text: "Description (optional)" });
+      const descInput = addPanel.createEl("input", { type: "text", placeholder: "Details about the quest" });
+      const selectRow = addPanel.createDiv({ cls: "vrpg-quest-selects" });
+      const areaSelect = selectRow.createEl("select");
+      areas.forEach(([value, label]) => {
+        areaSelect.createEl("option", { text: label, value });
+      });
+      const prioritySelect = selectRow.createEl("select");
+      priorities.forEach(([value, label]) => {
+        const xp = value === "major" ? "100" : "50";
+        prioritySelect.createEl("option", { text: `${label} (${xp} XP)`, value });
+      });
+      addPanel.createDiv({ cls: "vrpg-subtitle", text: "Deadline (optional)" });
+      const deadlineInput = addPanel.createEl("input", { type: "date" });
+      const addBtn = addPanel.createEl("button", { cls: "vrpg-primary", text: "Add Quest" });
+      addBtn.onclick = () => {
+        if (!titleInput.value.trim()) return;
+        addQuest({
+          title: titleInput.value.trim(),
+          description: descInput.value.trim(),
+          area: areaSelect.value,
+          priority: prioritySelect.value,
+          deadline: deadlineInput.value || null
+        });
+        titleInput.value = "";
+        descInput.value = "";
+        deadlineInput.value = "";
+      };
+      const quests = Array.isArray(data.quests) ? data.quests : [];
+      const active = quests.filter((q) => !q.completed && !q.abandoned);
+      const completed = quests.filter((q) => q.completed);
+      const abandoned = quests.filter((q) => q.abandoned);
+      if (active.length > 0) {
+        const listPanel = parent.createDiv({ cls: "vrpg-panel" });
+        listPanel.createDiv({ cls: "vrpg-section", text: "Active Quests" });
+        for (const quest of active) {
+          renderQuestRow(listPanel, quest, { areas, priorities, updateQuest, deleteQuest, confirm: confirm2 });
+        }
+      }
+      if (completed.length > 0) {
+        const donePanel = parent.createDiv({ cls: "vrpg-panel" });
+        donePanel.createDiv({ cls: "vrpg-section", text: "Completed Quests" });
+        for (const quest of completed.slice(-10).reverse()) {
+          const row = donePanel.createDiv({ cls: "vrpg-setting-row" });
+          row.createDiv({ cls: "vrpg-card-title", text: `\u2705 ${quest.title}` });
+          row.createDiv({ cls: "vrpg-subtitle", text: `${AREA_LABELS2[quest.area] || quest.area} \xB7 ${quest.priority === "major" ? "Major" : "Standard"}` });
+          const remove = row.createEl("button", { cls: "vrpg-danger", text: "Delete" });
+          remove.onclick = () => {
+            if (confirm2(`Remove completed quest "${quest.title}" from history?`)) {
+              deleteQuest(quest.id);
+            }
+          };
+        }
+      }
+      if (abandoned.length > 0) {
+        const abPanel = parent.createDiv({ cls: "vrpg-panel" });
+        abPanel.createDiv({ cls: "vrpg-section", text: "Abandoned Quests" });
+        for (const quest of abandoned.slice(-5).reverse()) {
+          const row = abPanel.createDiv({ cls: "vrpg-setting-row" });
+          row.createDiv({ cls: "vrpg-card-title", text: `\u274C ${quest.title}` });
+          const remove = row.createEl("button", { cls: "vrpg-danger", text: "Delete" });
+          remove.onclick = () => deleteQuest(quest.id);
+        }
+      }
+    }
+    function renderQuestRow(parent, quest, opts) {
+      const { areas, priorities, updateQuest, deleteQuest, confirm: confirm2 } = opts;
+      const row = parent.createDiv({ cls: "vrpg-setting-row" });
+      row.createDiv({ cls: "vrpg-card-title", text: quest.title });
+      const priorityLabel = quest.priority === "major" ? "\u2B50 Major" : "Standard";
+      const deadlineText = quest.deadline ? ` \xB7 Due: ${quest.deadline}` : "";
+      row.createDiv({ cls: "vrpg-subtitle", text: `${AREA_LABELS2[quest.area] || quest.area} \xB7 ${priorityLabel}${deadlineText}` });
+      const edit = row.createEl("button", { cls: "vrpg-primary", text: "Edit" });
+      let editForm = null;
+      edit.onclick = () => {
+        if (editForm) {
+          editForm.remove();
+          editForm = null;
+          return;
+        }
+        editForm = row.createDiv({ cls: "vrpg-setting-edit" });
+        const titleInput = editForm.createEl("input", { type: "text" });
+        titleInput.value = quest.title || "";
+        const descInput = editForm.createEl("input", { type: "text", placeholder: "Description" });
+        descInput.value = quest.description || "";
+        const areaSelect = editForm.createEl("select");
+        areas.forEach(([value, label]) => {
+          areaSelect.createEl("option", { text: label, value });
+        });
+        areaSelect.value = quest.area || "craft";
+        const prioritySelect = editForm.createEl("select");
+        priorities.forEach(([value, label]) => {
+          prioritySelect.createEl("option", { text: label, value });
+        });
+        prioritySelect.value = quest.priority || "standard";
+        editForm.createDiv({ cls: "vrpg-subtitle", text: "Deadline" });
+        const deadlineInput = editForm.createEl("input", { type: "date" });
+        deadlineInput.value = quest.deadline || "";
+        const save = editForm.createEl("button", { cls: "vrpg-primary", text: "Save" });
+        save.onclick = () => updateQuest(quest.id, {
+          title: titleInput.value,
+          description: descInput.value,
+          area: areaSelect.value,
+          priority: prioritySelect.value,
+          deadline: deadlineInput.value || null
+        });
+        const cancel = editForm.createEl("button", { cls: "vrpg-primary", text: "Cancel" });
+        cancel.onclick = () => {
+          editForm.remove();
+          editForm = null;
+        };
+      };
+      const remove = row.createEl("button", { cls: "vrpg-danger", text: "Delete" });
+      remove.onclick = () => {
+        if (confirm2(`Delete quest "${quest.title}"?`)) {
+          deleteQuest(quest.id);
+        }
+      };
+    }
+    module2.exports = {
+      renderSettingsQuestsScreen: renderSettingsQuestsScreen2
+    };
+  }
+});
+
 // src/systems/habitSystem.js
 var require_habitSystem = __commonJS({
   "src/systems/habitSystem.js"(exports2, module2) {
     var { dateKey: dateKey2, uid } = require_utils();
     var { getDay: getDay2 } = require_storage();
-    function activeHabits2(data) {
-      return data.habits.filter((habit) => habit.enabled !== false);
+    var { DAILY_XP, ALL_DAYS } = require_constants();
+    function activeHabits2(data, forDate) {
+      const habits = data.habits.filter((habit) => habit.enabled !== false);
+      if (!forDate) return habits;
+      const dayIndex = forDate.getDay();
+      const dayKey = ALL_DAYS[dayIndex];
+      return habits.filter((habit) => {
+        if (!habit.days || !Array.isArray(habit.days) || habit.days.length === 0) return true;
+        return habit.days.includes(dayKey);
+      });
     }
     function dayStats2(data, key = dateKey2()) {
       const day = getDay2(data, key);
@@ -2690,13 +2614,13 @@ var require_habitSystem = __commonJS({
       const habits = activeHabits2(data);
       let done = 0;
       let xp = 0;
-      const areaDone = { body: 0, mind: 0, craft: 0, control: 0 };
-      const areaTotal = { body: 0, mind: 0, craft: 0, control: 0 };
+      const areaDone = { body: 0, mind: 0, spirit: 0, craft: 0, hearth: 0 };
+      const areaTotal = { body: 0, mind: 0, spirit: 0, craft: 0, hearth: 0 };
       for (const habit of habits) {
         if (areaTotal[habit.area] !== void 0) areaTotal[habit.area]++;
         if (!day || !day.completed || !day.completed[habit.id]) continue;
         done++;
-        xp += Number(habit.xp || 0);
+        xp += DAILY_XP;
         if (areaDone[habit.area] !== void 0) areaDone[habit.area]++;
       }
       const total = habits.length;
@@ -2732,8 +2656,9 @@ var require_habitSystem = __commonJS({
       const result = {
         body: { done: 0, total: 0 },
         mind: { done: 0, total: 0 },
+        spirit: { done: 0, total: 0 },
         craft: { done: 0, total: 0 },
-        control: { done: 0, total: 0 }
+        hearth: { done: 0, total: 0 }
       };
       for (const key of keys) {
         const stats = dayStats2(data, key);
@@ -2750,14 +2675,14 @@ var require_habitSystem = __commonJS({
       return { data, key, day, habitId, completed: day.completed[habitId] };
     }
     function applyHabitAdd2(data, habitInput) {
-      const value = Number(habitInput.xp);
       const habit = {
         id: uid("habit"),
         title: habitInput.title,
         area: habitInput.area,
         icon: String(habitInput.icon || "\u2728").trim() || "\u2728",
-        xp: Number.isFinite(value) && value > 0 ? value : 10,
-        enabled: true
+        xp: DAILY_XP,
+        enabled: true,
+        days: habitInput.days || null
       };
       data.habits.push(habit);
       return { data, habit };
@@ -2765,10 +2690,11 @@ var require_habitSystem = __commonJS({
     function applyHabitUpdate2(data, habitId, patch) {
       const habit = data.habits.find((item) => item.id === habitId);
       if (!habit) return { data, habit };
-      const allowed = ["title", "area", "icon", "xp", "enabled"];
+      const allowed = ["title", "area", "icon", "enabled", "days"];
       for (const key of allowed) {
         if (Object.prototype.hasOwnProperty.call(patch, key)) habit[key] = patch[key];
       }
+      habit.xp = DAILY_XP;
       return { data, habit };
     }
     function applyHabitDelete2(data, habitId) {
@@ -2793,191 +2719,13 @@ var require_habitSystem = __commonJS({
   }
 });
 
-// src/ui/screens/settingsQuestsScreen.js
-var require_settingsQuestsScreen = __commonJS({
-  "src/ui/screens/settingsQuestsScreen.js"(exports2, module2) {
-    var { Notice: Notice2 } = require("obsidian");
-    var { activeHabits: activeHabits2 } = require_habitSystem();
-    var { normalizeQuestStatsSettings: normalizeQuestStatsSettings2 } = require_questStatsSystem();
-    var { QUEST_STATS_CARDS: QUEST_STATS_CARDS2 } = require_questStatsConfig();
-    function renderSettingsQuestsScreen2(parent, ctx = {}) {
-      const data = ctx.data || {};
-      const addCustomQuestStatsCard = ctx.addCustomQuestStatsCard;
-      const setQuestStatsCardEnabled = ctx.setQuestStatsCardEnabled;
-      const updateQuestStatsCard = ctx.updateQuestStatsCard;
-      const updateCustomQuestStatsCard = ctx.updateCustomQuestStatsCard;
-      const deleteCustomQuestStatsCard = ctx.deleteCustomQuestStatsCard;
-      const confirm2 = ctx.confirm;
-      const addPanel = parent.createDiv({ cls: "vrpg-panel" });
-      addPanel.createDiv({ cls: "vrpg-section", text: "Add Card" });
-      addPanel.createDiv({ cls: "vrpg-card-title", text: "Card Type" });
-      addPanel.createDiv({ cls: "vrpg-subtitle", text: "What the card will track." });
-      const typeSelect = addPanel.createEl("select");
-      [
-        ["manual", "Manual Card"],
-        ["habitCount", "Habit: Count"],
-        ["habitStreak", "Habit: Streak"]
-      ].forEach(([value, label]) => typeSelect.createEl("option", { text: label, value }));
-      const addForm = addPanel.createDiv({ cls: "vrpg-setting-edit" });
-      const renderAddForm = () => {
-        addForm.empty();
-        const type = typeSelect.value;
-        addForm.createDiv({ cls: "vrpg-card-title", text: "Card Name" });
-        addForm.createDiv({ cls: "vrpg-subtitle", text: "How the card will appear in the Quests panel." });
-        const customLabel = addForm.createEl("input", { type: "text", placeholder: "e.g. Don't skip workouts" });
-        if (type === "manual") {
-          addForm.createDiv({ cls: "vrpg-card-title", text: "Value / Caption" });
-          addForm.createDiv({ cls: "vrpg-subtitle", text: "Text that will be shown inside the card." });
-          const customValue = addForm.createEl("input", { type: "text", placeholder: "e.g. 3 important tasks" });
-          const add2 = addForm.createEl("button", { cls: "vrpg-primary", text: "Add" });
-          add2.onclick = async () => {
-            await addCustomQuestStatsCard({
-              type: "manual",
-              label: customLabel.value,
-              value: customValue.value,
-              enabled: true
-            });
-            customLabel.value = "";
-            customValue.value = "";
-          };
-          return;
-        }
-        addForm.createDiv({ cls: "vrpg-subtitle", text: "Linked quest progress is calculated automatically from selected habits. A day counts if at least one of them is completed." });
-        const habits = activeHabits2(data);
-        if (!habits.length) {
-          addForm.createDiv({ cls: "vrpg-subtitle", text: "First add or enable at least one habit." });
-          return;
-        }
-        addForm.createDiv({ cls: "vrpg-card-title", text: "Linked Habits" });
-        addForm.createDiv({ cls: "vrpg-subtitle", text: "e.g. running, cycling, and gym for an overall fitness streak." });
-        const habitChoices = addForm.createDiv({ cls: "vrpg-habit-choice-list" });
-        const habitInputs = [];
-        for (const habit of habits) {
-          const label = habitChoices.createEl("label", { cls: "vrpg-habit-choice" });
-          const checkbox = label.createEl("input", { type: "checkbox" });
-          checkbox.value = habit.id;
-          label.createSpan({ text: `${habit.icon || "\u2022"} ${habit.title}` });
-          habitInputs.push(checkbox);
-        }
-        addForm.createDiv({ cls: "vrpg-card-title", text: "Goal in Days" });
-        addForm.createDiv({ cls: "vrpg-subtitle", text: "How many days needed to complete the quest." });
-        const goalInput = addForm.createEl("input", { type: "number", placeholder: "e.g. 7 days" });
-        goalInput.value = "7";
-        addForm.createDiv({ cls: "vrpg-card-title", text: "XP Reward" });
-        addForm.createDiv({ cls: "vrpg-subtitle", text: "Currently display-only. XP is not awarded automatically." });
-        const rewardXpInput = addForm.createEl("input", { type: "number", placeholder: "e.g. 100" });
-        rewardXpInput.value = "0";
-        const add = addForm.createEl("button", { cls: "vrpg-primary", text: "Add" });
-        add.onclick = async () => {
-          const habitIds = habitInputs.filter((input) => input.checked).map((input) => input.value);
-          if (!habitIds.length) {
-            new Notice2("Select at least one habit");
-            return;
-          }
-          await addCustomQuestStatsCard({
-            type,
-            label: customLabel.value,
-            habitId: habitIds[0],
-            habitIds,
-            goal: goalInput.value,
-            rewardXp: rewardXpInput.value,
-            period: "lastDays",
-            enabled: true
-          });
-          customLabel.value = "";
-          goalInput.value = "7";
-          rewardXpInput.value = "0";
-        };
-      };
-      typeSelect.onchange = renderAddForm;
-      renderAddForm();
-      const panel = parent.createDiv({ cls: "vrpg-panel" });
-      panel.createDiv({ cls: "vrpg-section", text: "Quests Panel" });
-      panel.createDiv({ cls: "vrpg-subtitle", text: "Manage stat cards in the Quests panel." });
-      const normalized = normalizeQuestStatsSettings2(data.settings || {}, QUEST_STATS_CARDS2);
-      const settings = normalized.questStatsCards;
-      for (const card of QUEST_STATS_CARDS2) {
-        const cardSettings = settings[card.id] || {};
-        const enabled = card.enabled !== false && cardSettings.enabled !== false;
-        const row = panel.createDiv({ cls: "vrpg-setting-row" });
-        const title = cardSettings.label || card.label;
-        row.createDiv({ cls: "vrpg-card-title", text: title });
-        row.createDiv({ cls: "vrpg-subtitle", text: enabled ? "Shown in Quests panel" : "Hidden from Quests panel" });
-        const toggle = row.createEl("button", { cls: "vrpg-primary", text: enabled ? "Hide" : "Show" });
-        toggle.onclick = () => setQuestStatsCardEnabled(card.id, !enabled);
-        const edit = row.createEl("button", { cls: "vrpg-primary", text: "Edit" });
-        let editForm = null;
-        edit.onclick = () => {
-          if (editForm) {
-            editForm.remove();
-            editForm = null;
-            return;
-          }
-          editForm = row.createDiv({ cls: "vrpg-setting-edit" });
-          const labelInput = editForm.createEl("input", { type: "text", placeholder: "Name" });
-          labelInput.value = title;
-          const save = editForm.createEl("button", { cls: "vrpg-primary", text: "Save" });
-          save.onclick = () => updateQuestStatsCard(card.id, { label: labelInput.value });
-          const cancel = editForm.createEl("button", { cls: "vrpg-primary", text: "Cancel" });
-          cancel.onclick = () => {
-            editForm.remove();
-            editForm = null;
-          };
-        };
-      }
-      for (const card of normalized.customQuestStatsCards) {
-        const enabled = card.enabled !== false;
-        const row = panel.createDiv({ cls: "vrpg-setting-row" });
-        const linkedCount = Array.isArray(card.habitIds) && card.habitIds.length ? card.habitIds.length : card.habitId ? 1 : 0;
-        const linkedText = card.type === "manual" ? card.value || "No value" : `${linkedCount} habits \u2022 ${card.value || "auto-progress"}`;
-        row.createDiv({ cls: "vrpg-card-title", text: card.label });
-        row.createDiv({ cls: "vrpg-subtitle", text: `${linkedText} \u2022 ${enabled ? "Shown" : "Hidden"}` });
-        const toggle = row.createEl("button", { cls: "vrpg-primary", text: enabled ? "Hide" : "Show" });
-        toggle.onclick = () => updateCustomQuestStatsCard(card.id, { enabled: !enabled });
-        if (card.type === "manual") {
-          const edit = row.createEl("button", { cls: "vrpg-primary", text: "Edit" });
-          let editForm = null;
-          edit.onclick = () => {
-            if (editForm) {
-              editForm.remove();
-              editForm = null;
-              return;
-            }
-            editForm = row.createDiv({ cls: "vrpg-setting-edit" });
-            const labelInput = editForm.createEl("input", { type: "text", placeholder: "Name" });
-            labelInput.value = card.label;
-            const valueInput = editForm.createEl("input", { type: "text", placeholder: "Value / Caption" });
-            valueInput.value = card.value || "";
-            const save = editForm.createEl("button", { cls: "vrpg-primary", text: "Save" });
-            save.onclick = () => updateCustomQuestStatsCard(card.id, {
-              label: labelInput.value,
-              value: valueInput.value
-            });
-            const cancel = editForm.createEl("button", { cls: "vrpg-primary", text: "Cancel" });
-            cancel.onclick = () => {
-              editForm.remove();
-              editForm = null;
-            };
-          };
-        }
-        const remove = row.createEl("button", { cls: "vrpg-danger", text: "Delete" });
-        remove.onclick = () => {
-          if (confirm2(`Delete card "${card.label}"?`)) {
-            deleteCustomQuestStatsCard(card.id);
-          }
-        };
-      }
-    }
-    module2.exports = {
-      renderSettingsQuestsScreen: renderSettingsQuestsScreen2
-    };
-  }
-});
-
 // src/systems/xpSystem.js
 var require_xpSystem = __commonJS({
   "src/systems/xpSystem.js"(exports2, module2) {
+    var { DAILY_XP, QUEST_XP_STANDARD, QUEST_XP_MAJOR } = require_constants();
     function heroTitle2(level) {
+      if (level >= 50) return "Legend";
+      if (level >= 30) return "Champion";
       if (level >= 20) return "Rhythm Master";
       if (level >= 10) return "Strategist";
       if (level >= 5) return "Seeker";
@@ -2988,17 +2736,32 @@ var require_xpSystem = __commonJS({
       for (const [key, day] of Object.entries(data.days)) {
         if (!day || !day.completed) continue;
         for (const habit of data.habits) {
-          if (habit.enabled !== false && day.completed[habit.id]) earned += Number(habit.xp || 0);
+          if (habit.enabled !== false && day.completed[habit.id]) {
+            earned += DAILY_XP;
+          }
+        }
+      }
+      const quests = Array.isArray(data.quests) ? data.quests : [];
+      for (const quest of quests) {
+        if (quest.completed) {
+          earned += quest.priority === "major" ? QUEST_XP_MAJOR : QUEST_XP_STANDARD;
         }
       }
       let spent = 0;
       for (const item of data.inventory) spent += Number(item.cost || 0);
+      const goldEarned = earned;
+      const goldBalance = Math.max(0, goldEarned - spent);
       return {
         earned,
+        // Lifetime XP — never decreases
         spent,
-        balance: Math.max(0, earned - spent),
+        // Total gold spent
+        balance: goldBalance,
+        // Current gold available
         level: Math.floor(earned / 100) + 1,
-        levelXP: earned % 100
+        levelXP: earned % 100,
+        gold: goldBalance,
+        goldEarned
       };
     }
     module2.exports = {
@@ -3023,23 +2786,41 @@ var require_achievementSystem = __commonJS({
       return [
         ["Body", stats.body.total ? Math.round(stats.body.done / stats.body.total * 100) : 0],
         ["Mind", stats.mind.total ? Math.round(stats.mind.done / stats.mind.total * 100) : 0],
-        ["Craft", stats.craft.total ? Math.round(stats.craft.done / stats.craft.total * 100) : 0]
+        ["Spirit", stats.spirit.total ? Math.round(stats.spirit.done / stats.spirit.total * 100) : 0],
+        ["Craft", stats.craft.total ? Math.round(stats.craft.done / stats.craft.total * 100) : 0],
+        ["Hearth", stats.hearth.total ? Math.round(stats.hearth.done / stats.hearth.total * 100) : 0]
       ];
     }
     function achievements2(data) {
       const t = totals2(data);
       const keys = sortedDayKeys2(data);
+      const currentStreak = streak2(data);
       const hasCompleteDay = keys.some((key) => {
         const stats = dayStats2(data, key);
         return stats.total > 0 && stats.done === stats.total;
       });
       const bought = (data.inventory || []).length > 0;
+      const questsDone = (data.quests || []).filter((q) => q.completed).length;
+      const dailyBountyDays = keys.filter((key) => {
+        const stats = dayStats2(data, key);
+        return stats.done >= 3;
+      }).length;
       return [
-        { id: "first-day", title: "First Day Complete", done: hasCompleteDay },
-        { id: "three-streak", title: "3-Day Streak", done: streak2(data) >= 3 },
-        { id: "week", title: "Week Without Fail", done: streak2(data) >= 7 },
-        { id: "xp100", title: "100 XP Earned", done: t.earned >= 100 },
-        { id: "first-buy", title: "First Purchase", done: bought }
+        { id: "first-day", title: "First Day Complete", done: hasCompleteDay, icon: "\u2694\uFE0F" },
+        { id: "three-streak", title: "3-Day Streak", done: currentStreak >= 3, icon: "\u{1F525}" },
+        { id: "week", title: "Week Without Fail", done: currentStreak >= 7, icon: "\u{1F3C6}" },
+        { id: "two-weeks", title: "Fortnight Fighter", done: currentStreak >= 14, icon: "\u26A1" },
+        { id: "month", title: "Monthly Master", done: currentStreak >= 30, icon: "\u{1F451}" },
+        { id: "xp100", title: "100 XP Earned", done: t.earned >= 100, icon: "\u2728" },
+        { id: "xp500", title: "500 XP Earned", done: t.earned >= 500, icon: "\u{1F48E}" },
+        { id: "xp1000", title: "1000 XP Earned", done: t.earned >= 1e3, icon: "\u{1F31F}" },
+        { id: "first-buy", title: "First Purchase", done: bought, icon: "\u{1F6D2}" },
+        { id: "first-quest", title: "First Quest Complete", done: questsDone >= 1, icon: "\u{1F4DC}" },
+        { id: "five-quests", title: "Questmaster", done: questsDone >= 5, icon: "\u{1F5E1}\uFE0F" },
+        { id: "bounty-hunter", title: "Daily Bounty x10", done: dailyBountyDays >= 10, icon: "\u{1F3AF}" },
+        { id: "level5", title: "Level 5 Reached", done: t.level >= 5, icon: "\u{1F6E1}\uFE0F" },
+        { id: "level10", title: "Level 10 Reached", done: t.level >= 10, icon: "\u2B50" },
+        { id: "level20", title: "Level 20 Reached", done: t.level >= 20, icon: "\u{1F531}" }
       ];
     }
     module2.exports = {
@@ -3054,7 +2835,7 @@ var require_daySystem = __commonJS({
   "src/systems/daySystem.js"(exports2, module2) {
     var { dateKey: dateKey2 } = require_utils();
     var { getDay: getDay2 } = require_storage();
-    function applyWaterChange2(data, selectedDate, delta) {
+    function applyWaterChange(data, selectedDate, delta) {
       const key = selectedDate || dateKey2();
       const day = getDay2(data, key);
       const goal = Math.max(1, Number(data.settings.waterGoal) || 8);
@@ -3068,7 +2849,7 @@ var require_daySystem = __commonJS({
       return { data, key, day };
     }
     module2.exports = {
-      applyWaterChange: applyWaterChange2,
+      applyWaterChange,
       applyMoodChange: applyMoodChange2
     };
   }
@@ -3170,85 +2951,6 @@ var require_playerSystem = __commonJS({
   }
 });
 
-// src/systems/waterSystem.js
-var require_waterSystem = __commonJS({
-  "src/systems/waterSystem.js"(exports2, module2) {
-    function dateKey2(date = /* @__PURE__ */ new Date()) {
-      const dd = String(date.getDate()).padStart(2, "0");
-      const mm = String(date.getMonth() + 1).padStart(2, "0");
-      return `${dd}.${mm}.${date.getFullYear()}`;
-    }
-    function waterStats2(data, key = dateKey2()) {
-      const day = data.days[key] || {};
-      const goal = Math.max(1, Number(data.settings && data.settings.waterGoal) || 8);
-      const glassMl = Math.max(50, Number(data.settings && data.settings.waterGlassMl) || 250);
-      const value = Math.max(0, Number(day.water || 0));
-      return {
-        value,
-        goal,
-        glassMl,
-        currentMl: value * glassMl,
-        targetMl: goal * glassMl,
-        percent: Math.min(100, Math.round(value / goal * 100))
-      };
-    }
-    module2.exports = { waterStats: waterStats2 };
-  }
-});
-
-// src/systems/walletSystem.js
-var require_walletSystem = __commonJS({
-  "src/systems/walletSystem.js"(exports2, module2) {
-    var { timeKey, uid } = require_utils();
-    function walletStats2(wallet, key = null) {
-      let income = 0;
-      let expense = 0;
-      const items = key ? wallet.filter((item) => item.date === key) : wallet;
-      for (const item of items) {
-        if (item.type === "income") income += Number(item.amount || 0);
-        if (item.type === "expense") expense += Number(item.amount || 0);
-      }
-      return {
-        items,
-        income,
-        expense,
-        balance: income - expense
-      };
-    }
-    function applyWalletAdd2(data, walletInput) {
-      const item = {
-        id: uid("money"),
-        type: walletInput.type,
-        amount: walletInput.amount,
-        note: walletInput.note || "",
-        date: walletInput.date,
-        time: timeKey()
-      };
-      data.wallet.push(item);
-      return { data, item };
-    }
-    function applyWalletDelete2(data, walletId) {
-      data.wallet = data.wallet.filter((item) => item.id !== walletId);
-      return { data, walletId };
-    }
-    function applyWalletUpdate(data, walletId, patch) {
-      const item = data.wallet.find((entry) => entry.id === walletId);
-      if (!item) return { data, item };
-      const allowed = ["type", "amount", "note", "date", "time"];
-      for (const key of allowed) {
-        if (Object.prototype.hasOwnProperty.call(patch, key)) item[key] = patch[key];
-      }
-      return { data, item };
-    }
-    module2.exports = {
-      walletStats: walletStats2,
-      applyWalletAdd: applyWalletAdd2,
-      applyWalletDelete: applyWalletDelete2,
-      applyWalletUpdate
-    };
-  }
-});
-
 // src/config/textConfig.js
 var require_textConfig = __commonJS({
   "src/config/textConfig.js"(exports2, module2) {
@@ -3273,31 +2975,25 @@ var {
 } = require_constants();
 var {
   dateKey,
+  displayDate,
+  displayDateFromKey,
   timeParts,
   dayPhase,
-  parseMoney,
-  formatMoney,
   monthLabel,
   dateFromKey,
-  walletMonthLabel,
   calendarDays
 } = require_utils();
 var { mergeData, getDay } = require_storage();
 var { createProgressBar } = require_progressBar();
 var { createStatCard } = require_statCard();
 var { renderRadarChart } = require_radarChart();
-var { renderWaterWidget } = require_waterWidget();
-var {
-  renderWalletRow: renderWalletRowComponent,
-  renderWalletMonth: renderWalletMonthComponent
-} = require_walletRows();
 var { renderHomeScreen, renderHomeModuleScreen } = require_homeScreen();
 var { renderHomeTodayScreen } = require_homeTodayScreen();
 var { renderHomeHeroScreen } = require_homeHeroScreen();
 var { renderHomeQuestsScreen } = require_homeQuestsScreen();
 var { renderHomeRewardsScreen } = require_rewardsScreen();
 var { renderHomeInventoryScreen } = require_inventoryScreen();
-var { renderHomeWalletScreen } = require_homeWalletScreen();
+var { renderHomeLogScreen } = require_homeLogScreen();
 var { renderSettingsScreen } = require_settingsScreen();
 var { renderSettingsProfileScreen } = require_settingsProfileScreen();
 var { renderSettingsInterfaceScreen } = require_settingsInterfaceScreen();
@@ -3318,7 +3014,7 @@ var {
   skillStats
 } = require_habitSystem();
 var { coreAttributes, achievements } = require_achievementSystem();
-var { applyWaterChange, applyMoodChange } = require_daySystem();
+var { applyMoodChange } = require_daySystem();
 var { applyInventoryToggleUsed } = require_inventorySystem();
 var {
   applyRewardAdd,
@@ -3326,24 +3022,15 @@ var {
   applyRewardPurchase
 } = require_rewardSystem();
 var { applyPlayerUpdate, applySettingsUpdate } = require_playerSystem();
-var { waterStats } = require_waterSystem();
 var {
-  applyWalletAdd,
-  applyWalletDelete,
-  walletStats
-} = require_walletSystem();
+  applyQuestAdd,
+  applyQuestComplete,
+  applyQuestAbandon,
+  applyQuestUpdate,
+  applyQuestDelete
+} = require_questSystem();
 var { heroTitle, totals } = require_xpSystem();
-var {
-  applyCustomQuestStatsCardAdd,
-  applyCustomQuestStatsCardDelete,
-  applyCustomQuestStatsCardUpdate,
-  applyQuestStatsCardUpdate,
-  getQuestStatsCards,
-  normalizeQuestStatsSettings
-} = require_questStatsSystem();
 var { TEXT } = require_textConfig();
-var { QUEST_STATS_CARDS } = require_questStatsConfig();
-var { FEATURE_FLAGS } = require_featureFlags();
 var {
   normalizeHomeLayout,
   normalizeInterfaceLayout
@@ -3357,13 +3044,6 @@ var {
   getHeroClassTitle,
   resolveHeroClassId
 } = require_heroClassesConfig();
-function bindMoneyInput(input) {
-  input.inputMode = "numeric";
-  input.oninput = () => {
-    const value = parseMoney(input.value);
-    input.value = Number.isFinite(value) && value > 0 ? formatMoney(value) : "";
-  };
-}
 function getScrollContainer(view) {
   if (!view || !view.containerEl) return null;
   return view.containerEl.querySelector(".vrpg-app");
@@ -3398,9 +3078,9 @@ var VibeRpgPlugin = class extends Plugin {
     await this.save();
     this.registerView(APP_VIEW, (leaf) => new VibeRpgAppView(leaf, this));
     this.registerView(SIDEBAR_VIEW, (leaf) => new VibeRpgSidebarView(leaf, this));
-    this.addRibbonIcon("sparkles", "Open Life RPG", () => this.openApp());
-    this.addCommand({ id: "open-vibe-rpg", name: "Open Life RPG", callback: () => this.openApp() });
-    this.addCommand({ id: "open-vibe-rpg-sidebar", name: "Open Life RPG Widget", callback: () => this.openSidebar() });
+    this.addRibbonIcon("sparkles", "Open Grindstone", () => this.openApp());
+    this.addCommand({ id: "open-vibe-rpg", name: "Open Grindstone", callback: () => this.openApp() });
+    this.addCommand({ id: "open-vibe-rpg-sidebar", name: "Open Grindstone Widget", callback: () => this.openSidebar() });
     this.app.workspace.onLayoutReady(() => this.openSidebar());
   }
   async save() {
@@ -3430,10 +3110,6 @@ var VibeRpgPlugin = class extends Plugin {
     applyHabitToggle(this.data, key, id);
     await this.save();
   }
-  async changeWater(delta, key = dateKey()) {
-    applyWaterChange(this.data, key, delta);
-    await this.save();
-  }
   async setMood(value, key = dateKey()) {
     if (!MOODS[value]) return;
     applyMoodChange(this.data, key, value);
@@ -3442,18 +3118,24 @@ var VibeRpgPlugin = class extends Plugin {
   async buyReward(rewardId) {
     const result = applyRewardPurchase(this.data, rewardId);
     if (!result.ok && result.reason === "not-enough-xp") {
-      new Notice("Not enough XP");
+      new Notice("Not enough Gold");
       return;
     }
     if (!result.ok) return;
+    if (!Array.isArray(this.data.log)) this.data.log = [];
+    this.data.log.push({
+      type: "reward-purchased",
+      title: result.reward.title,
+      cost: result.reward.cost,
+      timestamp: (/* @__PURE__ */ new Date()).toISOString()
+    });
     await this.save();
     new Notice(`Purchased: ${result.reward.title}`);
   }
-  async addHabit(title, area, xp = 10, icon = "\u2728") {
+  async addHabit(title, area, icon = "\u2728", days = null) {
     const clean = String(title || "").trim();
-    const value = Number(String(xp || 10).replace(/\s/g, "").replace(",", "."));
     if (!clean) return;
-    applyHabitAdd(this.data, { title: clean, area, xp: value, icon });
+    applyHabitAdd(this.data, { title: clean, area, icon, days });
     await this.save();
   }
   async deleteHabit(id) {
@@ -3480,15 +3162,14 @@ var VibeRpgPlugin = class extends Plugin {
     if (Object.prototype.hasOwnProperty.call(patch, "icon")) {
       next.icon = String(patch.icon || "").trim() || "\u2728";
     }
-    if (Object.prototype.hasOwnProperty.call(patch, "xp")) {
-      const xp = Number(String(patch.xp || "").replace(/\s/g, "").replace(",", "."));
-      if (Number.isFinite(xp) && xp > 0) next.xp = xp;
-    }
     if (Object.prototype.hasOwnProperty.call(patch, "area") && AREA_LABELS[patch.area]) {
       next.area = patch.area;
     }
     if (Object.prototype.hasOwnProperty.call(patch, "enabled")) {
       next.enabled = !!patch.enabled;
+    }
+    if (Object.prototype.hasOwnProperty.call(patch, "days")) {
+      next.days = patch.days;
     }
     applyHabitUpdate(this.data, id, next);
     await this.save();
@@ -3515,31 +3196,27 @@ var VibeRpgPlugin = class extends Plugin {
     if (!result.ok) return;
     await this.save();
   }
-  async addWallet(type, amount, note, key = dateKey()) {
-    const value = parseMoney(amount);
-    if (!Number.isFinite(value) || value <= 0) {
-      new Notice("Amount must be a number");
-      return;
-    }
-    applyWalletAdd(this.data, { type, amount: value, note, date: key });
+  async addQuest(questInput) {
+    applyQuestAdd(this.data, questInput);
+    await this.save();
+    new Notice(`Quest added: ${questInput.title}`);
+  }
+  async completeQuest(questId) {
+    applyQuestComplete(this.data, questId);
+    await this.save();
+    new Notice("Quest completed! \u{1F389}");
+  }
+  async abandonQuest(questId) {
+    applyQuestAbandon(this.data, questId);
+    await this.save();
+    new Notice("Quest abandoned");
+  }
+  async updateQuest(questId, patch) {
+    applyQuestUpdate(this.data, questId, patch);
     await this.save();
   }
-  async setWaterGoal(value) {
-    const goal = Number(String(value || "").replace(/\s/g, "").replace(",", "."));
-    if (!Number.isFinite(goal) || goal < 1) {
-      new Notice("Goal must be at least 1 glass");
-      return;
-    }
-    applySettingsUpdate(this.data, { waterGoal: Math.round(goal) });
-    await this.save();
-  }
-  async setWaterGlassMl(value) {
-    const ml = Number(String(value || "").replace(/\s/g, "").replace(",", "."));
-    if (!Number.isFinite(ml) || ml < 50) {
-      new Notice("Glass size must be at least 50 ml");
-      return;
-    }
-    applySettingsUpdate(this.data, { waterGlassMl: Math.round(ml) });
+  async deleteQuest(questId) {
+    applyQuestDelete(this.data, questId);
     await this.save();
   }
   async updateHomeLayout(layout) {
@@ -3551,43 +3228,6 @@ var VibeRpgPlugin = class extends Plugin {
   async updateInterfaceLayout(layout) {
     this.data.settings = this.data.settings || {};
     this.data.settings.interfaceLayout = normalizeInterfaceLayout(layout);
-    await this.save();
-  }
-  async setQuestStatsCardEnabled(id, enabled) {
-    const result = applyQuestStatsCardUpdate(this.data, id, { enabled });
-    if (!result.ok) return;
-    await this.save();
-  }
-  async updateQuestStatsCard(id, patch) {
-    const result = applyQuestStatsCardUpdate(this.data, id, patch);
-    if (!result.ok) {
-      new Notice("Card not found");
-      return;
-    }
-    await this.save();
-  }
-  async addCustomQuestStatsCard(input) {
-    const result = applyCustomQuestStatsCardAdd(this.data, input);
-    if (!result.ok) {
-      new Notice("Failed to add card");
-      return;
-    }
-    await this.save();
-  }
-  async updateCustomQuestStatsCard(id, patch) {
-    const result = applyCustomQuestStatsCardUpdate(this.data, id, patch);
-    if (!result.ok) {
-      new Notice("Card not found");
-      return;
-    }
-    await this.save();
-  }
-  async deleteCustomQuestStatsCard(id) {
-    const result = applyCustomQuestStatsCardDelete(this.data, id);
-    if (!result.ok) {
-      new Notice("Card not found");
-      return;
-    }
     await this.save();
   }
   async updatePlayer(profile) {
@@ -3603,10 +3243,6 @@ var VibeRpgPlugin = class extends Plugin {
     });
     await this.save();
     new Notice("Hero profile updated");
-  }
-  async deleteWallet(id) {
-    applyWalletDelete(this.data, id);
-    await this.save();
   }
   onunload() {
     this.app.workspace.detachLeavesOfType(APP_VIEW);
@@ -3627,7 +3263,7 @@ var VibeRpgAppView = class extends ItemView {
     return APP_VIEW;
   }
   getDisplayText() {
-    return "Life RPG";
+    return "Grindstone";
   }
   getIcon() {
     return "sparkles";
@@ -3650,8 +3286,9 @@ var VibeRpgAppView = class extends ItemView {
     if (["home", "settings"].includes(state.tab)) this.tab = state.tab;
     if (state.selectedDateKey) this.selectedDateKey = state.selectedDateKey;
     if (state.homePanel === "dashboard") this.homePanel = "hero";
-    if (["today", "hero", "quests", "rewards", "inventory", "wallet"].includes(state.homePanel)) this.homePanel = state.homePanel;
-    if (["profile", "interface", "resources", "habits", "quests", "rewards"].includes(state.settingsPanel)) this.settingsPanel = state.settingsPanel;
+    if (state.homePanel === "wallet") this.homePanel = "log";
+    if (["today", "hero", "quests", "rewards", "inventory", "log"].includes(state.homePanel)) this.homePanel = state.homePanel;
+    if (["profile", "interface", "habits", "quests", "rewards"].includes(state.settingsPanel)) this.settingsPanel = state.settingsPanel;
   }
   navigate(state) {
     const previousHomePanel = this.homePanel;
@@ -3767,8 +3404,9 @@ var VibeRpgAppView = class extends ItemView {
       selectedDateKey: this.selectedDateKey,
       totals,
       dateKey,
+      displayDate,
+      displayDateFromKey,
       readDayStats,
-      waterStats,
       streak,
       getHeroClassTitle,
       createProgressBar,
@@ -3778,25 +3416,21 @@ var VibeRpgAppView = class extends ItemView {
       monthLabel,
       dateFromKey,
       calendarDays,
-      renderWaterWidget,
       renderAvatar: (avatarParent, data, cls) => this.renderAvatar(avatarParent, data, cls),
       navigate: (state) => this.navigate(state),
       toggleHomeEditMode: () => this.toggleHomeEditMode(),
       updateHomeLayout: (layout) => this.plugin.updateHomeLayout(layout),
-      changeWater: (delta, key) => this.plugin.changeWater(delta, key),
       getDay,
       activeHabits,
       skillStats,
       heroTitle,
-      walletStats,
-      formatMoney,
       toggleHabit: (habitId, key) => this.plugin.toggleHabit(habitId, key),
       renderHomeToday: (body) => this.renderHomeToday(body),
       renderHomeHero: (body) => this.renderHomeHero(body),
       renderHomeQuests: (body) => this.renderHomeQuests(body),
       renderHomeRewards: (body) => this.renderHomeRewards(body),
       renderHomeInventory: (body) => this.renderHomeInventory(body),
-      renderHomeWallet: (body) => this.renderHomeWallet(body)
+      renderHomeLog: (body) => this.renderHomeLog(body)
     };
   }
   renderHomeToday(parent) {
@@ -3804,6 +3438,8 @@ var VibeRpgAppView = class extends ItemView {
       data: this.plugin.data,
       selectedDateKey: this.selectedDateKey,
       dateKey,
+      displayDateFromKey,
+      dateFromKey,
       getDay,
       readDayStats,
       activeHabits,
@@ -3817,29 +3453,21 @@ var VibeRpgAppView = class extends ItemView {
     return renderHomeHeroScreen(parent, {
       data,
       totals,
-      skillStats,
-      waterStats,
+      coreAttributes,
       streak,
       getHeroClassTitle,
       heroTitle,
       createProgressBar,
       renderRadar: (radarParent, metrics) => this.renderRadar(radarParent, metrics),
-      featureFlags: FEATURE_FLAGS,
       achievements
     });
   }
   renderHomeQuests(parent) {
-    const data = this.plugin.data;
-    const selectedKey = this.selectedDateKey || dateKey();
     return renderHomeQuestsScreen(parent, {
-      data,
-      selectedDateKey: selectedKey,
-      dayStats,
-      sortedDayKeys,
-      streak,
-      getQuestStatsCards,
-      questStatsCards: QUEST_STATS_CARDS,
-      createStatCard
+      data: this.plugin.data,
+      completeQuest: (questId) => this.plugin.completeQuest(questId),
+      abandonQuest: (questId) => this.plugin.abandonQuest(questId),
+      displayDate
     });
   }
   renderHomeRewards(parent) {
@@ -3857,33 +3485,10 @@ var VibeRpgAppView = class extends ItemView {
       toggleInventoryItemUsed: (itemId) => this.plugin.toggleInventoryItemUsed(itemId)
     });
   }
-  renderHomeWallet(parent) {
-    const wallet = this.plugin.data.wallet || [];
-    return renderHomeWalletScreen(parent, {
-      wallet,
-      selectedDateKey: this.selectedDateKey,
-      dateKey,
-      walletStats,
-      formatMoney,
-      bindMoneyInput,
-      walletMonthLabel,
-      addWallet: (type, amount, note, key) => this.plugin.addWallet(type, amount, note, key),
-      renderWalletRow: (walletParent, item) => this.renderWalletRow(walletParent, item),
-      renderWalletMonth: (walletParent, walletItems, selectedKey) => this.renderWalletMonth(walletParent, walletItems, selectedKey)
-    });
-  }
-  renderWalletRow(parent, item) {
-    return renderWalletRowComponent(parent, item, {
-      formatMoney,
-      deleteWallet: (itemId) => this.plugin.deleteWallet(itemId)
-    });
-  }
-  renderWalletMonth(parent, wallet, selectedKey = dateKey()) {
-    return renderWalletMonthComponent(parent, wallet, selectedKey, {
-      dateKey,
-      dateFromKey,
-      formatMoney,
-      deleteWallet: (itemId) => this.plugin.deleteWallet(itemId)
+  renderHomeLog(parent) {
+    return renderHomeLogScreen(parent, {
+      data: this.plugin.data,
+      displayDateFromKey
     });
   }
   renderRadar(parent, metrics) {
@@ -3895,7 +3500,6 @@ var VibeRpgAppView = class extends ItemView {
       navigate: (state) => this.navigate(state),
       renderSettingsProfile: (body) => this.renderSettingsProfile(body),
       renderSettingsInterface: (body) => this.renderSettingsInterface(body),
-      renderSettingsResources: (body) => this.renderSettingsResources(body),
       renderSettingsHabits: (body) => this.renderSettingsHabits(body),
       renderSettingsQuests: (body) => this.renderSettingsQuests(body),
       renderSettingsRewards: (body) => this.renderSettingsRewards(body)
@@ -3916,19 +3520,12 @@ var VibeRpgAppView = class extends ItemView {
       updateInterfaceLayout: (layout) => this.plugin.updateInterfaceLayout(layout)
     });
   }
-  renderSettingsResources(parent) {
-    return renderSettingsResourcesScreen(parent, {
-      settings: this.plugin.data.settings,
-      setWaterGoal: (value) => this.plugin.setWaterGoal(value),
-      setWaterGlassMl: (value) => this.plugin.setWaterGlassMl(value)
-    });
-  }
   renderSettingsHabits(parent) {
     return renderSettingsHabitsScreen(parent, {
       data: this.plugin.data,
       habitIcons: HABIT_ICONS,
       areaLabels: AREA_LABELS,
-      addHabit: (title, area, xp, icon) => this.plugin.addHabit(title, area, xp, icon),
+      addHabit: (title, area, icon, days) => this.plugin.addHabit(title, area, icon, days),
       setHabitEnabled: (habitId, enabled) => this.plugin.setHabitEnabled(habitId, enabled),
       updateHabit: (habitId, patch) => this.plugin.updateHabit(habitId, patch),
       deleteHabit: (habitId) => this.plugin.deleteHabit(habitId),
@@ -3938,11 +3535,9 @@ var VibeRpgAppView = class extends ItemView {
   renderSettingsQuests(parent) {
     return renderSettingsQuestsScreen(parent, {
       data: this.plugin.data,
-      addCustomQuestStatsCard: (card) => this.plugin.addCustomQuestStatsCard(card),
-      setQuestStatsCardEnabled: (cardId, enabled) => this.plugin.setQuestStatsCardEnabled(cardId, enabled),
-      updateQuestStatsCard: (cardId, patch) => this.plugin.updateQuestStatsCard(cardId, patch),
-      updateCustomQuestStatsCard: (cardId, patch) => this.plugin.updateCustomQuestStatsCard(cardId, patch),
-      deleteCustomQuestStatsCard: (cardId) => this.plugin.deleteCustomQuestStatsCard(cardId),
+      addQuest: (questInput) => this.plugin.addQuest(questInput),
+      updateQuest: (questId, patch) => this.plugin.updateQuest(questId, patch),
+      deleteQuest: (questId) => this.plugin.deleteQuest(questId),
       confirm
     });
   }
@@ -3965,7 +3560,7 @@ var VibeRpgSidebarView = class extends ItemView {
     return SIDEBAR_VIEW;
   }
   getDisplayText() {
-    return "Life RPG";
+    return "Grindstone";
   }
   getIcon() {
     return "sparkles";
@@ -3986,8 +3581,8 @@ var VibeRpgSidebarView = class extends ItemView {
     box.createDiv({ cls: "vrpg-section", text: "Today" });
     box.createDiv({ cls: "vrpg-side-number", text: `${done}/${active.length}` });
     createProgressBar(box, active.length ? Math.round(done / active.length * 100) : 0);
-    box.createDiv({ cls: "vrpg-side-note", text: `Balance: ${t.balance} XP` });
-    const open = box.createEl("button", { cls: "vrpg-primary", text: "Open App" });
+    box.createDiv({ cls: "vrpg-side-note", text: `${t.gold} Gold \xB7 Level ${t.level}` });
+    const open = box.createEl("button", { cls: "vrpg-primary", text: "Open Grindstone" });
     open.onclick = () => this.plugin.openApp();
   }
 };

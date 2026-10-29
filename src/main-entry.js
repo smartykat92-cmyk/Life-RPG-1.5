@@ -9,31 +9,26 @@ const {
 } = require("./constants");
 const {
   dateKey,
+  displayDate,
+  displayDateFromKey,
   timeParts,
   dayPhase,
-  parseMoney,
-  formatMoney,
   monthLabel,
   dateFromKey,
-  walletMonthLabel,
   calendarDays
 } = require("./utils");
 const { mergeData, getDay } = require("./storage");
 const { createProgressBar } = require("./ui/components/progressBar");
 const { createStatCard } = require("./ui/components/statCard");
 const { renderRadarChart } = require("./ui/components/radarChart");
-const { renderWaterWidget } = require("./ui/components/waterWidget");
-const {
-  renderWalletRow: renderWalletRowComponent,
-  renderWalletMonth: renderWalletMonthComponent
-} = require("./ui/components/walletRows");
+// waterWidget and walletRows removed — water tracking and wallet are gone
 const { renderHomeScreen, renderHomeModuleScreen } = require("./ui/screens/homeScreen");
 const { renderHomeTodayScreen } = require("./ui/screens/homeTodayScreen");
 const { renderHomeHeroScreen } = require("./ui/screens/homeHeroScreen");
 const { renderHomeQuestsScreen } = require("./ui/screens/homeQuestsScreen");
 const { renderHomeRewardsScreen } = require("./ui/screens/rewardsScreen");
 const { renderHomeInventoryScreen } = require("./ui/screens/inventoryScreen");
-const { renderHomeWalletScreen } = require("./ui/screens/homeWalletScreen");
+const { renderHomeLogScreen } = require("./ui/screens/homeLogScreen");
 const { renderSettingsScreen } = require("./ui/screens/settingsScreen");
 const { renderSettingsProfileScreen } = require("./ui/screens/settingsProfileScreen");
 const { renderSettingsInterfaceScreen } = require("./ui/screens/settingsInterfaceScreen");
@@ -54,7 +49,7 @@ const {
   skillStats
 } = require("./systems/habitSystem");
 const { coreAttributes, achievements } = require("./systems/achievementSystem");
-const { applyWaterChange, applyMoodChange } = require("./systems/daySystem");
+const { applyMoodChange } = require("./systems/daySystem");
 const { applyInventoryToggleUsed } = require("./systems/inventorySystem");
 const {
   applyRewardAdd,
@@ -62,24 +57,17 @@ const {
   applyRewardPurchase
 } = require("./systems/rewardSystem");
 const { applyPlayerUpdate, applySettingsUpdate } = require("./systems/playerSystem");
-const { waterStats } = require("./systems/waterSystem");
+// waterSystem and walletSystem removed
 const {
-  applyWalletAdd,
-  applyWalletDelete,
-  walletStats
-} = require("./systems/walletSystem");
+  applyQuestAdd,
+  applyQuestComplete,
+  applyQuestAbandon,
+  applyQuestUpdate,
+  applyQuestDelete
+} = require("./systems/questSystem");
 const { heroTitle, totals } = require("./systems/xpSystem");
-const {
-  applyCustomQuestStatsCardAdd,
-  applyCustomQuestStatsCardDelete,
-  applyCustomQuestStatsCardUpdate,
-  applyQuestStatsCardUpdate,
-  getQuestStatsCards,
-  normalizeQuestStatsSettings
-} = require("./systems/questStatsSystem");
+// questStatsSystem removed — replaced by real quest system
 const { TEXT } = require("./config/textConfig");
-const { QUEST_STATS_CARDS } = require("./config/questStatsConfig");
-const { FEATURE_FLAGS } = require("./config/featureFlags");
 const {
   normalizeHomeLayout,
   normalizeInterfaceLayout
@@ -93,14 +81,6 @@ const {
   getHeroClassTitle,
   resolveHeroClassId
 } = require("./config/heroClassesConfig");
-
-function bindMoneyInput(input) {
-  input.inputMode = "numeric";
-  input.oninput = () => {
-    const value = parseMoney(input.value);
-    input.value = Number.isFinite(value) && value > 0 ? formatMoney(value) : "";
-  };
-}
 
 function getScrollContainer(view) {
   if (!view || !view.containerEl) return null;
@@ -142,9 +122,9 @@ class VibeRpgPlugin extends Plugin {
     this.registerView(APP_VIEW, leaf => new VibeRpgAppView(leaf, this));
     this.registerView(SIDEBAR_VIEW, leaf => new VibeRpgSidebarView(leaf, this));
 
-    this.addRibbonIcon("sparkles", "Open Life RPG", () => this.openApp());
-    this.addCommand({ id: "open-vibe-rpg", name: "Open Life RPG", callback: () => this.openApp() });
-    this.addCommand({ id: "open-vibe-rpg-sidebar", name: "Open Life RPG Widget", callback: () => this.openSidebar() });
+    this.addRibbonIcon("sparkles", "Open Grindstone", () => this.openApp());
+    this.addCommand({ id: "open-vibe-rpg", name: "Open Grindstone", callback: () => this.openApp() });
+    this.addCommand({ id: "open-vibe-rpg-sidebar", name: "Open Grindstone Widget", callback: () => this.openSidebar() });
 
     this.app.workspace.onLayoutReady(() => this.openSidebar());
   }
@@ -181,11 +161,6 @@ class VibeRpgPlugin extends Plugin {
     await this.save();
   }
 
-  async changeWater(delta, key = dateKey()) {
-    applyWaterChange(this.data, key, delta);
-    await this.save();
-  }
-
   async setMood(value, key = dateKey()) {
     if (!MOODS[value]) return;
     applyMoodChange(this.data, key, value);
@@ -195,19 +170,26 @@ class VibeRpgPlugin extends Plugin {
   async buyReward(rewardId) {
     const result = applyRewardPurchase(this.data, rewardId);
     if (!result.ok && result.reason === "not-enough-xp") {
-      new Notice("Not enough XP");
+      new Notice("Not enough Gold");
       return;
     }
     if (!result.ok) return;
+    // Log the purchase
+    if (!Array.isArray(this.data.log)) this.data.log = [];
+    this.data.log.push({
+      type: "reward-purchased",
+      title: result.reward.title,
+      cost: result.reward.cost,
+      timestamp: new Date().toISOString()
+    });
     await this.save();
     new Notice(`Purchased: ${result.reward.title}`);
   }
 
-  async addHabit(title, area, xp = 10, icon = "✨") {
+  async addHabit(title, area, icon = "✨", days = null) {
     const clean = String(title || "").trim();
-    const value = Number(String(xp || 10).replace(/\s/g, "").replace(",", "."));
     if (!clean) return;
-    applyHabitAdd(this.data, { title: clean, area, xp: value, icon });
+    applyHabitAdd(this.data, { title: clean, area, icon, days });
     await this.save();
   }
 
@@ -237,15 +219,14 @@ class VibeRpgPlugin extends Plugin {
     if (Object.prototype.hasOwnProperty.call(patch, "icon")) {
       next.icon = String(patch.icon || "").trim() || "✨";
     }
-    if (Object.prototype.hasOwnProperty.call(patch, "xp")) {
-      const xp = Number(String(patch.xp || "").replace(/\s/g, "").replace(",", "."));
-      if (Number.isFinite(xp) && xp > 0) next.xp = xp;
-    }
     if (Object.prototype.hasOwnProperty.call(patch, "area") && AREA_LABELS[patch.area]) {
       next.area = patch.area;
     }
     if (Object.prototype.hasOwnProperty.call(patch, "enabled")) {
       next.enabled = !!patch.enabled;
+    }
+    if (Object.prototype.hasOwnProperty.call(patch, "days")) {
+      next.days = patch.days;
     }
     applyHabitUpdate(this.data, id, next);
     await this.save();
@@ -276,33 +257,31 @@ class VibeRpgPlugin extends Plugin {
     await this.save();
   }
 
-  async addWallet(type, amount, note, key = dateKey()) {
-    const value = parseMoney(amount);
-    if (!Number.isFinite(value) || value <= 0) {
-      new Notice("Amount must be a number");
-      return;
-    }
-    applyWalletAdd(this.data, { type, amount: value, note, date: key });
+  async addQuest(questInput) {
+    applyQuestAdd(this.data, questInput);
+    await this.save();
+    new Notice(`Quest added: ${questInput.title}`);
+  }
+
+  async completeQuest(questId) {
+    applyQuestComplete(this.data, questId);
+    await this.save();
+    new Notice("Quest completed! 🎉");
+  }
+
+  async abandonQuest(questId) {
+    applyQuestAbandon(this.data, questId);
+    await this.save();
+    new Notice("Quest abandoned");
+  }
+
+  async updateQuest(questId, patch) {
+    applyQuestUpdate(this.data, questId, patch);
     await this.save();
   }
 
-  async setWaterGoal(value) {
-    const goal = Number(String(value || "").replace(/\s/g, "").replace(",", "."));
-    if (!Number.isFinite(goal) || goal < 1) {
-      new Notice("Goal must be at least 1 glass");
-      return;
-    }
-    applySettingsUpdate(this.data, { waterGoal: Math.round(goal) });
-    await this.save();
-  }
-
-  async setWaterGlassMl(value) {
-    const ml = Number(String(value || "").replace(/\s/g, "").replace(",", "."));
-    if (!Number.isFinite(ml) || ml < 50) {
-      new Notice("Glass size must be at least 50 ml");
-      return;
-    }
-    applySettingsUpdate(this.data, { waterGlassMl: Math.round(ml) });
+  async deleteQuest(questId) {
+    applyQuestDelete(this.data, questId);
     await this.save();
   }
 
@@ -319,48 +298,6 @@ class VibeRpgPlugin extends Plugin {
     await this.save();
   }
 
-  async setQuestStatsCardEnabled(id, enabled) {
-    const result = applyQuestStatsCardUpdate(this.data, id, { enabled });
-    if (!result.ok) return;
-    await this.save();
-  }
-
-  async updateQuestStatsCard(id, patch) {
-    const result = applyQuestStatsCardUpdate(this.data, id, patch);
-    if (!result.ok) {
-      new Notice("Card not found");
-      return;
-    }
-    await this.save();
-  }
-
-  async addCustomQuestStatsCard(input) {
-    const result = applyCustomQuestStatsCardAdd(this.data, input);
-    if (!result.ok) {
-      new Notice("Failed to add card");
-      return;
-    }
-    await this.save();
-  }
-
-  async updateCustomQuestStatsCard(id, patch) {
-    const result = applyCustomQuestStatsCardUpdate(this.data, id, patch);
-    if (!result.ok) {
-      new Notice("Card not found");
-      return;
-    }
-    await this.save();
-  }
-
-  async deleteCustomQuestStatsCard(id) {
-    const result = applyCustomQuestStatsCardDelete(this.data, id);
-    if (!result.ok) {
-      new Notice("Card not found");
-      return;
-    }
-    await this.save();
-  }
-
   async updatePlayer(profile) {
     const name = String(profile.name || "").trim();
     const classId = resolveHeroClassId({ classId: profile.classId, className: profile.className });
@@ -374,11 +311,6 @@ class VibeRpgPlugin extends Plugin {
     });
     await this.save();
     new Notice("Hero profile updated");
-  }
-
-  async deleteWallet(id) {
-    applyWalletDelete(this.data, id);
-    await this.save();
   }
 
   onunload() {
@@ -399,7 +331,7 @@ class VibeRpgAppView extends ItemView {
   }
 
   getViewType() { return APP_VIEW; }
-  getDisplayText() { return "Life RPG"; }
+  getDisplayText() { return "Grindstone"; }
   getIcon() { return "sparkles"; }
 
   getState() {
@@ -422,8 +354,9 @@ class VibeRpgAppView extends ItemView {
     if (["home", "settings"].includes(state.tab)) this.tab = state.tab;
     if (state.selectedDateKey) this.selectedDateKey = state.selectedDateKey;
     if (state.homePanel === "dashboard") this.homePanel = "hero";
-    if (["today", "hero", "quests", "rewards", "inventory", "wallet"].includes(state.homePanel)) this.homePanel = state.homePanel;
-    if (["profile", "interface", "resources", "habits", "quests", "rewards"].includes(state.settingsPanel)) this.settingsPanel = state.settingsPanel;
+    if (state.homePanel === "wallet") this.homePanel = "log"; // migrate wallet → log
+    if (["today", "hero", "quests", "rewards", "inventory", "log"].includes(state.homePanel)) this.homePanel = state.homePanel;
+    if (["profile", "interface", "habits", "quests", "rewards"].includes(state.settingsPanel)) this.settingsPanel = state.settingsPanel;
   }
 
   navigate(state) {
@@ -554,8 +487,9 @@ class VibeRpgAppView extends ItemView {
       selectedDateKey: this.selectedDateKey,
       totals,
       dateKey,
+      displayDate,
+      displayDateFromKey,
       readDayStats,
-      waterStats,
       streak,
       getHeroClassTitle,
       createProgressBar,
@@ -565,25 +499,21 @@ class VibeRpgAppView extends ItemView {
       monthLabel,
       dateFromKey,
       calendarDays,
-      renderWaterWidget,
       renderAvatar: (avatarParent, data, cls) => this.renderAvatar(avatarParent, data, cls),
       navigate: state => this.navigate(state),
       toggleHomeEditMode: () => this.toggleHomeEditMode(),
       updateHomeLayout: layout => this.plugin.updateHomeLayout(layout),
-      changeWater: (delta, key) => this.plugin.changeWater(delta, key),
       getDay,
       activeHabits,
       skillStats,
       heroTitle,
-      walletStats,
-      formatMoney,
       toggleHabit: (habitId, key) => this.plugin.toggleHabit(habitId, key),
       renderHomeToday: body => this.renderHomeToday(body),
       renderHomeHero: body => this.renderHomeHero(body),
       renderHomeQuests: body => this.renderHomeQuests(body),
       renderHomeRewards: body => this.renderHomeRewards(body),
       renderHomeInventory: body => this.renderHomeInventory(body),
-      renderHomeWallet: body => this.renderHomeWallet(body)
+      renderHomeLog: body => this.renderHomeLog(body)
     };
   }
 
@@ -592,6 +522,8 @@ class VibeRpgAppView extends ItemView {
       data: this.plugin.data,
       selectedDateKey: this.selectedDateKey,
       dateKey,
+      displayDateFromKey,
+      dateFromKey,
       getDay,
       readDayStats,
       activeHabits,
@@ -606,30 +538,22 @@ class VibeRpgAppView extends ItemView {
     return renderHomeHeroScreen(parent, {
       data,
       totals,
-      skillStats,
-      waterStats,
+      coreAttributes,
       streak,
       getHeroClassTitle,
       heroTitle,
       createProgressBar,
       renderRadar: (radarParent, metrics) => this.renderRadar(radarParent, metrics),
-      featureFlags: FEATURE_FLAGS,
       achievements
     });
   }
 
   renderHomeQuests(parent) {
-    const data = this.plugin.data;
-    const selectedKey = this.selectedDateKey || dateKey();
     return renderHomeQuestsScreen(parent, {
-      data,
-      selectedDateKey: selectedKey,
-      dayStats,
-      sortedDayKeys,
-      streak,
-      getQuestStatsCards,
-      questStatsCards: QUEST_STATS_CARDS,
-      createStatCard
+      data: this.plugin.data,
+      completeQuest: questId => this.plugin.completeQuest(questId),
+      abandonQuest: questId => this.plugin.abandonQuest(questId),
+      displayDate
     });
   }
 
@@ -650,35 +574,10 @@ class VibeRpgAppView extends ItemView {
     });
   }
 
-  renderHomeWallet(parent) {
-    const wallet = this.plugin.data.wallet || [];
-    return renderHomeWalletScreen(parent, {
-      wallet,
-      selectedDateKey: this.selectedDateKey,
-      dateKey,
-      walletStats,
-      formatMoney,
-      bindMoneyInput,
-      walletMonthLabel,
-      addWallet: (type, amount, note, key) => this.plugin.addWallet(type, amount, note, key),
-      renderWalletRow: (walletParent, item) => this.renderWalletRow(walletParent, item),
-      renderWalletMonth: (walletParent, walletItems, selectedKey) => this.renderWalletMonth(walletParent, walletItems, selectedKey)
-    });
-  }
-
-  renderWalletRow(parent, item) {
-    return renderWalletRowComponent(parent, item, {
-      formatMoney,
-      deleteWallet: itemId => this.plugin.deleteWallet(itemId)
-    });
-  }
-
-  renderWalletMonth(parent, wallet, selectedKey = dateKey()) {
-    return renderWalletMonthComponent(parent, wallet, selectedKey, {
-      dateKey,
-      dateFromKey,
-      formatMoney,
-      deleteWallet: itemId => this.plugin.deleteWallet(itemId)
+  renderHomeLog(parent) {
+    return renderHomeLogScreen(parent, {
+      data: this.plugin.data,
+      displayDateFromKey
     });
   }
 
@@ -692,7 +591,6 @@ class VibeRpgAppView extends ItemView {
       navigate: state => this.navigate(state),
       renderSettingsProfile: body => this.renderSettingsProfile(body),
       renderSettingsInterface: body => this.renderSettingsInterface(body),
-      renderSettingsResources: body => this.renderSettingsResources(body),
       renderSettingsHabits: body => this.renderSettingsHabits(body),
       renderSettingsQuests: body => this.renderSettingsQuests(body),
       renderSettingsRewards: body => this.renderSettingsRewards(body)
@@ -716,20 +614,12 @@ class VibeRpgAppView extends ItemView {
     });
   }
 
-  renderSettingsResources(parent) {
-    return renderSettingsResourcesScreen(parent, {
-      settings: this.plugin.data.settings,
-      setWaterGoal: value => this.plugin.setWaterGoal(value),
-      setWaterGlassMl: value => this.plugin.setWaterGlassMl(value)
-    });
-  }
-
   renderSettingsHabits(parent) {
     return renderSettingsHabitsScreen(parent, {
       data: this.plugin.data,
       habitIcons: HABIT_ICONS,
       areaLabels: AREA_LABELS,
-      addHabit: (title, area, xp, icon) => this.plugin.addHabit(title, area, xp, icon),
+      addHabit: (title, area, icon, days) => this.plugin.addHabit(title, area, icon, days),
       setHabitEnabled: (habitId, enabled) => this.plugin.setHabitEnabled(habitId, enabled),
       updateHabit: (habitId, patch) => this.plugin.updateHabit(habitId, patch),
       deleteHabit: habitId => this.plugin.deleteHabit(habitId),
@@ -740,11 +630,9 @@ class VibeRpgAppView extends ItemView {
   renderSettingsQuests(parent) {
     return renderSettingsQuestsScreen(parent, {
       data: this.plugin.data,
-      addCustomQuestStatsCard: card => this.plugin.addCustomQuestStatsCard(card),
-      setQuestStatsCardEnabled: (cardId, enabled) => this.plugin.setQuestStatsCardEnabled(cardId, enabled),
-      updateQuestStatsCard: (cardId, patch) => this.plugin.updateQuestStatsCard(cardId, patch),
-      updateCustomQuestStatsCard: (cardId, patch) => this.plugin.updateCustomQuestStatsCard(cardId, patch),
-      deleteCustomQuestStatsCard: cardId => this.plugin.deleteCustomQuestStatsCard(cardId),
+      addQuest: questInput => this.plugin.addQuest(questInput),
+      updateQuest: (questId, patch) => this.plugin.updateQuest(questId, patch),
+      deleteQuest: questId => this.plugin.deleteQuest(questId),
       confirm
     });
   }
@@ -767,7 +655,7 @@ class VibeRpgSidebarView extends ItemView {
   }
 
   getViewType() { return SIDEBAR_VIEW; }
-  getDisplayText() { return "Life RPG"; }
+  getDisplayText() { return "Grindstone"; }
   getIcon() { return "sparkles"; }
 
   async onOpen() {
@@ -788,8 +676,8 @@ class VibeRpgSidebarView extends ItemView {
     box.createDiv({ cls: "vrpg-section", text: "Today" });
     box.createDiv({ cls: "vrpg-side-number", text: `${done}/${active.length}` });
     createProgressBar(box, active.length ? Math.round(done / active.length * 100) : 0);
-    box.createDiv({ cls: "vrpg-side-note", text: `Balance: ${t.balance} XP` });
-    const open = box.createEl("button", { cls: "vrpg-primary", text: "Open App" });
+    box.createDiv({ cls: "vrpg-side-note", text: `${t.gold} Gold · Level ${t.level}` });
+    const open = box.createEl("button", { cls: "vrpg-primary", text: "Open Grindstone" });
     open.onclick = () => this.plugin.openApp();
   }
 }

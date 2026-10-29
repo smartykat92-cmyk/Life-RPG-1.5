@@ -1,36 +1,30 @@
-// Active Home hero panel renderer for Vibe RPG.
-// Receives data, helpers, and callbacks from main-entry; does not access plugin state directly.
+// Active Home hero panel renderer for Grindstone.
+// 5 categories (Body/Mind/Spirit/Craft/Hearth), no water, streak as own section.
 
 function renderHomeHeroScreen(parent, ctx = {}) {
   const data = ctx.data || {};
   const totals = ctx.totals;
-  const skillStats = ctx.skillStats;
-  const waterStats = ctx.waterStats;
+  const coreAttributes = ctx.coreAttributes;
   const streak = ctx.streak;
   const getHeroClassTitle = ctx.getHeroClassTitle;
   const heroTitle = ctx.heroTitle;
   const createProgressBar = ctx.createProgressBar;
   const renderRadar = ctx.renderRadar;
-  const featureFlags = ctx.featureFlags || {};
   const achievements = ctx.achievements;
+
   const t = totals(data);
-  const stats = skillStats(data);
-  const water = waterStats(data);
-  const metrics = [
-    ["Body", stats.body.total ? Math.round(stats.body.done / stats.body.total * 100) : 0],
-    ["Mind", stats.mind.total ? Math.round(stats.mind.done / stats.mind.total * 100) : 0],
-    ["Craft", stats.craft.total ? Math.round(stats.craft.done / stats.craft.total * 100) : 0],
-    ["Control", stats.control.total ? Math.round(stats.control.done / stats.control.total * 100) : 0],
-    ["Water", water.percent],
-    ["Streak", Math.min(100, Math.round(streak(data) / 7 * 100))]
-  ];
+  const metrics = coreAttributes(data);
+
+  // Hero summary card
   const wrap = parent.createDiv({ cls: "vrpg-hero-preview" });
   const info = wrap.createDiv({ cls: "vrpg-hero-summary" });
   info.createDiv({ cls: "vrpg-kicker", text: getHeroClassTitle(data.player) });
   info.createDiv({ cls: "vrpg-level", text: `LEVEL ${t.level}` });
   info.createDiv({ cls: "vrpg-hero-title", text: heroTitle(t.level) });
-  info.createDiv({ cls: "vrpg-subtitle", text: `${t.balance} XP · ${t.levelXP}/100 to next level` });
+  info.createDiv({ cls: "vrpg-subtitle", text: `${t.gold} Gold · ${t.levelXP}/100 XP to next level` });
   createProgressBar(info, t.levelXP, "vrpg-hero-xp");
+
+  // Radar + stat tracks
   const battle = wrap.createDiv({ cls: "vrpg-hero-battle" });
   const radarPanel = battle.createDiv({ cls: "vrpg-hero-radar-panel" });
   renderRadar(radarPanel, metrics);
@@ -46,14 +40,29 @@ function renderHomeHeroScreen(parent, ctx = {}) {
     });
   }
 
-  if (featureFlags.showAchievements) {
-    const achPanel = parent.createDiv({ cls: "vrpg-panel vrpg-achievements" });
-    achPanel.createDiv({ cls: "vrpg-section", text: "Achievements" });
-    for (const item of achievements(data)) {
-      const row = achPanel.createDiv({ cls: item.done ? "vrpg-achievement is-done" : "vrpg-achievement" });
-      row.createSpan({ text: item.done ? "✓" : "•" });
-      row.createEl("strong", { text: item.title });
-    }
+  // Streak section
+  const currentStreak = streak(data);
+  const streakPanel = parent.createDiv({ cls: "vrpg-panel vrpg-streak" });
+  streakPanel.createDiv({ cls: "vrpg-section", text: "🔥 Streak" });
+  streakPanel.createDiv({ cls: "vrpg-level", text: `${currentStreak} days` });
+  if (currentStreak >= 7) {
+    streakPanel.createDiv({ cls: "vrpg-subtitle", text: "Power streak! Keep it going!" });
+  } else if (currentStreak >= 3) {
+    streakPanel.createDiv({ cls: "vrpg-subtitle", text: "Building momentum!" });
+  } else {
+    streakPanel.createDiv({ cls: "vrpg-subtitle", text: "Complete 50%+ dailies to build your streak." });
+  }
+
+  // Achievement showcase
+  const achPanel = parent.createDiv({ cls: "vrpg-panel vrpg-achievements" });
+  achPanel.createDiv({ cls: "vrpg-section", text: "Achievements" });
+  const achList = achievements(data);
+  const earned = achList.filter(a => a.done);
+  achPanel.createDiv({ cls: "vrpg-subtitle", text: `${earned.length}/${achList.length} unlocked` });
+  for (const item of achList) {
+    const row = achPanel.createDiv({ cls: item.done ? "vrpg-achievement is-done" : "vrpg-achievement" });
+    row.createSpan({ text: item.icon || (item.done ? "✓" : "•") });
+    row.createEl("strong", { text: item.title });
   }
 }
 

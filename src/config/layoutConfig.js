@@ -1,4 +1,4 @@
-// Layout configuration for Vibe RPG.
+// Layout configuration for Grindstone.
 // Stores widget definitions, default layout, and normalization helpers.
 
 const WIDGET_SIZES = ["small", "medium", "large", "full"];
@@ -59,21 +59,6 @@ const HOME_WIDGET_DEFINITIONS = [
     category: "home"
   },
   {
-    id: "water",
-    title: "Water",
-    description: "Water balance for the selected day",
-    defaultEnabled: true,
-    defaultSize: "small",
-    allowedSizes: ["small", "medium"],
-    defaultGeometry: { x: 8, y: 5, w: 4, h: 3 },
-    minW: 3,
-    minH: 2,
-    maxW: 4,
-    maxH: 4,
-    rendererKey: "water",
-    category: "home"
-  },
-  {
     id: "today",
     title: "Today",
     description: "Habits, mood, and progress for the selected day",
@@ -106,7 +91,7 @@ const HOME_WIDGET_DEFINITIONS = [
   {
     id: "quests",
     title: "Quests",
-    description: "Progress cards and linked quests",
+    description: "Active quests with deadlines and priorities",
     defaultEnabled: true,
     defaultSize: "medium",
     allowedSizes: ["medium", "large", "full"],
@@ -121,7 +106,7 @@ const HOME_WIDGET_DEFINITIONS = [
   {
     id: "rewards",
     title: "Rewards",
-    description: "Reward shop for XP",
+    description: "Reward shop for Gold",
     defaultEnabled: true,
     defaultSize: "medium",
     allowedSizes: ["medium", "large", "full"],
@@ -149,9 +134,9 @@ const HOME_WIDGET_DEFINITIONS = [
     category: "home"
   },
   {
-    id: "wallet",
-    title: "Bank",
-    description: "Income, expenses, and transaction history",
+    id: "log",
+    title: "Adventure Log",
+    description: "Activity feed of completed quests, purchases, and achievements",
     defaultEnabled: true,
     defaultSize: "medium",
     allowedSizes: ["medium", "large", "full"],
@@ -160,7 +145,7 @@ const HOME_WIDGET_DEFINITIONS = [
     minH: 3,
     maxW: 12,
     maxH: 8,
-    rendererKey: "wallet",
+    rendererKey: "log",
     category: "home"
   }
 ];

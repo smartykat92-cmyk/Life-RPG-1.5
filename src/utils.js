@@ -1,24 +1,50 @@
-// Pure utility helpers for Vibe RPG.
-// Extracted from main.js without behavior changes; UI and data mutation stay elsewhere.
+// Pure utility helpers for Vibe RPG / Grindstone.
+// Updated: 12hr clock, MM/DD/YYYY display format, removed wallet/money helpers.
+// IMPORTANT: dateKey() storage format stays DD.MM.YYYY to preserve existing data.
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+// Storage key — DD.MM.YYYY — DO NOT CHANGE without migration
 function dateKey(date = new Date()) {
   const dd = String(date.getDate()).padStart(2, "0");
   const mm = String(date.getMonth() + 1).padStart(2, "0");
   return `${dd}.${mm}.${date.getFullYear()}`;
 }
 
-function timeKey(date = new Date()) {
-  return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+// Display date — MM/DD/YYYY for user-facing UI
+function displayDate(date = new Date()) {
+  const dd = String(date.getDate()).padStart(2, "0");
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  return `${mm}/${dd}/${date.getFullYear()}`;
 }
 
+// Display date from a storage key
+function displayDateFromKey(key) {
+  const date = dateFromKey(key);
+  return displayDate(date);
+}
+
+// 12hr time display — e.g. "2:30 PM"
+function timeKey(date = new Date()) {
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12;
+  return `${hours}:${minutes} ${ampm}`;
+}
+
+// 12hr time parts for UI components
 function timeParts(date = new Date()) {
+  let hours = date.getHours();
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const ampm = hours >= 12 ? "PM" : "AM";
+  hours = hours % 12 || 12;
   return {
-    hours: String(date.getHours()).padStart(2, "0"),
-    minutes: String(date.getMinutes()).padStart(2, "0")
+    hours: String(hours),
+    minutes,
+    ampm
   };
 }
 
@@ -30,29 +56,14 @@ function dayPhase(date = new Date()) {
   return "evening";
 }
 
-function parseMoney(value) {
-  const normalized = String(value || "").replace(/[\s.']/g, "").replace(",", ".");
-  const amount = Number(normalized);
-  return Number.isFinite(amount) ? amount : NaN;
-}
-
-function formatMoney(value) {
-  const amount = Math.round(Number(value || 0));
-  return String(amount).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-}
-
 function monthLabel(date = new Date()) {
   return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
 
+// Parse storage key DD.MM.YYYY back to Date
 function dateFromKey(key) {
   const [day, month, year] = String(key || "").split(".").map(Number);
   return new Date(year || 1970, (month || 1) - 1, day || 1);
-}
-
-function walletMonthLabel(key) {
-  const date = dateFromKey(key);
-  return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
 
 function calendarDays(date = new Date()) {
@@ -74,14 +85,13 @@ function uid(prefix) {
 module.exports = {
   clone,
   dateKey,
+  displayDate,
+  displayDateFromKey,
   timeKey,
   timeParts,
   dayPhase,
-  parseMoney,
-  formatMoney,
   monthLabel,
   dateFromKey,
-  walletMonthLabel,
   calendarDays,
   uid
 };

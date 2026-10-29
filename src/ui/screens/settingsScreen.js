@@ -1,4 +1,4 @@
-// Active Settings shell renderer for Vibe RPG.
+// Active Settings shell renderer for Grindstone.
 // Receives navigation and panel callbacks from main-entry.
 
 const { FEATURE_FLAGS } = require("../../config/featureFlags");
@@ -9,15 +9,14 @@ function renderSettingsScreen(parent, ctx = {}) {
   const shell = parent.createDiv({ cls: "vrpg-hero-card vrpg-settings-shell" });
   shell.createDiv({ cls: "vrpg-kicker", text: "Settings" });
   shell.createDiv({ cls: "vrpg-title", text: "System" });
-  shell.createDiv({ cls: "vrpg-subtitle", text: "Customize hero, water, habits, and shop." });
+  shell.createDiv({ cls: "vrpg-subtitle", text: "Customize hero, dailies, quests, and shop." });
   const nav = shell.createDiv({ cls: "vrpg-command-grid vrpg-settings-nav" });
   const panels = [
     ["profile", "Hero", "name, class, photo"],
     ["interface", "Interface", "home widgets"],
-    ["resources", "Water", "glasses and daily goals"],
-    ["habits", "Habits", "daily actions"],
-    ["quests", "Quests", "stat cards"],
-    ["rewards", "Rewards", "XP shop"]
+    ["habits", "Dailies", "daily actions"],
+    ["quests", "Quests", "quest management"],
+    ["rewards", "Rewards", "Gold shop"]
   ].filter(([id]) => FEATURE_FLAGS.showInterfaceSettings || id !== "interface");
   panels.forEach(([id, title, desc]) => {
     const button = nav.createEl("button", { cls: settingsPanel === id ? "vrpg-command-action is-active" : "vrpg-command-action" });
@@ -30,7 +29,6 @@ function renderSettingsScreen(parent, ctx = {}) {
   const body = shell.createDiv({ cls: "vrpg-home-module" });
   if (settingsPanel === "profile") ctx.renderSettingsProfile(body);
   if (settingsPanel === "interface") ctx.renderSettingsInterface(body);
-  if (settingsPanel === "resources") ctx.renderSettingsResources(body);
   if (settingsPanel === "habits") ctx.renderSettingsHabits(body);
   if (settingsPanel === "quests") ctx.renderSettingsQuests(body);
   if (settingsPanel === "rewards") ctx.renderSettingsRewards(body);
