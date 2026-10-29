@@ -1926,7 +1926,7 @@ var require_homeQuestsScreen = __commonJS({
         }
         const meta = card.createDiv({ cls: "vrpg-quest-meta" });
         meta.createSpan({ text: `${AREA_LABELS2[quest.area] || quest.area}` });
-        meta.createSpan({ text: ` \xB7 ${questXP(quest)} XP / Gold` });
+        meta.createSpan({ text: ` \xB7 ${questXP(quest)} XP + Gold` });
         if (quest.deadline) {
           const deadlineDate = new Date(quest.deadline);
           const deadlineStr = displayDate2 ? displayDate2(deadlineDate) : quest.deadline;
@@ -1945,7 +1945,7 @@ var require_homeQuestsScreen = __commonJS({
         for (const quest of recentDone) {
           const row = donePanel.createDiv({ cls: "vrpg-quest-done" });
           row.createSpan({ text: `${quest.title}` });
-          row.createSpan({ cls: "vrpg-subtitle", text: ` \xB7 ${questXP(quest)} XP earned` });
+          row.createSpan({ cls: "vrpg-subtitle", text: ` \xB7 ${questXP(quest)} XP + Gold earned` });
         }
         if (done.length > 5) {
           donePanel.createDiv({ cls: "vrpg-subtitle", text: `...and ${done.length - 5} more` });
@@ -1972,9 +1972,9 @@ var require_rewardsScreen = __commonJS({
         const card = grid.createDiv({ cls: "vrpg-panel" });
         card.createDiv({ cls: "vrpg-card-title", text: `${reward.icon || "\u{1F381}"} ${reward.title}` });
         card.createDiv({ cls: `vrpg-rarity vrpg-rarity-${reward.rarity || "common"}`, text: rarities[reward.rarity || "common"] || rarities.common });
-        card.createDiv({ cls: "vrpg-subtitle", text: `${reward.cost} XP` });
-        const button = card.createEl("button", { cls: "vrpg-primary", text: t.balance >= reward.cost ? "Buy" : "Not enough XP" });
-        button.disabled = t.balance < reward.cost;
+        card.createDiv({ cls: "vrpg-subtitle", text: `${reward.cost} Gold` });
+        const button = card.createEl("button", { cls: "vrpg-primary", text: t.gold >= reward.cost ? "Buy" : "Not enough Gold" });
+        button.disabled = t.gold < reward.cost;
         button.onclick = () => buyReward(reward.id);
       }
     }
@@ -2000,7 +2000,7 @@ var require_inventoryScreen = __commonJS({
       for (const item of items) {
         const card = grid.createDiv({ cls: item.used ? "vrpg-panel is-muted" : "vrpg-panel" });
         card.createDiv({ cls: "vrpg-card-title", text: `${item.icon || "\u{1F381}"} ${item.title}` });
-        card.createDiv({ cls: "vrpg-subtitle", text: `${item.cost} XP \u2022 ${item.date}` });
+        card.createDiv({ cls: "vrpg-subtitle", text: `${item.cost} Gold \u2022 ${item.date}` });
         const button = card.createEl("button", { cls: "vrpg-primary", text: item.used ? "Return" : "Use" });
         button.onclick = () => toggleInventoryItemUsed(item.id);
       }
