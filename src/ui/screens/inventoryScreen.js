@@ -13,7 +13,7 @@ function renderHomeInventoryScreen(parent, ctx = {}) {
   for (const item of items) {
     const card = grid.createDiv({ cls: item.used ? "vrpg-panel is-muted" : "vrpg-panel" });
     card.createDiv({ cls: "vrpg-card-title", text: `${item.icon || "🎁"} ${item.title}` });
-    card.createDiv({ cls: "vrpg-subtitle", text: `${item.cost} XP • ${item.date}` });
+    card.createDiv({ cls: "vrpg-subtitle", text: `${item.cost} Gold • ${item.date}` });
     const button = card.createEl("button", { cls: "vrpg-primary", text: item.used ? "Return" : "Use" });
     button.onclick = () => toggleInventoryItemUsed(item.id);
   }

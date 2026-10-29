@@ -11,9 +11,9 @@ function renderHomeRewardsScreen(parent, ctx = {}) {
     const card = grid.createDiv({ cls: "vrpg-panel" });
     card.createDiv({ cls: "vrpg-card-title", text: `${reward.icon || "🎁"} ${reward.title}` });
     card.createDiv({ cls: `vrpg-rarity vrpg-rarity-${reward.rarity || "common"}`, text: rarities[reward.rarity || "common"] || rarities.common });
-    card.createDiv({ cls: "vrpg-subtitle", text: `${reward.cost} XP` });
-    const button = card.createEl("button", { cls: "vrpg-primary", text: t.balance >= reward.cost ? "Buy" : "Not enough XP" });
-    button.disabled = t.balance < reward.cost;
+    card.createDiv({ cls: "vrpg-subtitle", text: `${reward.cost} Gold` });
+    const button = card.createEl("button", { cls: "vrpg-primary", text: t.gold >= reward.cost ? "Buy" : "Not enough Gold" });
+    button.disabled = t.gold < reward.cost;
     button.onclick = () => buyReward(reward.id);
   }
 }

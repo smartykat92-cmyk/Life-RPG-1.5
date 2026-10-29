@@ -37,7 +37,7 @@ function renderHomeQuestsScreen(parent, ctx = {}) {
 
     const meta = card.createDiv({ cls: "vrpg-quest-meta" });
     meta.createSpan({ text: `${AREA_LABELS[quest.area] || quest.area}` });
-    meta.createSpan({ text: ` · ${questXP(quest)} XP / Gold` });
+    meta.createSpan({ text: ` · ${questXP(quest)} XP + Gold` });
     if (quest.deadline) {
       const deadlineDate = new Date(quest.deadline);
       const deadlineStr = displayDate ? displayDate(deadlineDate) : quest.deadline;
@@ -59,7 +59,7 @@ function renderHomeQuestsScreen(parent, ctx = {}) {
     for (const quest of recentDone) {
       const row = donePanel.createDiv({ cls: "vrpg-quest-done" });
       row.createSpan({ text: `${quest.title}` });
-      row.createSpan({ cls: "vrpg-subtitle", text: ` · ${questXP(quest)} XP earned` });
+      row.createSpan({ cls: "vrpg-subtitle", text: ` · ${questXP(quest)} XP + Gold earned` });
     }
     if (done.length > 5) {
       donePanel.createDiv({ cls: "vrpg-subtitle", text: `...and ${done.length - 5} more` });
