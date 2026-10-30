@@ -13,42 +13,50 @@
 .vibe-rpg-plugin {
   position: relative;
   display: block;
-  --vrpg-bg: #100a1a;
-  --vrpg-bg-2: #1a1230;
-  --vrpg-surface: rgba(30, 20, 50, 0.82);
-  --vrpg-surface-strong: rgba(40, 28, 68, 0.9);
-  --vrpg-surface-soft: rgba(20, 14, 36, 0.72);
-  --vrpg-surface-glass: rgba(32, 22, 56, 0.66);
+  /* ── Dark Fantasy Palette ── */
+  --vrpg-bg: #08050e;
+  --vrpg-bg-2: #0e0918;
+  --vrpg-surface: rgba(14, 9, 24, 0.94);
+  --vrpg-surface-strong: rgba(22, 14, 38, 0.96);
+  --vrpg-surface-soft: rgba(10, 6, 18, 0.88);
+  --vrpg-surface-glass: rgba(16, 10, 28, 0.82);
   --vrpg-panel: var(--vrpg-surface);
   --vrpg-panel-2: var(--vrpg-surface-strong);
-  --vrpg-ink: #f7f4ff;
-  --vrpg-muted: rgba(225, 218, 255, 0.72);
-  --vrpg-button-ink: #f7f4ff;
+  --vrpg-ink: #e8dfd0;
+  --vrpg-muted: rgba(200, 186, 164, 0.72);
+  --vrpg-button-ink: #e8dfd0;
   --vrpg-on-accent: #ffffff;
   --vrpg-accent: #9b6cff;
-  --vrpg-accent-soft: rgba(155, 108, 255, 0.22);
-  --vrpg-purple: #b06cff;
-  --vrpg-green: #64d98b;
-  --vrpg-blue: #7b6cff;
-  --vrpg-cyan: #c084fc;
-  --vrpg-red: #ff6b73;
-  --vrpg-gold: #f1bf5b;
-  --vrpg-border: rgba(168, 130, 255, 0.24);
-  --vrpg-border-strong: rgba(180, 130, 255, 0.36);
-  --vrpg-blur: 22px;
-  --vrpg-radius-sm: 12px;
-  --vrpg-radius: 18px;
-  --vrpg-radius-lg: 24px;
-  --vrpg-radius-xl: 30px;
-  --vrpg-shadow: 0 18px 42px rgba(0, 0, 0, 0.34);
-  --vrpg-deep-shadow: 0 28px 72px rgba(0, 0, 0, 0.46);
-  --vrpg-soft-shadow: 0 12px 30px rgba(0, 0, 0, 0.24);
-  --vrpg-inner-light: inset 0 1px 0 rgba(255, 255, 255, 0.13);
+  --vrpg-accent-soft: rgba(155, 108, 255, 0.18);
+  --vrpg-purple: #8b5fbf;
+  --vrpg-green: #4cb870;
+  --vrpg-blue: #6b5cb8;
+  --vrpg-cyan: #9070cc;
+  --vrpg-red: #c43c3c;
+  --vrpg-gold: #d4a54a;
+  --vrpg-ember: #e8622a;
+  --vrpg-rune: #c9a35e;
+  --vrpg-bone: #b8a88a;
+  --vrpg-blood: #8b2020;
+  --vrpg-border: rgba(120, 90, 50, 0.32);
+  --vrpg-border-strong: rgba(160, 120, 60, 0.42);
+  --vrpg-blur: 18px;
+  --vrpg-radius-sm: 4px;
+  --vrpg-radius: 6px;
+  --vrpg-radius-lg: 8px;
+  --vrpg-radius-xl: 10px;
+  --vrpg-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
+  --vrpg-deep-shadow: 0 16px 52px rgba(0, 0, 0, 0.7);
+  --vrpg-soft-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+  --vrpg-inner-light: inset 0 1px 0 rgba(200, 170, 120, 0.08);
+  /* ── Noise texture SVG ── */
+  --vrpg-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
   background:
-    radial-gradient(circle at 12% 0%, rgba(155, 108, 255, 0.32), transparent 360px),
-    radial-gradient(circle at 92% 12%, rgba(180, 120, 255, 0.18), transparent 380px),
-    linear-gradient(145deg, rgba(42, 20, 72, 0.88), transparent 430px),
-    var(--vrpg-bg);
+    var(--vrpg-noise),
+    radial-gradient(ellipse at 20% 0%, rgba(100, 50, 20, 0.25), transparent 400px),
+    radial-gradient(ellipse at 85% 15%, rgba(80, 40, 120, 0.15), transparent 350px),
+    radial-gradient(ellipse at 50% 100%, rgba(20, 8, 4, 0.6), transparent 300px),
+    linear-gradient(180deg, #0a0610 0%, #08050e 50%, #060308 100%);
   color: var(--vrpg-ink);
   width: 100%;
   height: 100%;
@@ -58,51 +66,52 @@
 
 @media (prefers-color-scheme: dark) {
   .vibe-rpg-plugin {
-    --vrpg-bg: #0d0812;
-    --vrpg-bg-2: #17102a;
-    --vrpg-surface: rgba(24, 16, 44, 0.86);
-    --vrpg-surface-strong: rgba(34, 24, 60, 0.94);
-    --vrpg-surface-soft: rgba(16, 10, 32, 0.74);
-    --vrpg-surface-glass: rgba(28, 18, 52, 0.7);
-    --vrpg-shadow: 0 18px 46px rgba(0, 0, 0, 0.42);
-    --vrpg-deep-shadow: 0 30px 82px rgba(0, 0, 0, 0.58);
+    --vrpg-bg: #06040a;
+    --vrpg-bg-2: #0c0814;
+    --vrpg-surface: rgba(12, 8, 20, 0.94);
+    --vrpg-surface-strong: rgba(20, 12, 34, 0.96);
+    --vrpg-surface-soft: rgba(8, 5, 14, 0.9);
+    --vrpg-surface-glass: rgba(14, 9, 24, 0.85);
+    --vrpg-shadow: 0 8px 36px rgba(0, 0, 0, 0.6);
+    --vrpg-deep-shadow: 0 18px 56px rgba(0, 0, 0, 0.75);
   }
 }
 
 body.theme-dark .workspace-leaf-content[data-type="vibe-rpg-app-view"],
 body.theme-dark .workspace-leaf-content[data-type="vibe-rpg-app-view"] .view-content,
 body.theme-dark .view-content.vibe-rpg-plugin {
-  background: #0d0812 !important;
+  background: #06040a !important;
 }
 
 body.theme-dark .vibe-rpg-plugin {
-  --vrpg-bg: #0d0812;
-  --vrpg-bg-2: #17102a;
-  --vrpg-surface: rgba(24, 16, 44, 0.88);
-  --vrpg-surface-strong: rgba(52, 38, 82, 0.95);
-  --vrpg-surface-soft: rgba(16, 10, 32, 0.76);
-  --vrpg-surface-glass: rgba(28, 18, 52, 0.72);
+  --vrpg-bg: #06040a;
+  --vrpg-bg-2: #0c0814;
+  --vrpg-surface: rgba(12, 8, 20, 0.94);
+  --vrpg-surface-strong: rgba(24, 16, 40, 0.96);
+  --vrpg-surface-soft: rgba(8, 5, 14, 0.9);
+  --vrpg-surface-glass: rgba(14, 9, 24, 0.85);
   --vrpg-panel: var(--vrpg-surface);
   --vrpg-panel-2: var(--vrpg-surface-strong);
-  --vrpg-ink: #f8f6ff;
-  --vrpg-muted: rgba(228, 218, 255, 0.74);
-  --vrpg-button-ink: #f8f6ff;
-  --vrpg-accent: #9b72ff;
-  --vrpg-accent-soft: rgba(155, 114, 255, 0.24);
-  --vrpg-purple: #b06dff;
-  --vrpg-blue: #7b6cff;
-  --vrpg-cyan: #c084fc;
-  --vrpg-border: rgba(168, 130, 255, 0.26);
-  --vrpg-border-strong: rgba(180, 130, 255, 0.38);
-  --vrpg-shadow: 0 18px 46px rgba(0, 0, 0, 0.42);
-  --vrpg-deep-shadow: 0 30px 82px rgba(0, 0, 0, 0.58);
-  --vrpg-soft-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
-  --vrpg-inner-light: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  --vrpg-ink: #e8dfd0;
+  --vrpg-muted: rgba(200, 186, 164, 0.72);
+  --vrpg-button-ink: #e8dfd0;
+  --vrpg-accent: #9b6cff;
+  --vrpg-accent-soft: rgba(155, 108, 255, 0.16);
+  --vrpg-purple: #8b5fbf;
+  --vrpg-blue: #6b5cb8;
+  --vrpg-cyan: #9070cc;
+  --vrpg-border: rgba(120, 90, 50, 0.35);
+  --vrpg-border-strong: rgba(160, 120, 60, 0.45);
+  --vrpg-shadow: 0 8px 36px rgba(0, 0, 0, 0.6);
+  --vrpg-deep-shadow: 0 18px 56px rgba(0, 0, 0, 0.75);
+  --vrpg-soft-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
+  --vrpg-inner-light: inset 0 1px 0 rgba(200, 170, 120, 0.06);
   background:
-    radial-gradient(circle at 12% 0%, rgba(155, 114, 255, 0.36), transparent 360px),
-    radial-gradient(circle at 92% 12%, rgba(180, 120, 255, 0.16), transparent 390px),
-    linear-gradient(145deg, rgba(42, 20, 72, 0.9), transparent 440px),
-    var(--vrpg-bg);
+    var(--vrpg-noise),
+    radial-gradient(ellipse at 20% 0%, rgba(100, 50, 20, 0.28), transparent 400px),
+    radial-gradient(ellipse at 85% 15%, rgba(80, 40, 120, 0.12), transparent 350px),
+    radial-gradient(ellipse at 50% 100%, rgba(20, 8, 4, 0.65), transparent 300px),
+    linear-gradient(180deg, #08050e 0%, #06040a 50%, #040208 100%);
 }
 
 .vibe-rpg-plugin.vrpg-theme-brand-dark {
@@ -110,59 +119,59 @@ body.theme-dark .vibe-rpg-plugin {
 }
 
 .vibe-rpg-plugin.vrpg-accent-purple {
-  --vrpg-accent: #9b72ff;
-  --vrpg-accent-soft: rgba(155, 114, 255, 0.24);
-  --vrpg-purple: #a96dff;
-  --vrpg-border: rgba(164, 139, 255, 0.26);
+  --vrpg-accent: #8b5fbf;
+  --vrpg-accent-soft: rgba(139, 95, 191, 0.18);
+  --vrpg-purple: #7a52a8;
+  --vrpg-border: rgba(120, 80, 170, 0.28);
 }
 
 .vibe-rpg-plugin.vrpg-accent-cyan {
-  --vrpg-accent: #58dcff;
-  --vrpg-accent-soft: rgba(88, 220, 255, 0.22);
-  --vrpg-purple: #7d8cff;
-  --vrpg-cyan: #58dcff;
-  --vrpg-border: rgba(88, 220, 255, 0.28);
+  --vrpg-accent: #4aabbf;
+  --vrpg-accent-soft: rgba(74, 171, 191, 0.16);
+  --vrpg-purple: #5a7ab0;
+  --vrpg-cyan: #4aabbf;
+  --vrpg-border: rgba(74, 171, 191, 0.28);
 }
 
 .vibe-rpg-plugin.vrpg-accent-emerald {
-  --vrpg-accent: #64d98b;
-  --vrpg-accent-soft: rgba(100, 217, 139, 0.22);
-  --vrpg-purple: #8d80ff;
-  --vrpg-cyan: #65e6c8;
-  --vrpg-border: rgba(100, 217, 139, 0.26);
+  --vrpg-accent: #4cb870;
+  --vrpg-accent-soft: rgba(76, 184, 112, 0.16);
+  --vrpg-purple: #6a7aaa;
+  --vrpg-cyan: #4aad8a;
+  --vrpg-border: rgba(76, 184, 112, 0.26);
 }
 
 .vibe-rpg-plugin.vrpg-accent-crimson {
-  --vrpg-accent: #ff6b8a;
-  --vrpg-accent-soft: rgba(255, 107, 138, 0.22);
-  --vrpg-purple: #b16dff;
-  --vrpg-cyan: #ff8fab;
-  --vrpg-border: rgba(255, 107, 138, 0.26);
+  --vrpg-accent: #c43c3c;
+  --vrpg-accent-soft: rgba(196, 60, 60, 0.18);
+  --vrpg-purple: #8a4aaa;
+  --vrpg-cyan: #d05050;
+  --vrpg-border: rgba(196, 60, 60, 0.28);
 }
 
 .vibe-rpg-plugin.vrpg-accent-gold {
-  --vrpg-accent: #f1bf5b;
-  --vrpg-accent-soft: rgba(241, 191, 91, 0.22);
-  --vrpg-purple: #b688ff;
-  --vrpg-cyan: #ffd36f;
-  --vrpg-border: rgba(241, 191, 91, 0.26);
+  --vrpg-accent: #d4a54a;
+  --vrpg-accent-soft: rgba(212, 165, 74, 0.18);
+  --vrpg-purple: #9a7a5a;
+  --vrpg-cyan: #c4a040;
+  --vrpg-border: rgba(180, 140, 60, 0.3);
 }
 
 body.theme-dark .vibe-rpg-plugin .vrpg-app {
   background:
-    radial-gradient(circle at 10% 10%, rgba(130, 80, 220, 0.28), transparent 370px),
-    radial-gradient(circle at 90% 8%, rgba(160, 100, 240, 0.14), transparent 390px),
-    radial-gradient(circle at 42% 54%, rgba(120, 80, 200, 0.1), transparent 460px),
-    linear-gradient(135deg, #120a1e 0%, #160e28 34%, #0e0816 100%);
+    var(--vrpg-noise),
+    radial-gradient(ellipse at 15% 5%, rgba(120, 60, 20, 0.2), transparent 380px),
+    radial-gradient(ellipse at 88% 10%, rgba(60, 30, 90, 0.14), transparent 350px),
+    radial-gradient(ellipse at 50% 85%, rgba(140, 40, 10, 0.06), transparent 400px),
+    linear-gradient(180deg, #0a0610 0%, #08050e 40%, #060308 100%);
 }
 
 body.theme-dark .vibe-rpg-plugin .vrpg-app::before {
-  opacity: 0.24;
+  opacity: 0.18;
   background:
-    linear-gradient(115deg, transparent 0 46%, rgba(155, 114, 255, 0.12) 46% 47%, transparent 47% 100%),
-    radial-gradient(circle at 20% 20%, rgba(180, 120, 255, 0.14) 0 1px, transparent 1px 100%),
-    radial-gradient(circle at 70% 10%, rgba(155, 114, 255, 0.14) 0 1px, transparent 1px 100%),
-    linear-gradient(135deg, rgba(155, 114, 255, 0.08) 0 12%, transparent 12% 100%);
+    repeating-linear-gradient(0deg, transparent 0 39px, rgba(120, 90, 50, 0.06) 39px 40px),
+    repeating-linear-gradient(90deg, transparent 0 39px, rgba(120, 90, 50, 0.04) 39px 40px);
+  background-size: 40px 40px;
 }
 
 body.theme-dark .vibe-rpg-plugin .vrpg-glass-widget,
@@ -171,108 +180,111 @@ body.theme-dark .vibe-rpg-plugin .vrpg-widget,
 body.theme-dark .vibe-rpg-plugin .vrpg-ios-card,
 body.theme-dark .vibe-rpg-plugin .vrpg-surface-glass {
   background:
-    radial-gradient(circle at 76% 12%, rgba(160, 100, 240, 0.12), transparent 160px),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 62%),
-    rgba(28, 18, 52, 0.72);
+    linear-gradient(180deg, rgba(200, 170, 120, 0.04), transparent 50%),
+    rgba(12, 8, 20, 0.88);
+  border-color: var(--vrpg-border);
 }
 
 body.theme-dark .vibe-rpg-plugin .vrpg-hero-card {
   background:
-    radial-gradient(circle at 82% 18%, rgba(156, 109, 255, 0.28), transparent 220px),
-    linear-gradient(135deg, rgba(72, 48, 110, 0.96), rgba(52, 36, 88, 0.94));
-  border-color: rgba(155, 114, 255, 0.34);
+    radial-gradient(ellipse at 80% 20%, rgba(200, 160, 80, 0.12), transparent 200px),
+    linear-gradient(135deg, rgba(30, 18, 50, 0.98), rgba(18, 12, 30, 0.96));
+  border-color: rgba(160, 120, 60, 0.35);
   box-shadow:
     var(--vrpg-inner-light),
-    0 24px 68px rgba(0, 0, 0, 0.46),
-    inset 0 0 42px rgba(155, 114, 255, 0.08);
+    0 12px 40px rgba(0, 0, 0, 0.6),
+    inset 0 0 30px rgba(120, 80, 30, 0.05);
 }
 
 body.theme-dark .vibe-rpg-plugin .vrpg-panel,
 body.theme-dark .vibe-rpg-plugin .vrpg-surface-soft {
   background:
-    radial-gradient(circle at 80% 10%, rgba(155, 114, 255, 0.1), transparent 180px),
-    rgba(18, 12, 34, 0.76);
+    linear-gradient(180deg, rgba(200, 170, 120, 0.03), transparent 40%),
+    rgba(10, 6, 18, 0.9);
 }
 
 body.theme-dark .vibe-rpg-plugin .vrpg-command-action {
   background:
-    radial-gradient(circle at 86% 16%, rgba(160, 100, 240, 0.1), transparent 90px),
-    rgba(40, 28, 68, 0.62);
+    linear-gradient(180deg, rgba(200, 170, 120, 0.04), transparent 60%),
+    rgba(16, 10, 28, 0.8);
+  border-color: var(--vrpg-border);
 }
 
 body.theme-dark .vibe-rpg-plugin .vrpg-command-action.is-active {
   background:
-    radial-gradient(circle at 86% 16%, rgba(155, 114, 255, 0.26), transparent 100px),
-    rgba(82, 62, 150, 0.66);
+    linear-gradient(180deg, rgba(200, 170, 120, 0.08), transparent 60%),
+    rgba(24, 16, 40, 0.9);
+  border-color: rgba(180, 140, 60, 0.4);
+  box-shadow: inset 0 0 20px rgba(200, 160, 80, 0.04), var(--vrpg-soft-shadow);
 }
 
 body.theme-light .vibe-rpg-plugin {
-  --vrpg-bg: #0d0812;
-  --vrpg-bg-2: #17102a;
-  --vrpg-surface: rgba(24, 16, 44, 0.88);
-  --vrpg-surface-strong: rgba(52, 38, 82, 0.95);
-  --vrpg-surface-soft: rgba(16, 10, 32, 0.76);
-  --vrpg-surface-glass: rgba(28, 18, 52, 0.72);
+  --vrpg-bg: #08050e;
+  --vrpg-bg-2: #0e0918;
+  --vrpg-surface: rgba(14, 9, 24, 0.94);
+  --vrpg-surface-strong: rgba(22, 14, 38, 0.96);
+  --vrpg-surface-soft: rgba(10, 6, 18, 0.88);
+  --vrpg-surface-glass: rgba(16, 10, 28, 0.82);
   --vrpg-panel: var(--vrpg-surface);
   --vrpg-panel-2: var(--vrpg-surface-strong);
-  --vrpg-ink: #f8f6ff;
-  --vrpg-muted: rgba(228, 218, 255, 0.74);
-  --vrpg-button-ink: #f8f6ff;
-  --vrpg-accent: #9b72ff;
-  --vrpg-accent-soft: rgba(155, 114, 255, 0.24);
-  --vrpg-purple: #b06dff;
-  --vrpg-blue: #7b6cff;
-  --vrpg-cyan: #c084fc;
-  --vrpg-border: rgba(168, 130, 255, 0.26);
-  --vrpg-border-strong: rgba(180, 130, 255, 0.38);
-  --vrpg-shadow: 0 18px 46px rgba(0, 0, 0, 0.42);
-  --vrpg-deep-shadow: 0 30px 82px rgba(0, 0, 0, 0.58);
-  --vrpg-soft-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
-  --vrpg-inner-light: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  --vrpg-ink: #e8dfd0;
+  --vrpg-muted: rgba(200, 186, 164, 0.72);
+  --vrpg-button-ink: #e8dfd0;
+  --vrpg-accent: #9b6cff;
+  --vrpg-accent-soft: rgba(155, 108, 255, 0.16);
+  --vrpg-purple: #8b5fbf;
+  --vrpg-blue: #6b5cb8;
+  --vrpg-cyan: #9070cc;
+  --vrpg-border: rgba(120, 90, 50, 0.32);
+  --vrpg-border-strong: rgba(160, 120, 60, 0.42);
+  --vrpg-shadow: 0 8px 32px rgba(0, 0, 0, 0.55);
+  --vrpg-deep-shadow: 0 16px 52px rgba(0, 0, 0, 0.7);
+  --vrpg-soft-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+  --vrpg-inner-light: inset 0 1px 0 rgba(200, 170, 120, 0.08);
   background:
-    radial-gradient(circle at 12% 0%, rgba(155, 114, 255, 0.36), transparent 360px),
-    radial-gradient(circle at 92% 12%, rgba(180, 120, 255, 0.16), transparent 390px),
-    linear-gradient(145deg, rgba(42, 20, 72, 0.9), transparent 440px),
-    var(--vrpg-bg);
+    var(--vrpg-noise),
+    radial-gradient(ellipse at 20% 0%, rgba(100, 50, 20, 0.25), transparent 400px),
+    radial-gradient(ellipse at 85% 15%, rgba(80, 40, 120, 0.15), transparent 350px),
+    linear-gradient(180deg, #0a0610 0%, #08050e 50%, #060308 100%);
 }
 
 body.theme-light .vibe-rpg-plugin.vrpg-accent-purple {
-  --vrpg-accent: #9b72ff;
-  --vrpg-accent-soft: rgba(155, 114, 255, 0.24);
-  --vrpg-purple: #a96dff;
-  --vrpg-border: rgba(164, 139, 255, 0.26);
+  --vrpg-accent: #8b5fbf;
+  --vrpg-accent-soft: rgba(139, 95, 191, 0.18);
+  --vrpg-purple: #7a52a8;
+  --vrpg-border: rgba(120, 80, 170, 0.28);
 }
 
 body.theme-light .vibe-rpg-plugin.vrpg-accent-cyan {
-  --vrpg-accent: #58dcff;
-  --vrpg-accent-soft: rgba(88, 220, 255, 0.22);
-  --vrpg-purple: #7d8cff;
-  --vrpg-cyan: #58dcff;
-  --vrpg-border: rgba(88, 220, 255, 0.28);
+  --vrpg-accent: #4aabbf;
+  --vrpg-accent-soft: rgba(74, 171, 191, 0.16);
+  --vrpg-purple: #5a7ab0;
+  --vrpg-cyan: #4aabbf;
+  --vrpg-border: rgba(74, 171, 191, 0.28);
 }
 
 body.theme-light .vibe-rpg-plugin.vrpg-accent-emerald {
-  --vrpg-accent: #64d98b;
-  --vrpg-accent-soft: rgba(100, 217, 139, 0.22);
-  --vrpg-purple: #8d80ff;
-  --vrpg-cyan: #65e6c8;
-  --vrpg-border: rgba(100, 217, 139, 0.26);
+  --vrpg-accent: #4cb870;
+  --vrpg-accent-soft: rgba(76, 184, 112, 0.16);
+  --vrpg-purple: #6a7aaa;
+  --vrpg-cyan: #4aad8a;
+  --vrpg-border: rgba(76, 184, 112, 0.26);
 }
 
 body.theme-light .vibe-rpg-plugin.vrpg-accent-crimson {
-  --vrpg-accent: #ff6b8a;
-  --vrpg-accent-soft: rgba(255, 107, 138, 0.22);
-  --vrpg-purple: #b16dff;
-  --vrpg-cyan: #ff8fab;
-  --vrpg-border: rgba(255, 107, 138, 0.26);
+  --vrpg-accent: #c43c3c;
+  --vrpg-accent-soft: rgba(196, 60, 60, 0.18);
+  --vrpg-purple: #8a4aaa;
+  --vrpg-cyan: #d05050;
+  --vrpg-border: rgba(196, 60, 60, 0.28);
 }
 
 body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
-  --vrpg-accent: #f1bf5b;
-  --vrpg-accent-soft: rgba(241, 191, 91, 0.22);
-  --vrpg-purple: #b688ff;
-  --vrpg-cyan: #ffd36f;
-  --vrpg-border: rgba(241, 191, 91, 0.26);
+  --vrpg-accent: #d4a54a;
+  --vrpg-accent-soft: rgba(212, 165, 74, 0.18);
+  --vrpg-purple: #9a7a5a;
+  --vrpg-cyan: #c4a040;
+  --vrpg-border: rgba(180, 140, 60, 0.3);
 }
 
 .vibe-rpg-plugin * {
@@ -285,7 +297,7 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
 }
 
 .vibe-rpg-plugin ::selection {
-  background: rgba(166, 92, 255, 0.32);
+  background: rgba(200, 160, 80, 0.3);
   color: var(--vrpg-ink);
 }
 
@@ -317,11 +329,11 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
   padding: 22px;
   scrollbar-gutter: stable;
   background:
-    radial-gradient(circle at 12% 0%, color-mix(in srgb, var(--vrpg-accent) 20%, transparent), transparent 340px),
-    radial-gradient(circle at 92% 12%, rgba(160, 100, 240, 0.13), transparent 360px),
-    radial-gradient(circle at 45% 55%, color-mix(in srgb, var(--vrpg-blue) 10%, transparent), transparent 420px),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 360px),
-    var(--vrpg-bg);
+    var(--vrpg-noise),
+    radial-gradient(ellipse at 15% 5%, rgba(120, 60, 20, 0.16), transparent 380px),
+    radial-gradient(ellipse at 88% 10%, rgba(60, 30, 90, 0.1), transparent 320px),
+    radial-gradient(ellipse at 50% 80%, rgba(140, 40, 10, 0.05), transparent 360px),
+    linear-gradient(180deg, var(--vrpg-bg) 0%, rgba(6, 4, 10, 0.98) 100%);
 }
 
 .vrpg-app::before {
@@ -329,14 +341,24 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.36;
+  opacity: 0.12;
   background:
-    linear-gradient(115deg, transparent 0 46%, rgba(255, 255, 255, 0.1) 46% 47%, transparent 47% 100%),
-    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.18) 0 1px, transparent 1px 100%),
-    radial-gradient(circle at 70% 10%, rgba(166, 92, 255, 0.11) 0 1px, transparent 1px 100%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0 12%, transparent 12% 100%);
-  background-size: 220px 220px, 18px 18px, 26px 26px, 44px 44px;
-  mask-image: linear-gradient(180deg, black, transparent 78%);
+    repeating-linear-gradient(0deg, transparent 0 39px, rgba(120, 90, 50, 0.08) 39px 40px),
+    repeating-linear-gradient(90deg, transparent 0 39px, rgba(120, 90, 50, 0.05) 39px 40px);
+  background-size: 40px 40px;
+  mask-image: linear-gradient(180deg, black 20%, transparent 85%);
+}
+
+/* ── Vignette overlay ── */
+.vrpg-app::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999;
+  background:
+    radial-gradient(ellipse at 50% 50%, transparent 50%, rgba(0, 0, 0, 0.4) 100%);
+  mix-blend-mode: multiply;
 }
 
 .vrpg-app > * {
@@ -388,13 +410,16 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
   grid-template-columns: repeat(2, minmax(140px, 200px));
   justify-content: center;
   margin: 22px auto 0;
-  padding: 8px;
+  padding: 6px;
   pointer-events: none;
   border: 1px solid var(--vrpg-border);
+  border-top: 1px solid rgba(200, 170, 120, 0.15);
   border-radius: var(--vrpg-radius-lg);
-  background: var(--vrpg-surface-glass);
-  box-shadow: var(--vrpg-soft-shadow);
-  backdrop-filter: blur(var(--vrpg-blur)) saturate(1.22);
+  background:
+    linear-gradient(180deg, rgba(200, 170, 120, 0.04), transparent 50%),
+    var(--vrpg-surface);
+  box-shadow: var(--vrpg-soft-shadow), inset 0 1px 0 rgba(200, 170, 120, 0.06);
+  backdrop-filter: blur(var(--vrpg-blur));
 }
 
 .vrpg-tabs button {
@@ -405,31 +430,34 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
 .vrpg-check,
 .vrpg-primary {
   border: 1px solid var(--vrpg-border);
+  border-top-color: rgba(200, 170, 120, 0.12);
   border-radius: var(--vrpg-radius-sm);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent),
+    linear-gradient(180deg, rgba(200, 170, 120, 0.06), transparent 60%),
     var(--vrpg-surface-glass);
   color: var(--vrpg-button-ink) !important;
   -webkit-text-fill-color: var(--vrpg-button-ink) !important;
   font: inherit;
-  font-weight: 850;
+  font-weight: 700;
+  letter-spacing: 0.02em;
   padding: 12px 14px;
   cursor: pointer;
   text-align: center;
-  text-shadow: none;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   box-shadow: var(--vrpg-inner-light), var(--vrpg-soft-shadow);
-  backdrop-filter: blur(calc(var(--vrpg-blur) - 4px)) saturate(1.18);
-  transition: border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+  backdrop-filter: blur(var(--vrpg-blur));
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .vrpg-tabs button:hover,
 .vrpg-check:hover,
 .vrpg-primary:hover {
-  border-color: color-mix(in srgb, var(--vrpg-accent) 52%, var(--vrpg-border));
+  border-color: rgba(180, 140, 60, 0.4);
   background:
-    linear-gradient(180deg, var(--vrpg-accent-soft), rgba(255, 255, 255, 0.04)),
-    var(--vrpg-panel-2);
+    linear-gradient(180deg, rgba(200, 170, 120, 0.1), transparent 60%),
+    var(--vrpg-surface-strong);
   transform: translateY(-1px);
+  box-shadow: var(--vrpg-inner-light), 0 0 12px rgba(200, 160, 80, 0.08), var(--vrpg-soft-shadow);
 }
 
 .vrpg-tabs button:disabled,
@@ -437,22 +465,24 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
 .vrpg-primary:disabled {
   opacity: 1;
   cursor: not-allowed;
-  border-color: color-mix(in srgb, var(--vrpg-border) 58%, transparent);
-  background: color-mix(in srgb, var(--vrpg-muted) 10%, transparent);
+  border-color: rgba(60, 40, 20, 0.3);
+  background: rgba(10, 6, 18, 0.6);
   color: var(--vrpg-muted) !important;
   -webkit-text-fill-color: var(--vrpg-muted) !important;
   filter: none;
+  text-shadow: none;
 }
 
 .vrpg-tabs button.is-active,
 .vrpg-check.is-done {
-  border-color: color-mix(in srgb, var(--vrpg-accent) 72%, var(--vrpg-border));
+  border-color: rgba(200, 160, 80, 0.45);
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--vrpg-accent) 24%, transparent), rgba(255, 255, 255, 0.04)),
-    var(--vrpg-surface-glass);
+    linear-gradient(180deg, rgba(200, 170, 120, 0.12), transparent 60%),
+    var(--vrpg-surface-strong);
   box-shadow:
     var(--vrpg-inner-light),
-    0 0 0 3px color-mix(in srgb, var(--vrpg-accent) 14%, transparent),
+    0 0 16px rgba(200, 160, 80, 0.1),
+    inset 0 0 12px rgba(200, 160, 80, 0.03),
     var(--vrpg-soft-shadow);
 }
 
@@ -461,33 +491,53 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
 .vrpg-profile,
 .vrpg-stat {
   border: 1px solid var(--vrpg-border);
+  border-top-color: rgba(200, 170, 120, 0.1);
   border-radius: var(--vrpg-radius-lg);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 60%),
+    linear-gradient(180deg, rgba(200, 170, 120, 0.04), transparent 40%),
     var(--vrpg-panel);
   box-shadow: var(--vrpg-inner-light), var(--vrpg-shadow);
   padding: 18px;
   margin-bottom: 14px;
-  backdrop-filter: blur(var(--vrpg-blur)) saturate(1.22);
+  backdrop-filter: blur(var(--vrpg-blur));
 }
 
 .vrpg-panel.is-muted {
-  opacity: 0.62;
+  opacity: 0.5;
 }
 
 .vrpg-panel.is-complete {
-  border-color: rgba(104, 232, 139, 0.48);
+  border-color: rgba(76, 184, 112, 0.35);
   background:
-    linear-gradient(180deg, rgba(104, 232, 139, 0.14), transparent 60%),
+    linear-gradient(180deg, rgba(76, 184, 112, 0.08), transparent 50%),
     var(--vrpg-panel);
 }
 
 .vrpg-hero-card {
   min-height: 150px;
+  position: relative;
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--vrpg-accent) 22%, transparent), rgba(160, 100, 240, 0.08)),
-    var(--vrpg-panel-2);
-  box-shadow: var(--vrpg-deep-shadow);
+    radial-gradient(ellipse at 80% 20%, rgba(200, 160, 80, 0.1), transparent 200px),
+    linear-gradient(135deg, rgba(24, 14, 40, 0.98), rgba(14, 8, 24, 0.96));
+  border-color: rgba(160, 120, 60, 0.3);
+  box-shadow: var(--vrpg-deep-shadow), inset 0 0 40px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Ornamental corner accents on hero card ── */
+.vrpg-hero-card::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: -1px;
+  right: -1px;
+  height: 2px;
+  background: linear-gradient(90deg,
+    rgba(200, 160, 80, 0.5),
+    rgba(200, 160, 80, 0.15) 30%,
+    transparent 50%,
+    rgba(200, 160, 80, 0.15) 70%,
+    rgba(200, 160, 80, 0.5));
+  border-radius: var(--vrpg-radius-lg) var(--vrpg-radius-lg) 0 0;
 }
 
 .vrpg-home-top {
@@ -518,7 +568,7 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
 .vrpg-home-edit-bar .vrpg-primary.is-active {
   border-color: color-mix(in srgb, var(--vrpg-cyan) 54%, var(--vrpg-border));
   background:
-    radial-gradient(circle at 86% 14%, rgba(160, 100, 240, 0.18), transparent 90px),
+    radial-gradient(circle at 86% 14%, rgba(200, 163, 94, 0.18), transparent 90px),
     color-mix(in srgb, var(--vrpg-accent) 18%, var(--vrpg-surface-glass));
   box-shadow:
     var(--vrpg-inner-light),
@@ -543,7 +593,7 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
   border: 1px dashed color-mix(in srgb, var(--vrpg-border-strong) 70%, transparent);
   border-radius: var(--vrpg-radius);
   background:
-    radial-gradient(circle at 90% 18%, rgba(160, 100, 240, 0.1), transparent 120px),
+    radial-gradient(circle at 90% 18%, rgba(200, 163, 94, 0.1), transparent 120px),
     var(--vrpg-surface-soft);
   padding: 16px;
   margin: 12px 0;
@@ -564,7 +614,7 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
 .vrpg-day-focus {
   margin-bottom: 12px;
   background:
-    radial-gradient(circle at 90% 16%, rgba(160, 100, 240, 0.1), transparent 140px),
+    radial-gradient(circle at 90% 16%, rgba(200, 163, 94, 0.1), transparent 140px),
     var(--vrpg-surface-soft);
 }
 
@@ -579,7 +629,7 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
   align-items: end;
   border-color: color-mix(in srgb, var(--vrpg-purple) 32%, var(--vrpg-border));
   background:
-    radial-gradient(circle at 88% 12%, rgba(160, 100, 240, 0.14), transparent 160px),
+    radial-gradient(circle at 88% 12%, rgba(200, 163, 94, 0.14), transparent 160px),
     radial-gradient(circle at 18% 82%, color-mix(in srgb, var(--vrpg-purple) 16%, transparent), transparent 180px),
     var(--vrpg-panel);
   padding: 14px 16px;
@@ -622,7 +672,7 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
   min-height: 82px;
   border-radius: var(--vrpg-radius);
   background:
-    radial-gradient(circle at 82% 16%, rgba(160, 100, 240, 0.08), transparent 100px),
+    radial-gradient(circle at 82% 16%, rgba(200, 163, 94, 0.08), transparent 100px),
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent),
     var(--vrpg-surface-glass);
   font-size: 18px;
@@ -676,9 +726,10 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
   gap: 4px;
   min-height: 82px;
   border: 1px solid var(--vrpg-border);
+  border-top-color: rgba(200, 170, 120, 0.1);
   border-radius: var(--vrpg-radius);
   background:
-    radial-gradient(circle at 86% 16%, rgba(160, 100, 240, 0.1), transparent 90px),
+    linear-gradient(180deg, rgba(200, 170, 120, 0.03), transparent 50%),
     var(--vrpg-surface-soft);
   color: var(--vrpg-button-ink) !important;
   -webkit-text-fill-color: var(--vrpg-button-ink) !important;
@@ -686,42 +737,46 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
   text-align: left;
   cursor: pointer;
   box-shadow: var(--vrpg-inner-light), var(--vrpg-soft-shadow);
-  backdrop-filter: blur(calc(var(--vrpg-blur) - 6px)) saturate(1.16);
-  transition: border-color 0.16s ease, background 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
+  backdrop-filter: blur(var(--vrpg-blur));
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .vrpg-command-action:hover {
-  border-color: color-mix(in srgb, var(--vrpg-accent) 56%, var(--vrpg-border));
+  border-color: rgba(180, 140, 60, 0.4);
   background:
-    radial-gradient(circle at 86% 16%, color-mix(in srgb, var(--vrpg-accent) 18%, transparent), transparent 90px),
+    linear-gradient(180deg, rgba(200, 170, 120, 0.06), transparent 50%),
     var(--vrpg-surface-glass);
   transform: translateY(-1px);
+  box-shadow: var(--vrpg-inner-light), 0 0 14px rgba(200, 160, 80, 0.06), var(--vrpg-soft-shadow);
 }
 
 .vrpg-command-action.is-active {
-  border-color: color-mix(in srgb, var(--vrpg-accent) 76%, var(--vrpg-border));
+  border-color: rgba(200, 160, 80, 0.45);
   background:
-    radial-gradient(circle at 86% 16%, color-mix(in srgb, var(--vrpg-accent) 24%, transparent), transparent 90px),
-    color-mix(in srgb, var(--vrpg-accent) 14%, var(--vrpg-surface-glass));
+    linear-gradient(180deg, rgba(200, 170, 120, 0.1), transparent 50%),
+    var(--vrpg-surface-strong);
   box-shadow:
     var(--vrpg-inner-light),
-    0 0 0 3px color-mix(in srgb, var(--vrpg-accent) 13%, transparent),
+    0 0 18px rgba(200, 160, 80, 0.08),
+    inset 0 0 16px rgba(200, 160, 80, 0.03),
     var(--vrpg-soft-shadow);
 }
 
 .vrpg-command-action strong {
   color: var(--vrpg-ink) !important;
   -webkit-text-fill-color: var(--vrpg-ink) !important;
-  font-size: 18px;
-  font-weight: 950;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
 }
 
 .vrpg-command-action span {
   color: var(--vrpg-muted) !important;
   -webkit-text-fill-color: var(--vrpg-muted) !important;
-  font-size: 13px;
-  font-weight: 780;
-  line-height: 1.25;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.3;
 }
 
 .vrpg-widget-stack {
@@ -732,13 +787,14 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
 
 .vrpg-glass-widget {
   border: 1px solid var(--vrpg-border);
+  border-top-color: rgba(200, 170, 120, 0.1);
   border-radius: var(--vrpg-radius-lg);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 64%),
-    var(--vrpg-surface-glass);
+    linear-gradient(180deg, rgba(200, 170, 120, 0.04), transparent 50%),
+    var(--vrpg-surface);
   padding: 16px;
   box-shadow: var(--vrpg-inner-light), var(--vrpg-shadow);
-  backdrop-filter: blur(var(--vrpg-blur)) saturate(1.22);
+  backdrop-filter: blur(var(--vrpg-blur));
 }
 
 
@@ -786,14 +842,16 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
 
 
 .vrpg-clock {
-  color: #ffffff;
-  font-size: 46px;
-  font-weight: 950;
+  color: var(--vrpg-rune);
+  font-size: 44px;
+  font-weight: 700;
   line-height: 1;
+  letter-spacing: 0.02em;
   text-shadow:
-    0 0 18px rgba(155, 100, 235, 0.34),
-    0 8px 28px rgba(0, 0, 0, 0.24);
-  animation: vrpg-clock-glow 5s ease-in-out infinite;
+    0 0 20px rgba(200, 160, 80, 0.25),
+    0 0 40px rgba(200, 160, 80, 0.08),
+    0 4px 16px rgba(0, 0, 0, 0.5);
+  animation: vrpg-clock-glow 6s ease-in-out infinite;
 }
 
 .vrpg-clock-colon {
@@ -806,48 +864,48 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
   display: inline-flex;
   width: fit-content;
   margin: 10px 0 8px;
-  border: 1px solid rgba(155, 100, 235, 0.24);
-  border-radius: 999px;
-  background: rgba(155, 100, 235, 0.1);
-  color: #ffffff;
-  -webkit-text-fill-color: #ffffff;
-  padding: 6px 10px;
-  font-size: 12px;
-  font-weight: 900;
+  border: 1px solid rgba(200, 160, 80, 0.2);
+  border-radius: 2px;
+  background: rgba(200, 160, 80, 0.06);
+  color: var(--vrpg-rune);
+  -webkit-text-fill-color: var(--vrpg-rune);
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 700;
   text-transform: uppercase;
+  letter-spacing: 0.12em;
 }
 
 .vrpg-clock-widget {
   position: relative;
   overflow: hidden;
   background:
-    radial-gradient(circle at 80% 18%, rgba(160, 100, 240, 0.22), transparent 82px),
-    radial-gradient(circle at 14% 78%, color-mix(in srgb, var(--vrpg-accent) 20%, transparent), transparent 110px),
-    linear-gradient(145deg, var(--vrpg-surface-strong), var(--vrpg-surface-glass));
+    radial-gradient(ellipse at 80% 20%, rgba(200, 160, 80, 0.1), transparent 100px),
+    linear-gradient(145deg, var(--vrpg-surface-strong), var(--vrpg-surface));
 }
 
 .vrpg-clock-widget::after {
   content: "";
   position: absolute;
-  width: 86px;
-  height: 86px;
-  right: -26px;
-  top: -26px;
+  width: 60px;
+  height: 60px;
+  right: -16px;
+  top: -16px;
   border-radius: 999px;
-  background: rgba(155, 100, 235, 0.16);
-  filter: blur(2px);
-  animation: vrpg-pulse 4s ease-in-out infinite;
+  background: rgba(200, 160, 80, 0.08);
+  filter: blur(4px);
+  animation: vrpg-pulse 5s ease-in-out infinite;
 }
 
 @keyframes vrpg-pulse {
   0%, 100% {
-    transform: scale(0.92);
-    opacity: 0.42;
+    transform: scale(0.9);
+    opacity: 0.3;
   }
 
   50% {
-    transform: scale(1.08);
-    opacity: 0.78;
+    transform: scale(1.1);
+    opacity: 0.6;
   }
 }
 
@@ -863,11 +921,11 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
 
 @keyframes vrpg-clock-glow {
   0%, 100% {
-    filter: drop-shadow(0 0 0 rgba(155, 100, 235, 0));
+    filter: drop-shadow(0 0 0 rgba(200, 160, 80, 0));
   }
 
   50% {
-    filter: drop-shadow(0 0 16px rgba(155, 100, 235, 0.34));
+    filter: drop-shadow(0 0 12px rgba(200, 160, 80, 0.2));
   }
 }
 
@@ -901,8 +959,8 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
 }
 
 .vrpg-calendar-day:hover {
-  border-color: rgba(160, 100, 240, 0.42);
-  background: rgba(160, 100, 240, 0.18);
+  border-color: rgba(200, 163, 94, 0.42);
+  background: rgba(200, 163, 94, 0.14);
   color: var(--vrpg-button-ink) !important;
   -webkit-text-fill-color: var(--vrpg-button-ink) !important;
   transform: translateY(-1px);
@@ -919,9 +977,11 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
 }
 
 .vrpg-calendar-day.is-today {
-  background: linear-gradient(135deg, var(--vrpg-purple), var(--vrpg-blue));
+  background: linear-gradient(135deg, rgba(200, 163, 94, 0.5), rgba(232, 98, 42, 0.35));
+  border-color: rgba(200, 163, 94, 0.6);
   color: var(--vrpg-on-accent) !important;
   -webkit-text-fill-color: var(--vrpg-on-accent) !important;
+  text-shadow: 0 0 6px rgba(200, 163, 94, 0.4);
 }
 
 .vrpg-calendar-day.is-selected {
@@ -959,7 +1019,7 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
   font-size: 56px;
   font-weight: 950;
   line-height: 1;
-  text-shadow: 0 0 24px rgba(166, 92, 255, 0.28);
+  text-shadow: 0 0 20px rgba(200, 163, 94, 0.2);
 }
 
 .vrpg-subtitle,
@@ -1010,8 +1070,8 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
   border: 1px solid color-mix(in srgb, var(--vrpg-border) 72%, transparent);
   border-radius: var(--vrpg-radius);
   background:
-    radial-gradient(circle at 92% 12%, rgba(155, 114, 255, 0.1), transparent 180px),
-    rgba(18, 12, 34, 0.46);
+    radial-gradient(circle at 92% 12%, rgba(200, 163, 94, 0.06), transparent 180px),
+    rgba(12, 8, 18, 0.46);
   box-shadow: var(--vrpg-inner-light), 0 10px 24px rgba(0, 0, 0, 0.16);
 }
 
@@ -1046,8 +1106,8 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
   border: 1px solid color-mix(in srgb, var(--vrpg-border) 72%, transparent);
   border-radius: var(--vrpg-radius);
   background:
-    radial-gradient(circle at 94% 10%, rgba(160, 100, 240, 0.08), transparent 160px),
-    rgba(18, 12, 34, 0.46);
+    radial-gradient(circle at 94% 10%, rgba(200, 163, 94, 0.05), transparent 160px),
+    rgba(12, 8, 18, 0.46);
   box-shadow: var(--vrpg-inner-light), 0 10px 24px rgba(0, 0, 0, 0.16);
   transition: background 0.16s ease, border-color 0.16s ease, opacity 0.16s ease, transform 0.16s ease, box-shadow 0.16s ease;
 }
@@ -1055,8 +1115,8 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
 .vrpg-interface-row:hover {
   border-color: color-mix(in srgb, var(--vrpg-accent) 34%, var(--vrpg-border));
   background:
-    radial-gradient(circle at 94% 10%, rgba(160, 100, 240, 0.12), transparent 170px),
-    color-mix(in srgb, var(--vrpg-accent) 7%, rgba(18, 12, 34, 0.5));
+    radial-gradient(circle at 94% 10%, rgba(200, 163, 94, 0.08), transparent 170px),
+    color-mix(in srgb, var(--vrpg-accent) 7%, rgba(12, 8, 18, 0.5));
 }
 
 .vrpg-interface-meta {
@@ -1098,18 +1158,18 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
   border-color: color-mix(in srgb, var(--vrpg-border) 82%, transparent);
   border-radius: var(--vrpg-radius-sm);
   background:
-    radial-gradient(circle at 50% 18%, rgba(160, 100, 240, 0.1), transparent 54px),
-    rgba(9, 14, 32, 0.5);
+    radial-gradient(circle at 50% 18%, rgba(200, 163, 94, 0.06), transparent 54px),
+    rgba(8, 5, 14, 0.5);
   color: var(--vrpg-muted) !important;
   -webkit-text-fill-color: var(--vrpg-muted) !important;
   touch-action: none;
 }
 
 .vrpg-drag-handle:hover {
-  border-color: color-mix(in srgb, var(--vrpg-cyan) 48%, var(--vrpg-border));
+  border-color: color-mix(in srgb, var(--vrpg-rune) 38%, var(--vrpg-border));
   background:
-    radial-gradient(circle at 50% 18%, rgba(160, 100, 240, 0.18), transparent 58px),
-    rgba(28, 18, 52, 0.72);
+    radial-gradient(circle at 50% 18%, rgba(200, 163, 94, 0.12), transparent 58px),
+    rgba(18, 12, 24, 0.72);
   color: var(--vrpg-ink) !important;
   -webkit-text-fill-color: var(--vrpg-ink) !important;
 }
@@ -1125,10 +1185,10 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
 }
 
 .vrpg-interface-row.is-drag-over {
-  border-color: color-mix(in srgb, var(--vrpg-accent) 48%, var(--vrpg-border));
+  border-color: color-mix(in srgb, var(--vrpg-rune) 48%, var(--vrpg-border));
   background:
-    radial-gradient(circle at 94% 10%, rgba(160, 100, 240, 0.16), transparent 180px),
-    color-mix(in srgb, var(--vrpg-accent) 12%, rgba(18, 12, 34, 0.58));
+    radial-gradient(circle at 94% 10%, rgba(200, 163, 94, 0.1), transparent 180px),
+    color-mix(in srgb, var(--vrpg-rune) 10%, rgba(12, 8, 18, 0.58));
 }
 
 .vrpg-interface-row.is-drag-over::before,
@@ -1140,8 +1200,8 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
   right: 10px;
   height: 2px;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--vrpg-purple), var(--vrpg-cyan));
-  box-shadow: 0 0 12px color-mix(in srgb, var(--vrpg-accent) 42%, transparent);
+  background: linear-gradient(90deg, var(--vrpg-rune), var(--vrpg-ember));
+  box-shadow: 0 0 12px color-mix(in srgb, var(--vrpg-rune) 42%, transparent);
 }
 
 .vrpg-interface-row.is-drag-over-before::before {
@@ -1166,14 +1226,14 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
   width: auto;
   min-height: 0;
   margin: 0;
-  accent-color: var(--vrpg-purple);
+  accent-color: var(--vrpg-rune);
 }
 
 .vrpg-interface-disabled {
   opacity: 0.64;
   background:
-    radial-gradient(circle at 94% 10%, rgba(160, 100, 240, 0.04), transparent 140px),
-    rgba(10, 14, 30, 0.42);
+    radial-gradient(circle at 94% 10%, rgba(200, 163, 94, 0.03), transparent 140px),
+    rgba(10, 8, 14, 0.42);
 }
 
 .vrpg-interface-disabled .vrpg-widget-title,
@@ -1192,8 +1252,8 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
   border: 1px solid var(--vrpg-border);
   border-radius: var(--vrpg-radius-sm);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent),
-    rgba(9, 14, 32, 0.52);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent),
+    rgba(8, 5, 14, 0.52);
   box-shadow: var(--vrpg-inner-light);
 }
 
@@ -1219,15 +1279,15 @@ body.theme-light .vibe-rpg-plugin.vrpg-accent-gold {
 }
 
 .vrpg-size-option.is-active {
-  border-color: color-mix(in srgb, var(--vrpg-accent) 68%, var(--vrpg-border));
+  border-color: color-mix(in srgb, var(--vrpg-rune) 58%, var(--vrpg-border));
   background:
-    radial-gradient(circle at 78% 14%, rgba(160, 100, 240, 0.2), transparent 70px),
-    linear-gradient(135deg, rgba(155, 114, 255, 0.42), rgba(86, 125, 255, 0.24));
+    radial-gradient(circle at 78% 14%, rgba(200, 163, 94, 0.15), transparent 70px),
+    linear-gradient(135deg, rgba(200, 163, 94, 0.3), rgba(232, 98, 42, 0.15));
   color: var(--vrpg-ink) !important;
   -webkit-text-fill-color: var(--vrpg-ink) !important;
   box-shadow:
     var(--vrpg-inner-light),
-    0 0 0 2px color-mix(in srgb, var(--vrpg-accent) 13%, transparent);
+    0 0 0 2px color-mix(in srgb, var(--vrpg-rune) 13%, transparent);
 }
 
 button.vrpg-danger {
@@ -1268,8 +1328,8 @@ button.vrpg-danger {
 .vrpg-settings-shell {
   justify-content: flex-start;
   background:
-    radial-gradient(circle at 82% 4%, color-mix(in srgb, var(--vrpg-accent) 18%, transparent), transparent 260px),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 64%),
+    radial-gradient(circle at 82% 4%, color-mix(in srgb, var(--vrpg-rune) 10%, transparent), transparent 260px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 64%),
     var(--vrpg-panel);
 }
 
@@ -1434,11 +1494,11 @@ button.vrpg-danger {
 }
 
 .vrpg-rarity-rare {
-  background: rgba(155, 100, 235, 0.16);
+  background: rgba(80, 140, 200, 0.2);
 }
 
 .vrpg-rarity-epic {
-  background: rgba(166, 92, 255, 0.2);
+  background: rgba(160, 80, 200, 0.2);
 }
 
 .vrpg-rarity-legendary {
@@ -1465,7 +1525,7 @@ button.vrpg-danger {
   aspect-ratio: 1 / 1;
   min-width: 0;
   margin: 0 auto;
-  filter: drop-shadow(0 18px 34px rgba(166, 92, 255, 0.16));
+  filter: drop-shadow(0 18px 34px rgba(200, 163, 94, 0.12));
 }
 
 .vrpg-radar-ring {
@@ -1480,13 +1540,13 @@ button.vrpg-danger {
 }
 
 .vrpg-radar-shape {
-  fill: rgba(166, 92, 255, 0.28);
-  stroke: rgba(155, 100, 235, 0.9);
+  fill: rgba(200, 163, 94, 0.2);
+  stroke: rgba(200, 163, 94, 0.8);
   stroke-width: 2.4;
 }
 
 .vrpg-radar-label {
-  fill: #f5f8ff;
+  fill: #e8dfd0;
   font-size: 12px;
   font-weight: 800;
 }
@@ -1537,7 +1597,7 @@ button.vrpg-danger {
 .vrpg-hero-track-fill {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--vrpg-blue), var(--vrpg-purple), var(--vrpg-cyan));
+  background: linear-gradient(90deg, var(--vrpg-ember), var(--vrpg-rune), var(--vrpg-bone));
 }
 
 .vrpg-week-strip {
@@ -1557,8 +1617,8 @@ button.vrpg-danger {
 }
 
 .vrpg-week-card.is-today {
-  border-color: rgba(166, 92, 255, 0.5);
-  background: rgba(166, 92, 255, 0.16);
+  border-color: rgba(200, 163, 94, 0.5);
+  background: rgba(200, 163, 94, 0.1);
 }
 
 .vrpg-week-name {
@@ -1588,7 +1648,7 @@ button.vrpg-danger {
 .vrpg-mini-fill {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, var(--vrpg-purple), var(--vrpg-cyan));
+  background: linear-gradient(90deg, var(--vrpg-rune), var(--vrpg-ember));
 }
 
 .vrpg-button-grid,
@@ -1617,9 +1677,10 @@ button.vrpg-danger {
   width: 72px;
   height: 72px;
   border-radius: var(--vrpg-radius);
-  background: linear-gradient(135deg, var(--vrpg-purple), var(--vrpg-blue));
-  color: #ffffff;
-  -webkit-text-fill-color: #ffffff;
+  background: linear-gradient(135deg, rgba(200, 163, 94, 0.4), rgba(120, 90, 50, 0.5));
+  border: 1px solid rgba(200, 163, 94, 0.3);
+  color: #e8dfd0;
+  -webkit-text-fill-color: #e8dfd0;
   font-size: 34px;
   font-weight: 950;
   flex: 0 0 auto;
@@ -1631,18 +1692,18 @@ button.vrpg-danger {
   overflow: hidden;
   width: 76px;
   height: 76px;
-  border: 1px solid rgba(205, 216, 238, 0.22);
+  border: 1px solid rgba(200, 163, 94, 0.3);
   border-radius: var(--vrpg-radius-lg);
   background:
-    radial-gradient(circle at 70% 18%, rgba(160, 100, 240, 0.28), transparent 52px),
-    linear-gradient(135deg, color-mix(in srgb, var(--vrpg-accent) 76%, #b28cff 24%), var(--vrpg-surface-strong));
-  color: #ffffff;
-  -webkit-text-fill-color: #ffffff;
+    radial-gradient(circle at 70% 18%, rgba(200, 163, 94, 0.2), transparent 52px),
+    linear-gradient(135deg, rgba(200, 163, 94, 0.35), rgba(120, 90, 50, 0.5));
+  color: #e8dfd0;
+  -webkit-text-fill-color: #e8dfd0;
   font-size: 32px;
   font-weight: 950;
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
-    0 14px 30px rgba(0, 0, 0, 0.24);
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 14px 30px rgba(0, 0, 0, 0.3);
   flex: 0 0 auto;
 }
 
@@ -1671,8 +1732,8 @@ button.vrpg-danger {
 
 .vrpg-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--vrpg-blue), var(--vrpg-purple));
-  box-shadow: 0 0 18px color-mix(in srgb, var(--vrpg-accent) 28%, transparent);
+  background: linear-gradient(90deg, var(--vrpg-ember), var(--vrpg-rune));
+  box-shadow: 0 0 14px color-mix(in srgb, var(--vrpg-rune) 20%, transparent);
 }
 
 .vrpg-stat-value,
@@ -1756,28 +1817,28 @@ button.vrpg-danger {
 
 .vibe-rpg-plugin .vrpg-hero-card.vrpg-widget {
   background:
-    radial-gradient(circle at 82% 18%, rgba(156, 109, 255, 0.3), transparent 220px),
-    linear-gradient(135deg, rgba(83, 72, 137, 0.96), rgba(58, 62, 108, 0.94));
-  border-color: rgba(155, 114, 255, 0.34);
+    radial-gradient(circle at 82% 18%, rgba(200, 163, 94, 0.3), transparent 220px),
+    linear-gradient(135deg, rgba(30, 20, 12, 0.96), rgba(20, 14, 10, 0.94));
+  border-color: rgba(200, 163, 94, 0.34);
   box-shadow:
     var(--vrpg-inner-light),
     0 24px 68px rgba(0, 0, 0, 0.46),
-    inset 0 0 42px rgba(155, 114, 255, 0.08);
+    inset 0 0 42px rgba(200, 163, 94, 0.08);
 }
 
 .vibe-rpg-plugin .vrpg-glass-widget.vrpg-widget {
   background:
-    radial-gradient(circle at 76% 12%, rgba(160, 100, 240, 0.12), transparent 160px),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 62%),
-    rgba(28, 18, 52, 0.72);
+    radial-gradient(circle at 76% 12%, rgba(200, 163, 94, 0.06), transparent 160px),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 62%),
+    rgba(14, 10, 20, 0.82);
 }
 
 
 .vibe-rpg-plugin .vrpg-home-module.vrpg-widget,
 .vibe-rpg-plugin .vrpg-panel.vrpg-widget {
   background:
-    radial-gradient(circle at 82% 6%, rgba(155, 114, 255, 0.12), transparent 220px),
-    rgba(18, 12, 34, 0.76);
+    radial-gradient(circle at 82% 6%, rgba(200, 163, 94, 0.06), transparent 220px),
+    rgba(10, 7, 16, 0.82);
 }
 
 .vibe-rpg-plugin .vrpg-widget {
@@ -1793,7 +1854,7 @@ button.vrpg-danger {
   opacity: 0.42;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 32%),
-    radial-gradient(circle at 88% 10%, rgba(160, 100, 240, 0.08), transparent 170px);
+    radial-gradient(circle at 88% 10%, rgba(200, 163, 94, 0.08), transparent 170px);
   mask-image: linear-gradient(180deg, black, transparent 88%);
 }
 
@@ -1811,12 +1872,12 @@ button.vrpg-danger {
 }
 
 .vrpg-home-edit-mode .vrpg-widget-editing {
-  outline: 1px solid color-mix(in srgb, var(--vrpg-cyan) 30%, transparent);
+  outline: 1px solid color-mix(in srgb, var(--vrpg-rune) 30%, transparent);
   outline-offset: -7px;
   box-shadow:
     var(--vrpg-inner-light),
     var(--vrpg-shadow),
-    inset 0 0 0 1px color-mix(in srgb, var(--vrpg-purple) 12%, transparent);
+    inset 0 0 0 1px color-mix(in srgb, var(--vrpg-rune) 12%, transparent);
 }
 
 .vrpg-home-drag-handle {
@@ -1828,27 +1889,27 @@ button.vrpg-danger {
   place-items: center;
   min-width: 42px;
   min-height: 42px;
-  border: 1px solid color-mix(in srgb, var(--vrpg-cyan) 42%, var(--vrpg-border));
+  border: 1px solid color-mix(in srgb, var(--vrpg-rune) 32%, var(--vrpg-border));
   border-radius: 999px;
   background:
-    radial-gradient(circle at 50% 18%, rgba(160, 100, 240, 0.18), transparent 52px),
-    rgba(9, 14, 32, 0.76);
+    radial-gradient(circle at 50% 18%, rgba(200, 163, 94, 0.12), transparent 52px),
+    rgba(8, 5, 14, 0.76);
   color: var(--vrpg-ink) !important;
   -webkit-text-fill-color: var(--vrpg-ink) !important;
   cursor: grab;
   box-shadow:
     var(--vrpg-inner-light),
     0 12px 24px rgba(0, 0, 0, 0.26),
-    0 0 0 3px color-mix(in srgb, var(--vrpg-cyan) 8%, transparent);
+    0 0 0 3px color-mix(in srgb, var(--vrpg-rune) 8%, transparent);
   touch-action: none;
   transition: transform 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease, background 0.14s ease;
 }
 
 .vrpg-home-drag-handle:hover {
-  border-color: color-mix(in srgb, var(--vrpg-purple) 58%, var(--vrpg-border));
+  border-color: color-mix(in srgb, var(--vrpg-rune) 48%, var(--vrpg-border));
   background:
-    radial-gradient(circle at 50% 18%, rgba(155, 114, 255, 0.22), transparent 52px),
-    rgba(28, 18, 52, 0.86);
+    radial-gradient(circle at 50% 18%, rgba(200, 163, 94, 0.16), transparent 52px),
+    rgba(18, 12, 24, 0.86);
 }
 
 .vrpg-home-drag-handle:active {
@@ -1868,11 +1929,11 @@ button.vrpg-danger {
   justify-content: space-between;
   min-width: 0;
   padding: 8px 9px 8px 12px;
-  border: 1px solid color-mix(in srgb, var(--vrpg-cyan) 24%, var(--vrpg-border));
+  border: 1px solid color-mix(in srgb, var(--vrpg-rune) 20%, var(--vrpg-border));
   border-radius: 999px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 74%),
-    rgba(9, 14, 32, 0.76);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 74%),
+    rgba(8, 5, 14, 0.76);
   box-shadow:
     var(--vrpg-inner-light),
     0 12px 26px rgba(0, 0, 0, 0.24),
@@ -1926,27 +1987,27 @@ button.vrpg-danger {
   place-items: center;
   min-width: 48px;
   min-height: 48px;
-  border: 1px solid color-mix(in srgb, var(--vrpg-purple) 44%, var(--vrpg-border));
+  border: 1px solid color-mix(in srgb, var(--vrpg-rune) 34%, var(--vrpg-border));
   border-radius: 999px;
   background:
-    radial-gradient(circle at 50% 18%, rgba(155, 114, 255, 0.18), transparent 48px),
-    rgba(9, 14, 32, 0.76);
+    radial-gradient(circle at 50% 18%, rgba(200, 163, 94, 0.12), transparent 48px),
+    rgba(8, 5, 14, 0.76);
   color: var(--vrpg-ink) !important;
   -webkit-text-fill-color: var(--vrpg-ink) !important;
   cursor: nwse-resize;
   box-shadow:
     var(--vrpg-inner-light),
     0 16px 30px rgba(0, 0, 0, 0.3),
-    0 0 0 4px color-mix(in srgb, var(--vrpg-purple) 10%, transparent);
+    0 0 0 4px color-mix(in srgb, var(--vrpg-rune) 10%, transparent);
   touch-action: none;
   transition: transform 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease, background 0.14s ease;
 }
 
 .vrpg-home-resize-handle:hover {
-  border-color: color-mix(in srgb, var(--vrpg-cyan) 58%, var(--vrpg-border));
+  border-color: color-mix(in srgb, var(--vrpg-rune) 48%, var(--vrpg-border));
   background:
-    radial-gradient(circle at 50% 18%, rgba(160, 100, 240, 0.18), transparent 48px),
-    rgba(28, 18, 52, 0.86);
+    radial-gradient(circle at 50% 18%, rgba(200, 163, 94, 0.14), transparent 48px),
+    rgba(18, 12, 24, 0.86);
 }
 
 .vrpg-home-resize-handle:active {
@@ -1960,9 +2021,9 @@ button.vrpg-danger {
 
 .vrpg-freeform-canvas.vrpg-home-edit-mode {
   background:
-    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--vrpg-cyan) 10%, transparent) 0 1px, transparent 1px),
-    linear-gradient(color-mix(in srgb, var(--vrpg-cyan) 7%, transparent) 1px, transparent 1px),
-    linear-gradient(90deg, color-mix(in srgb, var(--vrpg-cyan) 7%, transparent) 1px, transparent 1px);
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--vrpg-rune) 8%, transparent) 0 1px, transparent 1px),
+    linear-gradient(color-mix(in srgb, var(--vrpg-rune) 5%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--vrpg-rune) 5%, transparent) 1px, transparent 1px);
   background-size:
     24px 24px,
     96px var(--vrpg-freeform-row-height, 96px),
@@ -2036,7 +2097,7 @@ button.vrpg-danger {
   display: none;
   height: 2px;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--vrpg-purple), var(--vrpg-cyan));
+  background: linear-gradient(90deg, var(--vrpg-rune), var(--vrpg-ember));
   box-shadow: 0 0 14px color-mix(in srgb, var(--vrpg-cyan) 46%, transparent);
 }
 
@@ -2196,7 +2257,7 @@ button.vrpg-danger {
   border-radius: var(--vrpg-radius);
   background:
     radial-gradient(circle at 86% 12%, color-mix(in srgb, var(--vrpg-accent) 14%, transparent), transparent 90px),
-    rgba(8, 12, 30, 0.34);
+    rgba(8, 5, 14, 0.34);
   padding: 8px 10px;
   box-shadow: var(--vrpg-inner-light);
 }
@@ -2218,7 +2279,7 @@ button.vrpg-danger {
   border-color: color-mix(in srgb, var(--vrpg-gold) 28%, var(--vrpg-border));
   background:
     radial-gradient(circle at 92% 8%, rgba(242, 193, 78, 0.16), transparent 120px),
-    rgba(8, 12, 30, 0.34);
+    rgba(8, 5, 14, 0.34);
 }
 
 .vrpg-command-utility.is-water {
@@ -2239,7 +2300,7 @@ button.vrpg-danger {
 .vrpg-command-mini-actions button {
   border: 1px solid color-mix(in srgb, var(--vrpg-cyan) 34%, var(--vrpg-border));
   border-radius: var(--vrpg-radius-sm);
-  background: rgba(160, 100, 240, 0.12);
+  background: rgba(200, 163, 94, 0.12);
   color: var(--vrpg-ink) !important;
   -webkit-text-fill-color: var(--vrpg-ink) !important;
   font: inherit;
@@ -2286,7 +2347,7 @@ button.vrpg-danger {
   min-width: 0;
   border: 1px solid color-mix(in srgb, var(--vrpg-border) 58%, transparent);
   border-radius: var(--vrpg-radius);
-  background: rgba(8, 12, 30, 0.28);
+  background: rgba(8, 5, 14, 0.28);
   padding: 7px 9px;
   box-shadow: var(--vrpg-inner-light);
 }
@@ -2308,7 +2369,7 @@ button.vrpg-danger {
   min-height: 34px;
   border: 1px solid color-mix(in srgb, var(--vrpg-border) 62%, transparent);
   border-radius: var(--vrpg-radius-sm);
-  background: rgba(8, 12, 30, 0.28);
+  background: rgba(8, 5, 14, 0.28);
   color: var(--vrpg-ink) !important;
   -webkit-text-fill-color: var(--vrpg-ink) !important;
   padding: 7px 9px;
@@ -2320,19 +2381,19 @@ button.vrpg-danger {
 
 .vrpg-preview-task.is-done {
   border-color: color-mix(in srgb, var(--vrpg-green) 38%, var(--vrpg-border));
-  background: color-mix(in srgb, var(--vrpg-green) 12%, rgba(8, 12, 30, 0.28));
+  background: color-mix(in srgb, var(--vrpg-green) 12%, rgba(8, 5, 14, 0.28));
 }
 
 .vrpg-preview-task strong {
-  color: var(--vrpg-cyan);
-  -webkit-text-fill-color: var(--vrpg-cyan);
+  color: var(--vrpg-rune);
+  -webkit-text-fill-color: var(--vrpg-rune);
   white-space: nowrap;
 }
 
 .vrpg-preview-empty {
   border: 1px dashed color-mix(in srgb, var(--vrpg-border) 72%, transparent);
   border-radius: var(--vrpg-radius-sm);
-  background: rgba(8, 12, 30, 0.22);
+  background: rgba(8, 5, 14, 0.22);
   color: var(--vrpg-muted);
   -webkit-text-fill-color: var(--vrpg-muted);
   padding: 9px 10px;
@@ -2411,7 +2472,7 @@ button.vrpg-danger {
   min-width: 0;
   border: 1px solid color-mix(in srgb, var(--vrpg-cyan) 28%, var(--vrpg-border));
   border-radius: var(--vrpg-radius);
-  background: rgba(8, 12, 30, 0.28);
+  background: rgba(8, 5, 14, 0.28);
   padding: 7px;
   text-align: center;
   box-shadow: var(--vrpg-inner-light);
@@ -2706,7 +2767,7 @@ button.vrpg-danger {
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent),
     var(--vrpg-surface-soft);
   color: var(--vrpg-ink);
-  caret-color: var(--vrpg-purple);
+  caret-color: var(--vrpg-rune);
   outline: none;
   padding: 11px 14px;
   font: inherit;
@@ -2731,7 +2792,7 @@ button.vrpg-danger {
   border-radius: var(--vrpg-radius-sm);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.07), transparent),
-    rgba(11, 16, 36, 0.58);
+    rgba(10, 7, 16, 0.58);
   color: var(--vrpg-ink);
   -webkit-text-fill-color: var(--vrpg-ink);
   padding: 9px 12px;
@@ -2748,7 +2809,7 @@ button.vrpg-danger {
   margin: 0;
   padding: 0;
   border-radius: 5px;
-  accent-color: var(--vrpg-purple);
+  accent-color: var(--vrpg-rune);
   box-shadow: none;
 }
 
@@ -3092,8 +3153,9 @@ button.vrpg-danger {
   display: flex;
   gap: 2px;
   padding: 4px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 8px;
+  background: rgba(8, 5, 14, 0.6);
+  border: 1px solid var(--vrpg-border);
+  border-radius: var(--vrpg-radius-sm);
   margin-bottom: 12px;
   overflow-x: auto;
   scrollbar-width: none;
@@ -3105,11 +3167,13 @@ button.vrpg-danger {
   min-width: 0;
   padding: 8px 6px;
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: calc(var(--vrpg-radius-sm) - 2px);
   background: transparent;
-  color: var(--text-muted);
+  color: var(--vrpg-muted);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -3119,56 +3183,74 @@ button.vrpg-danger {
   white-space: nowrap;
 }
 .vrpg-quest-tab:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-normal);
+  background: rgba(200, 163, 94, 0.06);
+  color: var(--vrpg-ink);
 }
 .vrpg-quest-tab.is-active {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(88, 28, 135, 0.3));
-  border-color: rgba(139, 92, 246, 0.4);
-  color: var(--text-normal);
-  box-shadow: 0 0 8px rgba(139, 92, 246, 0.2);
+  background:
+    linear-gradient(135deg, rgba(200, 163, 94, 0.18), rgba(120, 90, 50, 0.22));
+  border-color: rgba(200, 163, 94, 0.35);
+  color: var(--vrpg-ink);
+  box-shadow: 0 0 8px rgba(200, 163, 94, 0.12);
+  text-shadow: 0 0 8px rgba(200, 163, 94, 0.2);
 }
 
 .vrpg-tab-badge {
   font-size: 10px;
-  font-weight: 700;
-  background: rgba(139, 92, 246, 0.5);
-  color: #fff;
+  font-weight: 900;
+  background: rgba(200, 163, 94, 0.35);
+  color: var(--vrpg-ink);
   padding: 1px 5px;
-  border-radius: 8px;
+  border-radius: 4px;
   min-width: 16px;
   text-align: center;
 }
 
 /* ── Quest Cards ── */
 .vrpg-quest-card {
-  background: rgba(0, 0, 0, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 8px;
+  background:
+    radial-gradient(circle at 95% 5%, rgba(200, 163, 94, 0.04), transparent 120px),
+    rgba(8, 5, 14, 0.5);
+  border: 1px solid var(--vrpg-border);
+  border-radius: var(--vrpg-radius-sm);
   padding: 14px;
   margin-bottom: 10px;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  position: relative;
 }
 .vrpg-quest-card:hover {
-  border-color: rgba(255, 255, 255, 0.1);
+  border-color: rgba(200, 163, 94, 0.25);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
-/* Type-specific card accents */
+/* Type-specific card accents — each quest type gets a distinct dark fantasy identity */
 .vrpg-quest-card.vrpg-type-main-quest {
-  border-left: 3px solid rgba(234, 179, 8, 0.6);
+  border-left: 3px solid rgba(200, 163, 94, 0.7);
+  background:
+    radial-gradient(circle at 0% 50%, rgba(200, 163, 94, 0.06), transparent 100px),
+    rgba(8, 5, 14, 0.5);
 }
 .vrpg-quest-card.vrpg-type-quest {
-  border-left: 3px solid rgba(139, 92, 246, 0.5);
+  border-left: 3px solid rgba(120, 140, 200, 0.5);
+  background:
+    radial-gradient(circle at 0% 50%, rgba(120, 140, 200, 0.04), transparent 100px),
+    rgba(8, 5, 14, 0.5);
 }
 .vrpg-quest-card.vrpg-type-bounty {
-  border-left: 3px solid rgba(34, 197, 94, 0.5);
+  border-left: 3px solid rgba(80, 160, 90, 0.55);
+  background:
+    radial-gradient(circle at 0% 50%, rgba(80, 160, 90, 0.04), transparent 100px),
+    rgba(8, 5, 14, 0.5);
 }
 .vrpg-quest-card.vrpg-type-event {
-  border-left: 3px solid rgba(249, 115, 22, 0.5);
+  border-left: 3px solid rgba(232, 98, 42, 0.6);
+  background:
+    radial-gradient(circle at 0% 50%, rgba(232, 98, 42, 0.04), transparent 100px),
+    rgba(8, 5, 14, 0.5);
 }
 .vrpg-quest-card.is-overdue {
-  border-color: rgba(239, 68, 68, 0.4);
-  box-shadow: 0 0 6px rgba(239, 68, 68, 0.15);
+  border-color: rgba(180, 50, 50, 0.5);
+  box-shadow: 0 0 8px rgba(180, 50, 50, 0.12);
 }
 
 .vrpg-quest-header {
@@ -3180,19 +3262,20 @@ button.vrpg-danger {
 
 .vrpg-quest-type-badge {
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 900;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-muted);
-  opacity: 0.8;
+  letter-spacing: 0.08em;
+  color: var(--vrpg-muted);
 }
 
 .vrpg-quest-deadline {
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--vrpg-muted);
+  font-weight: 700;
 }
 .vrpg-quest-deadline.vrpg-overdue {
-  color: var(--text-error, #ef4444);
+  color: #c44040;
+  text-shadow: 0 0 6px rgba(180, 50, 50, 0.3);
 }
 
 .vrpg-quest-meta {
@@ -3200,8 +3283,9 @@ button.vrpg-danger {
   flex-wrap: wrap;
   gap: 0;
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--vrpg-muted);
   margin-top: 6px;
+  font-weight: 700;
 }
 
 .vrpg-quest-actions {
@@ -3216,20 +3300,23 @@ button.vrpg-danger {
 }
 .vrpg-mq-progress-text {
   font-size: 11px;
-  color: var(--text-muted);
+  color: var(--vrpg-muted);
   margin-bottom: 4px;
+  font-weight: 750;
 }
 .vrpg-mq-bar {
-  height: 6px;
-  background: rgba(0, 0, 0, 0.3);
-  border-radius: 3px;
+  height: 8px;
+  background: rgba(8, 5, 14, 0.6);
+  border: 1px solid rgba(120, 90, 50, 0.2);
+  border-radius: 4px;
   overflow: hidden;
 }
 .vrpg-mq-fill {
   height: 100%;
-  background: linear-gradient(90deg, #eab308, #f59e0b);
+  background: linear-gradient(90deg, var(--vrpg-ember), var(--vrpg-rune));
   border-radius: 3px;
   transition: width 0.3s ease;
+  box-shadow: 0 0 8px rgba(200, 163, 94, 0.2);
 }
 
 /* ── Main Quest Steps ── */
@@ -3241,25 +3328,26 @@ button.vrpg-danger {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 5px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(120, 90, 50, 0.12);
 }
 .vrpg-mq-step:last-child { border-bottom: none; }
 .vrpg-mq-step.is-done {
-  opacity: 0.5;
+  opacity: 0.45;
 }
 .vrpg-mq-step.is-done .vrpg-step-title {
   text-decoration: line-through;
+  text-decoration-color: var(--vrpg-muted);
 }
 
 .vrpg-step-check {
   width: 24px;
   height: 24px;
   min-width: 24px;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  background: transparent;
-  color: var(--text-muted);
+  border-radius: 4px;
+  border: 2px solid rgba(120, 90, 50, 0.3);
+  background: rgba(8, 5, 14, 0.4);
+  color: var(--vrpg-muted);
   font-size: 12px;
   cursor: pointer;
   display: flex;
@@ -3269,47 +3357,55 @@ button.vrpg-danger {
   padding: 0;
 }
 .vrpg-step-check:hover {
-  border-color: rgba(234, 179, 8, 0.6);
-  background: rgba(234, 179, 8, 0.1);
+  border-color: rgba(200, 163, 94, 0.5);
+  background: rgba(200, 163, 94, 0.1);
+  box-shadow: 0 0 6px rgba(200, 163, 94, 0.12);
 }
 .vrpg-step-check.is-checked {
-  border-color: rgba(34, 197, 94, 0.5);
-  background: rgba(34, 197, 94, 0.15);
-  color: #22c55e;
+  border-color: rgba(80, 160, 90, 0.5);
+  background: rgba(80, 160, 90, 0.12);
+  color: #5ab06a;
   cursor: default;
 }
 
 .vrpg-step-title {
   flex: 1;
   font-size: 13px;
+  font-weight: 700;
+  color: var(--vrpg-ink);
 }
 .vrpg-step-xp {
   font-size: 10px;
-  color: var(--text-muted);
-  opacity: 0.7;
+  color: var(--vrpg-rune);
+  font-weight: 800;
 }
 
 /* ── Event Tasks ── */
 .vrpg-event-tasks {
   margin: 8px 0;
   padding: 8px;
-  background: rgba(0, 0, 0, 0.15);
-  border-radius: 6px;
+  background: rgba(8, 5, 14, 0.35);
+  border: 1px solid rgba(120, 90, 50, 0.12);
+  border-radius: var(--vrpg-radius-sm);
 }
 .vrpg-event-task {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 4px 0;
+  font-weight: 700;
+  color: var(--vrpg-ink);
 }
 .vrpg-event-task.is-done {
-  opacity: 0.5;
+  opacity: 0.45;
   text-decoration: line-through;
+  text-decoration-color: var(--vrpg-muted);
 }
 
 /* ── Bounty specific ── */
 .vrpg-quest-card.vrpg-type-bounty .vrpg-quest-meta span:last-child {
-  font-weight: 600;
+  font-weight: 800;
+  color: var(--vrpg-rune);
 }
 
 /* ── Codex (Quick Capture Inbox) ── */
@@ -3324,19 +3420,21 @@ button.vrpg-danger {
 .vrpg-codex-input {
   flex: 1;
   padding: 8px 12px;
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
-  color: var(--text-normal);
+  background: rgba(8, 5, 14, 0.5);
+  border: 1px solid var(--vrpg-border);
+  border-radius: var(--vrpg-radius-sm);
+  color: var(--vrpg-ink);
   font-size: 13px;
+  font-weight: 700;
+  caret-color: var(--vrpg-rune);
 }
 .vrpg-codex-input:focus {
   outline: none;
-  border-color: rgba(139, 92, 246, 0.4);
-  box-shadow: 0 0 6px rgba(139, 92, 246, 0.15);
+  border-color: rgba(200, 163, 94, 0.4);
+  box-shadow: 0 0 8px rgba(200, 163, 94, 0.1);
 }
 .vrpg-codex-input::placeholder {
-  color: var(--text-muted);
+  color: var(--vrpg-muted);
   opacity: 0.6;
 }
 
@@ -3344,10 +3442,12 @@ button.vrpg-danger {
   margin-top: 8px;
 }
 .vrpg-codex-scroll {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-left: 3px solid rgba(139, 92, 246, 0.3);
-  border-radius: 6px;
+  background:
+    radial-gradient(circle at 0% 50%, rgba(200, 163, 94, 0.04), transparent 80px),
+    rgba(8, 5, 14, 0.4);
+  border: 1px solid var(--vrpg-border);
+  border-left: 3px solid rgba(200, 163, 94, 0.35);
+  border-radius: var(--vrpg-radius-sm);
   padding: 10px 12px;
   margin-bottom: 8px;
 }
@@ -3359,21 +3459,25 @@ button.vrpg-danger {
 }
 .vrpg-codex-sort-btn {
   font-size: 11px;
+  font-weight: 800;
   padding: 3px 8px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 4px;
-  color: var(--text-muted);
+  background: rgba(200, 163, 94, 0.06);
+  border: 1px solid var(--vrpg-border);
+  border-radius: var(--vrpg-radius-sm);
+  color: var(--vrpg-muted);
   cursor: pointer;
+  letter-spacing: 0.03em;
+  transition: all 0.16s ease;
 }
 .vrpg-codex-sort-btn:hover {
-  background: rgba(139, 92, 246, 0.2);
-  border-color: rgba(139, 92, 246, 0.3);
-  color: var(--text-normal);
+  background: rgba(200, 163, 94, 0.12);
+  border-color: rgba(200, 163, 94, 0.3);
+  color: var(--vrpg-ink);
 }
 .vrpg-codex-empty {
   text-align: center;
   padding: 20px;
+  color: var(--vrpg-muted);
 }
 
 /* ── Empty States ── */
@@ -3384,13 +3488,14 @@ button.vrpg-danger {
 .vrpg-empty-icon {
   font-size: 32px;
   margin-bottom: 8px;
-  opacity: 0.5;
+  opacity: 0.4;
 }
 .vrpg-empty-title {
   font-size: 16px;
-  font-weight: 600;
-  color: var(--text-normal);
+  font-weight: 850;
+  color: var(--vrpg-ink);
   margin-bottom: 4px;
+  letter-spacing: 0.02em;
 }
 
 /* ── Small / Ghost Buttons ── */
@@ -3399,26 +3504,30 @@ button.vrpg-danger {
   padding: 4px 10px !important;
 }
 .vrpg-ghost {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: var(--text-muted);
+  background: rgba(200, 163, 94, 0.04);
+  border: 1px solid var(--vrpg-border);
+  color: var(--vrpg-muted);
   cursor: pointer;
-  padding: 3px 8px;
-  border-radius: 4px;
+  padding: 4px 9px;
+  border-radius: var(--vrpg-radius-sm);
   font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  transition: all 0.16s ease;
 }
 .vrpg-ghost:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: var(--text-normal);
+  background: rgba(200, 163, 94, 0.1);
+  border-color: rgba(200, 163, 94, 0.25);
+  color: var(--vrpg-ink);
 }
 .vrpg-disabled {
   opacity: 0.4;
   cursor: not-allowed;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  color: var(--text-muted);
+  background: rgba(8, 5, 14, 0.3);
+  border: 1px solid rgba(120, 90, 50, 0.12);
+  color: var(--vrpg-muted);
   padding: 6px 12px;
-  border-radius: 6px;
+  border-radius: var(--vrpg-radius-sm);
   font-size: 13px;
 }
 
@@ -3433,17 +3542,152 @@ button.vrpg-danger {
 .vrpg-dynamic-fields textarea {
   width: 100%;
   padding: 8px;
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 6px;
-  color: var(--text-normal);
+  background: rgba(8, 5, 14, 0.5);
+  border: 1px solid var(--vrpg-border);
+  border-radius: var(--vrpg-radius-sm);
+  color: var(--vrpg-ink);
   font-size: 13px;
+  font-weight: 700;
   resize: vertical;
+  caret-color: var(--vrpg-rune);
 }
 
 /* ── Quest Subtasks ── */
 .vrpg-quest-subtasks {
   margin: 4px 0;
   padding-left: 8px;
-  border-left: 2px solid rgba(255, 255, 255, 0.05);
+  border-left: 2px solid rgba(120, 90, 50, 0.2);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   ATMOSPHERIC EFFECTS & POLISH — Dark Fantasy
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Floating Ember Particles ──
+   Pseudo-element particle system on the main app background.
+   Small glowing dots drift upward like embers from a forge. */
+.vibe-rpg-plugin::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    radial-gradient(1px 1px at 15% 80%, rgba(232, 98, 42, 0.5), transparent),
+    radial-gradient(1.5px 1.5px at 35% 70%, rgba(200, 163, 94, 0.4), transparent),
+    radial-gradient(1px 1px at 55% 85%, rgba(232, 98, 42, 0.35), transparent),
+    radial-gradient(1.2px 1.2px at 75% 75%, rgba(200, 163, 94, 0.3), transparent),
+    radial-gradient(0.8px 0.8px at 90% 90%, rgba(232, 98, 42, 0.4), transparent),
+    radial-gradient(1px 1px at 25% 60%, rgba(200, 163, 94, 0.25), transparent),
+    radial-gradient(1.3px 1.3px at 65% 50%, rgba(232, 98, 42, 0.3), transparent),
+    radial-gradient(0.7px 0.7px at 45% 40%, rgba(200, 163, 94, 0.2), transparent);
+  background-size:
+    300px 300px, 400px 350px, 350px 280px, 280px 320px,
+    320px 360px, 380px 300px, 260px 340px, 340px 280px;
+  animation: vrpg-embers 20s linear infinite;
+  opacity: 0.6;
+}
+
+@keyframes vrpg-embers {
+  0%   { background-position: 0 0, 50px 20px, 100px 40px, 150px 10px, 200px 30px, 30px 50px, 180px 0px, 80px 60px; }
+  100% { background-position: 0 -300px, 50px -280px, 100px -260px, 150px -310px, 200px -270px, 30px -250px, 180px -300px, 80px -240px; }
+}
+
+/* ── Rune Pulse Glow — for active/important elements ── */
+@keyframes vrpg-rune-pulse {
+  0%, 100% { box-shadow: 0 0 4px rgba(200, 163, 94, 0.1), 0 0 8px rgba(200, 163, 94, 0.05); }
+  50%      { box-shadow: 0 0 8px rgba(200, 163, 94, 0.2), 0 0 16px rgba(200, 163, 94, 0.08); }
+}
+
+/* Apply rune pulse to active quest tab */
+.vrpg-quest-tab.is-active {
+  animation: vrpg-rune-pulse 3s ease-in-out infinite;
+}
+
+/* ── Forge Glow — for main quest cards ── */
+@keyframes vrpg-forge-glow {
+  0%, 100% { border-left-color: rgba(200, 163, 94, 0.5); }
+  50%      { border-left-color: rgba(200, 163, 94, 0.8); }
+}
+.vrpg-quest-card.vrpg-type-main-quest {
+  animation: vrpg-forge-glow 4s ease-in-out infinite;
+}
+
+/* ── Enhanced Hover States ── */
+/* Quest cards get a subtle inner glow on hover */
+.vrpg-quest-card:hover {
+  background:
+    radial-gradient(circle at 95% 5%, rgba(200, 163, 94, 0.08), transparent 120px),
+    rgba(8, 5, 14, 0.55);
+}
+
+/* Codex scrolls get a warm lift */
+.vrpg-codex-scroll:hover {
+  border-color: rgba(200, 163, 94, 0.3);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Overdue Danger Pulse ── */
+@keyframes vrpg-overdue-pulse {
+  0%, 100% { box-shadow: 0 0 4px rgba(180, 50, 50, 0.1); }
+  50%      { box-shadow: 0 0 10px rgba(180, 50, 50, 0.2), inset 0 0 8px rgba(180, 50, 50, 0.04); }
+}
+.vrpg-quest-card.is-overdue {
+  animation: vrpg-overdue-pulse 2.5s ease-in-out infinite;
+}
+
+/* ── XP Gain Flash ── */
+@keyframes vrpg-xp-flash {
+  0%   { text-shadow: 0 0 4px rgba(200, 163, 94, 0.6); transform: scale(1); }
+  50%  { text-shadow: 0 0 12px rgba(200, 163, 94, 0.9); transform: scale(1.1); }
+  100% { text-shadow: 0 0 4px rgba(200, 163, 94, 0.6); transform: scale(1); }
+}
+.vrpg-xp-flash {
+  animation: vrpg-xp-flash 0.6s ease-out;
+}
+
+/* ── Smoke/Fog Bottom Gradient ──
+   Subtle atmospheric haze at the bottom of the app area */
+.vibe-rpg-plugin > .vrpg-app::after {
+  content: "";
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to top,
+    rgba(8, 5, 14, 0.7),
+    rgba(8, 5, 14, 0.3) 40%,
+    transparent);
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* ── Scrollbar Styling — Dark Fantasy ── */
+.vibe-rpg-plugin ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.vibe-rpg-plugin ::-webkit-scrollbar-track {
+  background: rgba(8, 5, 14, 0.4);
+}
+.vibe-rpg-plugin ::-webkit-scrollbar-thumb {
+  background: rgba(120, 90, 50, 0.35);
+  border-radius: 3px;
+}
+.vibe-rpg-plugin ::-webkit-scrollbar-thumb:hover {
+  background: rgba(200, 163, 94, 0.4);
+}
+
+/* ── Selection Color ── */
+.vibe-rpg-plugin ::selection {
+  background: rgba(200, 163, 94, 0.25);
+  color: var(--vrpg-ink);
+}
+
+/* ── Focus-Visible Ring ── */
+.vibe-rpg-plugin *:focus-visible {
+  outline: 2px solid rgba(200, 163, 94, 0.4);
+  outline-offset: 2px;
 }
