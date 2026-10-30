@@ -800,7 +800,7 @@ function renderHomeModuleScreen(parent, ctx = {}, widget = null) {
   const body = module.createDiv({ cls: "vrpg-module-body" });
   if (ctx.homePanel === "today") ctx.renderHomeToday(body);
   if (ctx.homePanel === "hero") ctx.renderHomeHero(body);
-  if (ctx.homePanel === "quests") ctx.renderHomeQuests(body);
+  if (ctx.homePanel === "quests" || ctx.homePanel === "codex") ctx.renderHomeQuests(body);
   if (ctx.homePanel === "rewards") ctx.renderHomeRewards(body);
   if (ctx.homePanel === "inventory") ctx.renderHomeInventory(body);
   if (ctx.homePanel === "log") ctx.renderHomeLog(body);

@@ -3082,3 +3082,368 @@ button.vrpg-danger {
     grid-template-columns: 1fr !important;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   GRINDSTONE QUEST SYSTEM — Dark Fantasy Aesthetic
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Quest Tab Bar ── */
+.vrpg-quest-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.vrpg-quest-tabs::-webkit-scrollbar { display: none; }
+
+.vrpg-quest-tab {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 6px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+.vrpg-quest-tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-normal);
+}
+.vrpg-quest-tab.is-active {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(88, 28, 135, 0.3));
+  border-color: rgba(139, 92, 246, 0.4);
+  color: var(--text-normal);
+  box-shadow: 0 0 8px rgba(139, 92, 246, 0.2);
+}
+
+.vrpg-tab-badge {
+  font-size: 10px;
+  font-weight: 700;
+  background: rgba(139, 92, 246, 0.5);
+  color: #fff;
+  padding: 1px 5px;
+  border-radius: 8px;
+  min-width: 16px;
+  text-align: center;
+}
+
+/* ── Quest Cards ── */
+.vrpg-quest-card {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.vrpg-quest-card:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Type-specific card accents */
+.vrpg-quest-card.vrpg-type-main-quest {
+  border-left: 3px solid rgba(234, 179, 8, 0.6);
+}
+.vrpg-quest-card.vrpg-type-quest {
+  border-left: 3px solid rgba(139, 92, 246, 0.5);
+}
+.vrpg-quest-card.vrpg-type-bounty {
+  border-left: 3px solid rgba(34, 197, 94, 0.5);
+}
+.vrpg-quest-card.vrpg-type-event {
+  border-left: 3px solid rgba(249, 115, 22, 0.5);
+}
+.vrpg-quest-card.is-overdue {
+  border-color: rgba(239, 68, 68, 0.4);
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.15);
+}
+
+.vrpg-quest-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.vrpg-quest-type-badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  opacity: 0.8;
+}
+
+.vrpg-quest-deadline {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.vrpg-quest-deadline.vrpg-overdue {
+  color: var(--text-error, #ef4444);
+}
+
+.vrpg-quest-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+.vrpg-quest-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+/* ── Main Quest Progress Bar ── */
+.vrpg-mq-progress {
+  margin: 8px 0;
+}
+.vrpg-mq-progress-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.vrpg-mq-bar {
+  height: 6px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.vrpg-mq-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #eab308, #f59e0b);
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+/* ── Main Quest Steps ── */
+.vrpg-mq-steps {
+  margin: 8px 0 4px;
+  padding-left: 4px;
+}
+.vrpg-mq-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+.vrpg-mq-step:last-child { border-bottom: none; }
+.vrpg-mq-step.is-done {
+  opacity: 0.5;
+}
+.vrpg-mq-step.is-done .vrpg-step-title {
+  text-decoration: line-through;
+}
+
+.vrpg-step-check {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  padding: 0;
+}
+.vrpg-step-check:hover {
+  border-color: rgba(234, 179, 8, 0.6);
+  background: rgba(234, 179, 8, 0.1);
+}
+.vrpg-step-check.is-checked {
+  border-color: rgba(34, 197, 94, 0.5);
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  cursor: default;
+}
+
+.vrpg-step-title {
+  flex: 1;
+  font-size: 13px;
+}
+.vrpg-step-xp {
+  font-size: 10px;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+/* ── Event Tasks ── */
+.vrpg-event-tasks {
+  margin: 8px 0;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+}
+.vrpg-event-task {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+.vrpg-event-task.is-done {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+/* ── Bounty specific ── */
+.vrpg-quest-card.vrpg-type-bounty .vrpg-quest-meta span:last-child {
+  font-weight: 600;
+}
+
+/* ── Codex (Quick Capture Inbox) ── */
+.vrpg-codex-capture {
+  margin-bottom: 12px;
+}
+.vrpg-codex-input-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+.vrpg-codex-input {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  color: var(--text-normal);
+  font-size: 13px;
+}
+.vrpg-codex-input:focus {
+  outline: none;
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 6px rgba(139, 92, 246, 0.15);
+}
+.vrpg-codex-input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+.vrpg-codex-scrolls {
+  margin-top: 8px;
+}
+.vrpg-codex-scroll {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-left: 3px solid rgba(139, 92, 246, 0.3);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
+}
+.vrpg-codex-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+.vrpg-codex-sort-btn {
+  font-size: 11px;
+  padding: 3px 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.vrpg-codex-sort-btn:hover {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.3);
+  color: var(--text-normal);
+}
+.vrpg-codex-empty {
+  text-align: center;
+  padding: 20px;
+}
+
+/* ── Empty States ── */
+.vrpg-empty-state {
+  text-align: center;
+  padding: 30px 16px;
+}
+.vrpg-empty-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+  opacity: 0.5;
+}
+.vrpg-empty-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-normal);
+  margin-bottom: 4px;
+}
+
+/* ── Small / Ghost Buttons ── */
+.vrpg-sm {
+  font-size: 12px !important;
+  padding: 4px 10px !important;
+}
+.vrpg-ghost {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+.vrpg-ghost:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-normal);
+}
+.vrpg-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  color: var(--text-muted);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 13px;
+}
+
+/* ── Settings: Quest Type Select ── */
+.vrpg-type-select {
+  width: 100%;
+  margin-bottom: 8px;
+}
+.vrpg-dynamic-fields {
+  margin: 8px 0;
+}
+.vrpg-dynamic-fields textarea {
+  width: 100%;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  color: var(--text-normal);
+  font-size: 13px;
+  resize: vertical;
+}
+
+/* ── Quest Subtasks ── */
+.vrpg-quest-subtasks {
+  margin: 4px 0;
+  padding-left: 8px;
+  border-left: 2px solid rgba(255, 255, 255, 0.05);
+}

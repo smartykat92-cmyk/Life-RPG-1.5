@@ -18,10 +18,31 @@ var require_constants = __commonJS({
     var DAILY_XP = 10;
     var QUEST_XP_STANDARD = 50;
     var QUEST_XP_MAJOR = 100;
+    var MAIN_QUEST_XP = 200;
+    var MAIN_QUEST_STEP_XP = 25;
+    var BOUNTY_XP = 15;
+    var EVENT_XP_SHORT = 75;
+    var EVENT_XP_MEDIUM = 125;
+    var EVENT_XP_LONG = 200;
+    var EVENT_XP_EXTENDED = 300;
+    var EVENT_SUBTASK_XP = 15;
+    var QUEST_TYPES2 = {
+      quest: "Quest",
+      main_quest: "Main Quest",
+      bounty: "Bounty",
+      event: "Event"
+    };
     var QUEST_PRIORITIES = {
       standard: "Standard",
       major: "Major"
     };
+    var QUEST_TYPE_ICONS2 = {
+      quest: "\u2694\uFE0F",
+      main_quest: "\u{1F3F0}",
+      bounty: "\u{1F3AF}",
+      event: "\u{1F525}"
+    };
+    var BOUNTY_DAILY_CAP2 = 5;
     var MOODS2 = {
       low: "Low",
       normal: "Normal",
@@ -54,7 +75,18 @@ var require_constants = __commonJS({
       DAILY_XP,
       QUEST_XP_STANDARD,
       QUEST_XP_MAJOR,
+      MAIN_QUEST_XP,
+      MAIN_QUEST_STEP_XP,
+      BOUNTY_XP,
+      EVENT_XP_SHORT,
+      EVENT_XP_MEDIUM,
+      EVENT_XP_LONG,
+      EVENT_XP_EXTENDED,
+      EVENT_SUBTASK_XP,
+      QUEST_TYPES: QUEST_TYPES2,
       QUEST_PRIORITIES,
+      QUEST_TYPE_ICONS: QUEST_TYPE_ICONS2,
+      BOUNTY_DAILY_CAP: BOUNTY_DAILY_CAP2,
       DAYS_OF_WEEK,
       ALL_DAYS
     };
@@ -615,6 +647,7 @@ var require_defaults = __commonJS({
       days: {},
       inventory: [],
       log: [],
+      codex: [],
       gold: 0
     };
     module2.exports = { DEFAULT_DATA };
@@ -655,6 +688,7 @@ var require_storage = __commonJS({
       next.inventory = Array.isArray(data.inventory) ? data.inventory : next.inventory;
       next.quests = Array.isArray(data.quests) ? data.quests : next.quests;
       next.log = Array.isArray(data.log) ? data.log : next.log;
+      next.codex = Array.isArray(data.codex) ? data.codex : next.codex;
       next.gold = typeof data.gold === "number" ? data.gold : next.gold;
       return next;
     }
@@ -1653,7 +1687,7 @@ var require_homeScreen = __commonJS({
       const body = module3.createDiv({ cls: "vrpg-module-body" });
       if (ctx.homePanel === "today") ctx.renderHomeToday(body);
       if (ctx.homePanel === "hero") ctx.renderHomeHero(body);
-      if (ctx.homePanel === "quests") ctx.renderHomeQuests(body);
+      if (ctx.homePanel === "quests" || ctx.homePanel === "codex") ctx.renderHomeQuests(body);
       if (ctx.homePanel === "rewards") ctx.renderHomeRewards(body);
       if (ctx.homePanel === "inventory") ctx.renderHomeInventory(body);
       if (ctx.homePanel === "log") ctx.renderHomeLog(body);
@@ -1788,38 +1822,114 @@ var require_homeHeroScreen = __commonJS({
 // src/systems/questSystem.js
 var require_questSystem = __commonJS({
   "src/systems/questSystem.js"(exports2, module2) {
-    var { uid } = require_utils();
-    var { QUEST_XP_STANDARD, QUEST_XP_MAJOR } = require_constants();
+    var { uid, dateKey: dateKey2 } = require_utils();
+    var {
+      QUEST_XP_STANDARD,
+      QUEST_XP_MAJOR,
+      MAIN_QUEST_XP,
+      MAIN_QUEST_STEP_XP,
+      BOUNTY_XP,
+      EVENT_XP_SHORT,
+      EVENT_XP_MEDIUM,
+      EVENT_XP_LONG,
+      EVENT_XP_EXTENDED,
+      EVENT_SUBTASK_XP,
+      BOUNTY_DAILY_CAP: BOUNTY_DAILY_CAP2
+    } = require_constants();
+    function ensureQuests(data) {
+      if (!Array.isArray(data.quests)) data.quests = [];
+    }
+    function ensureCodex(data) {
+      if (!Array.isArray(data.codex)) data.codex = [];
+    }
+    function ensureLog(data) {
+      if (!Array.isArray(data.log)) data.log = [];
+    }
     function activeQuests(data) {
-      const quests = Array.isArray(data.quests) ? data.quests : [];
-      return quests.filter((q) => !q.completed && !q.abandoned);
+      ensureQuests(data);
+      return data.quests.filter((q) => !q.completed && !q.abandoned);
     }
     function completedQuests(data) {
-      const quests = Array.isArray(data.quests) ? data.quests : [];
-      return quests.filter((q) => q.completed);
+      ensureQuests(data);
+      return data.quests.filter((q) => q.completed);
+    }
+    function questsByType2(data, type) {
+      return activeQuests(data).filter((q) => (q.type || "quest") === type);
+    }
+    function completedByType(data, type) {
+      return completedQuests(data).filter((q) => (q.type || "quest") === type);
     }
     function questXP(quest) {
+      const type = quest.type || "quest";
+      if (type === "main_quest") {
+        return MAIN_QUEST_XP;
+      }
+      if (type === "bounty") {
+        return BOUNTY_XP;
+      }
+      if (type === "event") {
+        return eventXP(quest);
+      }
       return quest.priority === "major" ? QUEST_XP_MAJOR : QUEST_XP_STANDARD;
     }
+    function eventXP(quest) {
+      const days = eventDuration(quest);
+      if (days >= 15) return EVENT_XP_EXTENDED;
+      if (days >= 8) return EVENT_XP_LONG;
+      if (days >= 4) return EVENT_XP_MEDIUM;
+      return EVENT_XP_SHORT;
+    }
+    function eventDuration(quest) {
+      if (!quest.startDate || !quest.endDate) return 1;
+      const start = new Date(quest.startDate);
+      const end = new Date(quest.endDate);
+      const diff = Math.ceil((end - start) / (1e3 * 60 * 60 * 24)) + 1;
+      return Math.max(1, diff);
+    }
     function applyQuestAdd2(data, questInput) {
-      if (!Array.isArray(data.quests)) data.quests = [];
+      ensureQuests(data);
+      ensureLog(data);
+      const type = questInput.type || "quest";
       const quest = {
         id: uid("quest"),
+        type,
         title: questInput.title,
         description: questInput.description || "",
         area: questInput.area || "craft",
-        priority: questInput.priority || "standard",
-        deadline: questInput.deadline || null,
-        // ISO date string or null
         completed: false,
         completedDate: null,
         abandoned: false,
         createdDate: (/* @__PURE__ */ new Date()).toISOString()
       };
+      if (type === "quest") {
+        quest.priority = questInput.priority || "standard";
+        quest.deadline = questInput.deadline || null;
+        quest.subtasks = Array.isArray(questInput.subtasks) ? questInput.subtasks : [];
+      }
+      if (type === "main_quest") {
+        quest.steps = Array.isArray(questInput.steps) ? questInput.steps.map((s, i) => ({
+          id: uid("step"),
+          title: s.title || `Step ${i + 1}`,
+          description: s.description || "",
+          completed: false,
+          completedDate: null
+        })) : [];
+        quest.targetDate = questInput.targetDate || null;
+      }
+      if (type === "bounty") {
+        quest.repeatable = true;
+        quest.completionCount = 0;
+        quest.lastCompletedDate = null;
+      }
+      if (type === "event") {
+        quest.startDate = questInput.startDate || null;
+        quest.endDate = questInput.endDate || null;
+        quest.dailyTasks = Array.isArray(questInput.dailyTasks) ? questInput.dailyTasks : [];
+      }
       data.quests.push(quest);
-      if (!Array.isArray(data.log)) data.log = [];
       data.log.push({
         type: "quest-added",
+        questType: type,
         questId: quest.id,
         title: quest.title,
         timestamp: (/* @__PURE__ */ new Date()).toISOString()
@@ -1828,12 +1938,18 @@ var require_questSystem = __commonJS({
     }
     function applyQuestComplete2(data, questId) {
       const quest = (data.quests || []).find((q) => q.id === questId);
-      if (!quest || quest.completed) return { data, quest };
+      if (!quest) return { data, quest };
+      ensureLog(data);
+      const type = quest.type || "quest";
+      if (type === "bounty") {
+        return applyBountyClaim2(data, questId);
+      }
+      if (quest.completed) return { data, quest };
       quest.completed = true;
       quest.completedDate = (/* @__PURE__ */ new Date()).toISOString();
-      if (!Array.isArray(data.log)) data.log = [];
       data.log.push({
         type: "quest-completed",
+        questType: type,
         questId: quest.id,
         title: quest.title,
         xp: questXP(quest),
@@ -1841,13 +1957,86 @@ var require_questSystem = __commonJS({
       });
       return { data, quest };
     }
+    function applyBountyClaim2(data, questId) {
+      const quest = (data.quests || []).find((q) => q.id === questId);
+      if (!quest || (quest.type || "quest") !== "bounty") return { data, quest };
+      ensureLog(data);
+      const today = dateKey2();
+      const todayClaims = (data.log || []).filter(
+        (e) => e.type === "bounty-claimed" && e.questId === questId && e.dayKey === today
+      ).length;
+      if (todayClaims >= BOUNTY_DAILY_CAP2) {
+        return { data, quest, capped: true };
+      }
+      quest.completionCount = (quest.completionCount || 0) + 1;
+      quest.lastCompletedDate = (/* @__PURE__ */ new Date()).toISOString();
+      data.log.push({
+        type: "bounty-claimed",
+        questId: quest.id,
+        title: quest.title,
+        xp: BOUNTY_XP,
+        dayKey: today,
+        claimNumber: quest.completionCount,
+        timestamp: (/* @__PURE__ */ new Date()).toISOString()
+      });
+      return { data, quest, claimed: true };
+    }
+    function applyMainQuestStepComplete2(data, questId, stepId) {
+      const quest = (data.quests || []).find((q) => q.id === questId);
+      if (!quest || (quest.type || "quest") !== "main_quest") return { data, quest };
+      ensureLog(data);
+      const step = (quest.steps || []).find((s) => s.id === stepId);
+      if (!step || step.completed) return { data, quest };
+      step.completed = true;
+      step.completedDate = (/* @__PURE__ */ new Date()).toISOString();
+      data.log.push({
+        type: "main-quest-step-completed",
+        questId: quest.id,
+        stepId: step.id,
+        title: `${quest.title}: ${step.title}`,
+        xp: MAIN_QUEST_STEP_XP,
+        timestamp: (/* @__PURE__ */ new Date()).toISOString()
+      });
+      const allDone = (quest.steps || []).every((s) => s.completed);
+      if (allDone) {
+        quest.completed = true;
+        quest.completedDate = (/* @__PURE__ */ new Date()).toISOString();
+        data.log.push({
+          type: "main-quest-chain-completed",
+          questId: quest.id,
+          title: quest.title,
+          xp: MAIN_QUEST_XP,
+          timestamp: (/* @__PURE__ */ new Date()).toISOString()
+        });
+      }
+      return { data, quest, allDone };
+    }
+    function applyEventDailyTaskComplete2(data, questId, taskIndex) {
+      const quest = (data.quests || []).find((q) => q.id === questId);
+      if (!quest || (quest.type || "quest") !== "event") return { data, quest };
+      ensureLog(data);
+      if (!quest.dailyTasks || !quest.dailyTasks[taskIndex]) return { data, quest };
+      const task = quest.dailyTasks[taskIndex];
+      if (task.completed) return { data, quest };
+      task.completed = true;
+      task.completedDate = (/* @__PURE__ */ new Date()).toISOString();
+      data.log.push({
+        type: "event-task-completed",
+        questId: quest.id,
+        title: `${quest.title}: ${task.title}`,
+        xp: EVENT_SUBTASK_XP,
+        timestamp: (/* @__PURE__ */ new Date()).toISOString()
+      });
+      return { data, quest };
+    }
     function applyQuestAbandon2(data, questId) {
       const quest = (data.quests || []).find((q) => q.id === questId);
       if (!quest || quest.completed || quest.abandoned) return { data, quest };
+      ensureLog(data);
       quest.abandoned = true;
-      if (!Array.isArray(data.log)) data.log = [];
       data.log.push({
         type: "quest-abandoned",
+        questType: quest.type || "quest",
         questId: quest.id,
         title: quest.title,
         timestamp: (/* @__PURE__ */ new Date()).toISOString()
@@ -1857,40 +2046,113 @@ var require_questSystem = __commonJS({
     function applyQuestUpdate2(data, questId, patch) {
       const quest = (data.quests || []).find((q) => q.id === questId);
       if (!quest) return { data, quest };
-      const allowed = ["title", "description", "area", "priority", "deadline"];
+      const allowed = ["title", "description", "area", "priority", "deadline", "targetDate", "startDate", "endDate", "steps", "dailyTasks", "subtasks"];
       for (const key of allowed) {
         if (Object.prototype.hasOwnProperty.call(patch, key)) quest[key] = patch[key];
       }
       return { data, quest };
     }
     function applyQuestDelete2(data, questId) {
-      if (!Array.isArray(data.quests)) return { data, questId };
+      ensureQuests(data);
       data.quests = data.quests.filter((q) => q.id !== questId);
       return { data, questId };
     }
+    function applyCodexAdd2(data, scrollInput) {
+      ensureCodex(data);
+      const scroll = {
+        id: uid("scroll"),
+        text: scrollInput.text || "",
+        createdDate: (/* @__PURE__ */ new Date()).toISOString(),
+        sorted: false
+      };
+      data.codex.push(scroll);
+      return { data, scroll };
+    }
+    function applyCodexSort2(data, scrollId, targetType, questInput) {
+      ensureCodex(data);
+      const scroll = data.codex.find((s) => s.id === scrollId);
+      if (!scroll || scroll.sorted) return { data };
+      scroll.sorted = true;
+      scroll.sortedTo = targetType;
+      scroll.sortedDate = (/* @__PURE__ */ new Date()).toISOString();
+      const input = {
+        ...questInput,
+        type: targetType,
+        title: questInput.title || scroll.text
+      };
+      const result = applyQuestAdd2(data, input);
+      return { data, scroll, quest: result.quest };
+    }
+    function applyCodexDismiss2(data, scrollId) {
+      ensureCodex(data);
+      const scroll = data.codex.find((s) => s.id === scrollId);
+      if (!scroll) return { data };
+      scroll.sorted = true;
+      scroll.sortedTo = "dismissed";
+      scroll.sortedDate = (/* @__PURE__ */ new Date()).toISOString();
+      return { data, scroll };
+    }
+    function applyCodexDelete2(data, scrollId) {
+      ensureCodex(data);
+      data.codex = data.codex.filter((s) => s.id !== scrollId);
+      return { data };
+    }
+    function unsortedScrolls2(data) {
+      ensureCodex(data);
+      return data.codex.filter((s) => !s.sorted);
+    }
     function sortedByDeadline(quests) {
       return [...quests].sort((a, b) => {
-        if (!a.deadline && !b.deadline) return 0;
-        if (!a.deadline) return 1;
-        if (!b.deadline) return -1;
-        return new Date(a.deadline) - new Date(b.deadline);
+        const aDate = a.deadline || a.targetDate || a.endDate;
+        const bDate = b.deadline || b.targetDate || b.endDate;
+        if (!aDate && !bDate) return 0;
+        if (!aDate) return 1;
+        if (!bDate) return -1;
+        return new Date(aDate) - new Date(bDate);
       });
     }
     function isOverdue(quest) {
-      if (!quest.deadline || quest.completed || quest.abandoned) return false;
-      return new Date(quest.deadline) < /* @__PURE__ */ new Date();
+      const deadline = quest.deadline || quest.targetDate || quest.endDate;
+      if (!deadline || quest.completed || quest.abandoned) return false;
+      return new Date(deadline) < /* @__PURE__ */ new Date();
+    }
+    function mainQuestProgress2(quest) {
+      if ((quest.type || "quest") !== "main_quest") return { done: 0, total: 0, percent: 0 };
+      const steps = quest.steps || [];
+      const done = steps.filter((s) => s.completed).length;
+      return { done, total: steps.length, percent: steps.length ? Math.round(done / steps.length * 100) : 0 };
+    }
+    function bountyClaimsToday2(data, questId) {
+      const today = dateKey2();
+      return (data.log || []).filter(
+        (e) => e.type === "bounty-claimed" && e.questId === questId && e.dayKey === today
+      ).length;
     }
     module2.exports = {
       activeQuests,
       completedQuests,
+      questsByType: questsByType2,
+      completedByType,
       questXP,
+      eventXP,
+      eventDuration,
       applyQuestAdd: applyQuestAdd2,
       applyQuestComplete: applyQuestComplete2,
+      applyBountyClaim: applyBountyClaim2,
+      applyMainQuestStepComplete: applyMainQuestStepComplete2,
+      applyEventDailyTaskComplete: applyEventDailyTaskComplete2,
       applyQuestAbandon: applyQuestAbandon2,
       applyQuestUpdate: applyQuestUpdate2,
       applyQuestDelete: applyQuestDelete2,
+      applyCodexAdd: applyCodexAdd2,
+      applyCodexSort: applyCodexSort2,
+      applyCodexDismiss: applyCodexDismiss2,
+      applyCodexDelete: applyCodexDelete2,
+      unsortedScrolls: unsortedScrolls2,
       sortedByDeadline,
-      isOverdue
+      isOverdue,
+      mainQuestProgress: mainQuestProgress2,
+      bountyClaimsToday: bountyClaimsToday2
     };
   }
 });
@@ -1898,58 +2160,305 @@ var require_questSystem = __commonJS({
 // src/ui/screens/homeQuestsScreen.js
 var require_homeQuestsScreen = __commonJS({
   "src/ui/screens/homeQuestsScreen.js"(exports2, module2) {
-    var { AREA_LABELS: AREA_LABELS2, QUEST_PRIORITIES } = require_constants();
-    var { activeQuests, completedQuests, questXP, sortedByDeadline, isOverdue } = require_questSystem();
+    var { AREA_LABELS: AREA_LABELS2 } = require_constants();
+    var {
+      activeQuests,
+      completedQuests,
+      questXP,
+      sortedByDeadline,
+      isOverdue,
+      questsByType: questsByType2,
+      completedByType,
+      mainQuestProgress: mainQuestProgress2,
+      bountyClaimsToday: bountyClaimsToday2
+    } = require_questSystem();
+    var selectedQuestTab = "quests";
     function renderHomeQuestsScreen2(parent, ctx = {}) {
       const data = ctx.data || {};
       const completeQuest = ctx.completeQuest || (() => {
       });
       const abandonQuest = ctx.abandonQuest || (() => {
       });
+      const claimBounty = ctx.claimBounty || (() => {
+      });
+      const completeMainQuestStep = ctx.completeMainQuestStep || (() => {
+      });
+      const completeEventTask = ctx.completeEventTask || (() => {
+      });
+      const addCodexEntry = ctx.addCodexEntry || (() => {
+      });
+      const sortCodexEntry = ctx.sortCodexEntry || (() => {
+      });
+      const dismissCodexEntry = ctx.dismissCodexEntry || (() => {
+      });
+      const deleteCodexEntry = ctx.deleteCodexEntry || (() => {
+      });
       const displayDate2 = ctx.displayDate;
-      const active = sortedByDeadline(activeQuests(data));
-      const done = completedQuests(data);
-      const activePanel = parent.createDiv({ cls: "vrpg-panel" });
-      activePanel.createDiv({ cls: "vrpg-section", text: "\u2694\uFE0F Active Quests" });
-      if (active.length === 0) {
-        activePanel.createDiv({ cls: "vrpg-subtitle", text: "No active quests. Add one in Settings \u2192 Quests." });
+      const questTypes = ctx.questTypes || {};
+      const questTypeIcons = ctx.questTypeIcons || {};
+      const bountyDailyCap = ctx.bountyDailyCap || 5;
+      const unsortedScrollsFn = ctx.unsortedScrolls || (() => []);
+      const unsorted = unsortedScrollsFn(data);
+      const tabBar = parent.createDiv({ cls: "vrpg-quest-tabs" });
+      const tabs = [
+        { id: "main_quest", label: "\u{1F3F0} Main", count: questsByType2(data, "main_quest").length },
+        { id: "quests", label: "\u2694\uFE0F Quests", count: questsByType2(data, "quest").length },
+        { id: "bounties", label: "\u{1F3AF} Bounties", count: questsByType2(data, "bounty").length },
+        { id: "events", label: "\u{1F525} Events", count: questsByType2(data, "event").length },
+        { id: "codex", label: "\u{1F4DC} Codex", count: unsorted.length }
+      ];
+      for (const tab of tabs) {
+        const btn = tabBar.createEl("button", {
+          cls: selectedQuestTab === tab.id ? "vrpg-quest-tab is-active" : "vrpg-quest-tab"
+        });
+        btn.createSpan({ text: tab.label });
+        if (tab.count > 0) {
+          btn.createSpan({ cls: "vrpg-tab-badge", text: String(tab.count) });
+        }
+        btn.onclick = () => {
+          selectedQuestTab = tab.id;
+          parent.empty();
+          renderHomeQuestsScreen2(parent, ctx);
+        };
+      }
+      const body = parent.createDiv({ cls: "vrpg-quest-body" });
+      if (selectedQuestTab === "main_quest") {
+        renderMainQuests(body, data, ctx);
+      } else if (selectedQuestTab === "quests") {
+        renderStandardQuests(body, data, ctx);
+      } else if (selectedQuestTab === "bounties") {
+        renderBounties(body, data, ctx);
+      } else if (selectedQuestTab === "events") {
+        renderEvents(body, data, ctx);
+      } else if (selectedQuestTab === "codex") {
+        renderCodex(body, data, ctx);
+      }
+    }
+    function renderMainQuests(parent, data, ctx) {
+      const active = questsByType2(data, "main_quest");
+      const done = completedByType(data, "main_quest");
+      if (active.length === 0 && done.length === 0) {
+        renderEmptyState(parent, "\u{1F3F0}", "No Main Quests", "Main Quests are long-term goals broken into steps. Add one in Settings \u2192 Quests.");
+        return;
+      }
+      for (const quest of active) {
+        const progress = mainQuestProgress2(quest);
+        const card = parent.createDiv({ cls: "vrpg-quest-card vrpg-type-main-quest" });
+        const header = card.createDiv({ cls: "vrpg-quest-header" });
+        header.createDiv({ cls: "vrpg-quest-type-badge", text: "\u{1F3F0} MAIN QUEST" });
+        if (quest.targetDate) {
+          const overdue = isOverdue(quest);
+          const dateStr = ctx.displayDate ? ctx.displayDate(new Date(quest.targetDate)) : quest.targetDate;
+          header.createDiv({ cls: overdue ? "vrpg-quest-deadline vrpg-overdue" : "vrpg-quest-deadline", text: `Target: ${dateStr}` });
+        }
+        card.createDiv({ cls: "vrpg-card-title", text: quest.title });
+        if (quest.description) card.createDiv({ cls: "vrpg-subtitle", text: quest.description });
+        const progWrap = card.createDiv({ cls: "vrpg-mq-progress" });
+        progWrap.createDiv({ cls: "vrpg-mq-progress-text", text: `${progress.done}/${progress.total} steps \xB7 ${progress.percent}%` });
+        const bar = progWrap.createDiv({ cls: "vrpg-mq-bar" });
+        bar.createDiv({ cls: "vrpg-mq-fill" }).style.width = `${progress.percent}%`;
+        const steps = quest.steps || [];
+        if (steps.length > 0) {
+          const stepList = card.createDiv({ cls: "vrpg-mq-steps" });
+          for (const step of steps) {
+            const stepRow = stepList.createDiv({ cls: step.completed ? "vrpg-mq-step is-done" : "vrpg-mq-step" });
+            const check = stepRow.createEl("button", {
+              cls: step.completed ? "vrpg-step-check is-checked" : "vrpg-step-check",
+              text: step.completed ? "\u2713" : "\u25CB"
+            });
+            if (!step.completed) {
+              check.onclick = () => ctx.completeMainQuestStep(quest.id, step.id);
+            }
+            stepRow.createSpan({ cls: "vrpg-step-title", text: step.title });
+            if (step.completed) {
+              stepRow.createSpan({ cls: "vrpg-step-xp", text: "\u2713 25 XP" });
+            } else {
+              stepRow.createSpan({ cls: "vrpg-step-xp", text: "25 XP" });
+            }
+          }
+        }
+        const meta = card.createDiv({ cls: "vrpg-quest-meta" });
+        meta.createSpan({ text: `${AREA_LABELS2[quest.area] || quest.area} \xB7 200 XP chain bonus` });
+        const actions = card.createDiv({ cls: "vrpg-quest-actions" });
+        const abandonBtn = actions.createEl("button", { cls: "vrpg-danger vrpg-sm", text: "Abandon" });
+        abandonBtn.onclick = () => ctx.abandonQuest(quest.id);
+      }
+      renderCompletedSection(parent, done, "\u{1F3F0}", ctx);
+    }
+    function renderStandardQuests(parent, data, ctx) {
+      const active = sortedByDeadline(questsByType2(data, "quest"));
+      const done = completedByType(data, "quest");
+      if (active.length === 0 && done.length === 0) {
+        renderEmptyState(parent, "\u2694\uFE0F", "No Quests", "Quests are one-off goals with optional deadlines. Add one in Settings \u2192 Quests.");
+        return;
       }
       for (const quest of active) {
         const overdue = isOverdue(quest);
-        const card = activePanel.createDiv({ cls: overdue ? "vrpg-quest-card is-overdue" : "vrpg-quest-card" });
+        const card = parent.createDiv({ cls: overdue ? "vrpg-quest-card vrpg-type-quest is-overdue" : "vrpg-quest-card vrpg-type-quest" });
         const header = card.createDiv({ cls: "vrpg-quest-header" });
         const priorityTag = quest.priority === "major" ? "\u2B50 MAJOR" : "STANDARD";
-        header.createDiv({ cls: `vrpg-quest-priority vrpg-priority-${quest.priority}`, text: priorityTag });
+        header.createDiv({ cls: `vrpg-quest-priority vrpg-priority-${quest.priority || "standard"}`, text: priorityTag });
         card.createDiv({ cls: "vrpg-card-title", text: quest.title });
-        if (quest.description) {
-          card.createDiv({ cls: "vrpg-subtitle", text: quest.description });
+        if (quest.description) card.createDiv({ cls: "vrpg-subtitle", text: quest.description });
+        const subtasks = quest.subtasks || [];
+        if (subtasks.length > 0) {
+          const stList = card.createDiv({ cls: "vrpg-quest-subtasks" });
+          for (const st of subtasks) {
+            stList.createDiv({ cls: "vrpg-subtitle", text: `\u2022 ${st}` });
+          }
         }
         const meta = card.createDiv({ cls: "vrpg-quest-meta" });
-        meta.createSpan({ text: `${AREA_LABELS2[quest.area] || quest.area}` });
-        meta.createSpan({ text: ` \xB7 ${questXP(quest)} XP + Gold` });
+        meta.createSpan({ text: `${AREA_LABELS2[quest.area] || quest.area} \xB7 ${questXP(quest)} XP + Gold` });
         if (quest.deadline) {
-          const deadlineDate = new Date(quest.deadline);
-          const deadlineStr = displayDate2 ? displayDate2(deadlineDate) : quest.deadline;
-          meta.createSpan({ cls: overdue ? "vrpg-overdue" : "", text: ` \xB7 Due: ${deadlineStr}` });
+          const dStr = ctx.displayDate ? ctx.displayDate(new Date(quest.deadline)) : quest.deadline;
+          meta.createSpan({ cls: overdue ? "vrpg-overdue" : "", text: ` \xB7 Due: ${dStr}` });
         }
         const actions = card.createDiv({ cls: "vrpg-quest-actions" });
         const doneBtn = actions.createEl("button", { cls: "vrpg-primary", text: "\u2713 Complete" });
-        doneBtn.onclick = () => completeQuest(quest.id);
-        const abandonBtn = actions.createEl("button", { cls: "vrpg-danger", text: "\u2717 Abandon" });
-        abandonBtn.onclick = () => abandonQuest(quest.id);
+        doneBtn.onclick = () => ctx.completeQuest(quest.id);
+        const abandonBtn = actions.createEl("button", { cls: "vrpg-danger vrpg-sm", text: "Abandon" });
+        abandonBtn.onclick = () => ctx.abandonQuest(quest.id);
       }
-      if (done.length > 0) {
-        const donePanel = parent.createDiv({ cls: "vrpg-panel" });
-        donePanel.createDiv({ cls: "vrpg-section", text: "\u2705 Completed Quests" });
-        const recentDone = done.slice(-5).reverse();
-        for (const quest of recentDone) {
-          const row = donePanel.createDiv({ cls: "vrpg-quest-done" });
-          row.createSpan({ text: `${quest.title}` });
-          row.createSpan({ cls: "vrpg-subtitle", text: ` \xB7 ${questXP(quest)} XP + Gold earned` });
+      renderCompletedSection(parent, done, "\u2694\uFE0F", ctx);
+    }
+    function renderBounties(parent, data, ctx) {
+      const active = questsByType2(data, "bounty");
+      const bountyDailyCap = ctx.bountyDailyCap || 5;
+      if (active.length === 0) {
+        renderEmptyState(parent, "\u{1F3AF}", "No Bounties", "Bounties are small repeatable tasks you can claim daily for quick XP. Add one in Settings \u2192 Quests.");
+        return;
+      }
+      for (const quest of active) {
+        const todayClaims = bountyClaimsToday2(data, quest.id);
+        const capped = todayClaims >= bountyDailyCap;
+        const card = parent.createDiv({ cls: "vrpg-quest-card vrpg-type-bounty" });
+        card.createDiv({ cls: "vrpg-quest-type-badge", text: "\u{1F3AF} BOUNTY" });
+        card.createDiv({ cls: "vrpg-card-title", text: quest.title });
+        if (quest.description) card.createDiv({ cls: "vrpg-subtitle", text: quest.description });
+        const meta = card.createDiv({ cls: "vrpg-quest-meta" });
+        meta.createSpan({ text: `${AREA_LABELS2[quest.area] || quest.area} \xB7 15 XP per claim` });
+        meta.createSpan({ text: ` \xB7 ${quest.completionCount || 0} total claims` });
+        meta.createSpan({ text: ` \xB7 Today: ${todayClaims}/${bountyDailyCap}` });
+        const actions = card.createDiv({ cls: "vrpg-quest-actions" });
+        if (capped) {
+          const cappedBtn = actions.createEl("button", { cls: "vrpg-disabled", text: "Daily Cap Reached" });
+          cappedBtn.disabled = true;
+        } else {
+          const claimBtn = actions.createEl("button", { cls: "vrpg-primary", text: "\u{1F3AF} Claim Bounty" });
+          claimBtn.onclick = () => ctx.claimBounty(quest.id);
         }
-        if (done.length > 5) {
-          donePanel.createDiv({ cls: "vrpg-subtitle", text: `...and ${done.length - 5} more` });
+        const removeBtn = actions.createEl("button", { cls: "vrpg-danger vrpg-sm", text: "Remove" });
+        removeBtn.onclick = () => ctx.abandonQuest(quest.id);
+      }
+    }
+    function renderEvents(parent, data, ctx) {
+      const active = sortedByDeadline(questsByType2(data, "event"));
+      const done = completedByType(data, "event");
+      if (active.length === 0 && done.length === 0) {
+        renderEmptyState(parent, "\u{1F525}", "No Events", "Events are time-boxed challenges with daily tasks. Add one in Settings \u2192 Quests.");
+        return;
+      }
+      for (const quest of active) {
+        const overdue = isOverdue(quest);
+        const card = parent.createDiv({ cls: overdue ? "vrpg-quest-card vrpg-type-event is-overdue" : "vrpg-quest-card vrpg-type-event" });
+        card.createDiv({ cls: "vrpg-quest-type-badge", text: "\u{1F525} EVENT" });
+        card.createDiv({ cls: "vrpg-card-title", text: quest.title });
+        if (quest.description) card.createDiv({ cls: "vrpg-subtitle", text: quest.description });
+        if (quest.startDate || quest.endDate) {
+          const dateRange = card.createDiv({ cls: "vrpg-quest-meta" });
+          const start = quest.startDate ? ctx.displayDate ? ctx.displayDate(new Date(quest.startDate)) : quest.startDate : "?";
+          const end = quest.endDate ? ctx.displayDate ? ctx.displayDate(new Date(quest.endDate)) : quest.endDate : "?";
+          dateRange.createSpan({ text: `${start} \u2192 ${end}` });
+          dateRange.createSpan({ text: ` \xB7 ${questXP(quest)} XP` });
         }
+        const tasks = quest.dailyTasks || [];
+        if (tasks.length > 0) {
+          const taskList = card.createDiv({ cls: "vrpg-event-tasks" });
+          taskList.createDiv({ cls: "vrpg-subtitle", text: "Daily Tasks:" });
+          tasks.forEach((task, i) => {
+            const taskRow = taskList.createDiv({ cls: task.completed ? "vrpg-event-task is-done" : "vrpg-event-task" });
+            const check = taskRow.createEl("button", {
+              cls: task.completed ? "vrpg-step-check is-checked" : "vrpg-step-check",
+              text: task.completed ? "\u2713" : "\u25CB"
+            });
+            if (!task.completed) {
+              check.onclick = () => ctx.completeEventTask(quest.id, i);
+            }
+            taskRow.createSpan({ text: task.title || `Task ${i + 1}` });
+            if (!task.completed) {
+              taskRow.createSpan({ cls: "vrpg-step-xp", text: "15 XP" });
+            }
+          });
+        }
+        const actions = card.createDiv({ cls: "vrpg-quest-actions" });
+        const doneBtn = actions.createEl("button", { cls: "vrpg-primary", text: "\u2713 Complete Event" });
+        doneBtn.onclick = () => ctx.completeQuest(quest.id);
+        const abandonBtn = actions.createEl("button", { cls: "vrpg-danger vrpg-sm", text: "Abandon" });
+        abandonBtn.onclick = () => ctx.abandonQuest(quest.id);
+      }
+      renderCompletedSection(parent, done, "\u{1F525}", ctx);
+    }
+    function renderCodex(parent, data, ctx) {
+      const unsorted = (ctx.unsortedScrolls || (() => []))(data);
+      const questTypes = ctx.questTypes || {};
+      const captureBox = parent.createDiv({ cls: "vrpg-codex-capture" });
+      captureBox.createDiv({ cls: "vrpg-section", text: "\u{1F4DC} Quick Capture" });
+      const inputRow = captureBox.createDiv({ cls: "vrpg-codex-input-row" });
+      const input = inputRow.createEl("input", {
+        type: "text",
+        placeholder: "Capture a thought, idea, or task...",
+        cls: "vrpg-codex-input"
+      });
+      const addBtn = inputRow.createEl("button", { cls: "vrpg-primary", text: "Add" });
+      addBtn.onclick = () => {
+        const text = input.value.trim();
+        if (text) ctx.addCodexEntry(text);
+      };
+      input.onkeydown = (e) => {
+        if (e.key === "Enter") {
+          const text = input.value.trim();
+          if (text) ctx.addCodexEntry(text);
+        }
+      };
+      if (unsorted.length === 0) {
+        parent.createDiv({ cls: "vrpg-codex-empty" }).createDiv({
+          cls: "vrpg-subtitle",
+          text: "All scrolls have been sorted. Capture new ideas above."
+        });
+        return;
+      }
+      const scrollsPanel = parent.createDiv({ cls: "vrpg-codex-scrolls" });
+      scrollsPanel.createDiv({ cls: "vrpg-section", text: `Unbound Scrolls (${unsorted.length})` });
+      for (const scroll of unsorted) {
+        const card = scrollsPanel.createDiv({ cls: "vrpg-codex-scroll" });
+        card.createDiv({ cls: "vrpg-card-title", text: scroll.text });
+        const actions = card.createDiv({ cls: "vrpg-codex-actions" });
+        for (const [typeId, typeLabel] of Object.entries(questTypes)) {
+          const btn = actions.createEl("button", { cls: "vrpg-sm vrpg-codex-sort-btn", text: typeLabel });
+          btn.onclick = () => ctx.sortCodexEntry(scroll.id, typeId, { title: scroll.text });
+        }
+        const dismissBtn = actions.createEl("button", { cls: "vrpg-sm vrpg-ghost", text: "Dismiss" });
+        dismissBtn.onclick = () => ctx.dismissCodexEntry(scroll.id);
+      }
+    }
+    function renderEmptyState(parent, icon, title, subtitle) {
+      const empty = parent.createDiv({ cls: "vrpg-empty-state" });
+      empty.createDiv({ cls: "vrpg-empty-icon", text: icon });
+      empty.createDiv({ cls: "vrpg-empty-title", text: title });
+      empty.createDiv({ cls: "vrpg-subtitle", text: subtitle });
+    }
+    function renderCompletedSection(parent, done, icon, ctx) {
+      if (done.length === 0) return;
+      const panel = parent.createDiv({ cls: "vrpg-panel" });
+      panel.createDiv({ cls: "vrpg-section", text: `${icon} Completed` });
+      const recent = done.slice(-5).reverse();
+      for (const quest of recent) {
+        const row = panel.createDiv({ cls: "vrpg-quest-done" });
+        row.createSpan({ text: quest.title });
+        row.createSpan({ cls: "vrpg-subtitle", text: ` \xB7 ${questXP(quest)} XP earned` });
+      }
+      if (done.length > 5) {
+        panel.createDiv({ cls: "vrpg-subtitle", text: `...and ${done.length - 5} more` });
       }
     }
     module2.exports = {
@@ -2460,38 +2969,105 @@ var require_settingsQuestsScreen = __commonJS({
       const deleteQuest = ctx.deleteQuest || (() => {
       });
       const confirm2 = ctx.confirm;
-      const areas = Object.entries(AREA_LABELS2);
+      const questTypes = ctx.questTypes || { quest: "Quest", main_quest: "Main Quest", bounty: "Bounty", event: "Event" };
+      const questTypeIcons = ctx.questTypeIcons || {};
+      const areaLabels = ctx.areaLabels || AREA_LABELS2;
+      const areas = Object.entries(areaLabels);
       const priorities = Object.entries(QUEST_PRIORITIES);
       const addPanel = parent.createDiv({ cls: "vrpg-panel" });
       addPanel.createDiv({ cls: "vrpg-section", text: "Add Quest" });
-      const titleInput = addPanel.createEl("input", { type: "text", placeholder: "Quest title, e.g. Complete WGU course" });
+      addPanel.createDiv({ cls: "vrpg-subtitle", text: "Type" });
+      const typeSelect = addPanel.createEl("select", { cls: "vrpg-type-select" });
+      for (const [value, label] of Object.entries(questTypes)) {
+        const icon = questTypeIcons[value] || "";
+        typeSelect.createEl("option", { text: `${icon} ${label}`, value });
+      }
+      const titleInput = addPanel.createEl("input", { type: "text", placeholder: "Quest title" });
       addPanel.createDiv({ cls: "vrpg-subtitle", text: "Description (optional)" });
       const descInput = addPanel.createEl("input", { type: "text", placeholder: "Details about the quest" });
-      const selectRow = addPanel.createDiv({ cls: "vrpg-quest-selects" });
-      const areaSelect = selectRow.createEl("select");
-      areas.forEach(([value, label]) => {
-        areaSelect.createEl("option", { text: label, value });
-      });
-      const prioritySelect = selectRow.createEl("select");
-      priorities.forEach(([value, label]) => {
-        const xp = value === "major" ? "100" : "50";
-        prioritySelect.createEl("option", { text: `${label} (${xp} XP)`, value });
-      });
-      addPanel.createDiv({ cls: "vrpg-subtitle", text: "Deadline (optional)" });
-      const deadlineInput = addPanel.createEl("input", { type: "date" });
+      addPanel.createDiv({ cls: "vrpg-subtitle", text: "Category" });
+      const areaSelect = addPanel.createEl("select");
+      areas.forEach(([value, label]) => areaSelect.createEl("option", { text: label, value }));
+      const dynamicFields = addPanel.createDiv({ cls: "vrpg-dynamic-fields" });
+      function refreshDynamicFields() {
+        dynamicFields.empty();
+        const type = typeSelect.value;
+        if (type === "quest") {
+          dynamicFields.createDiv({ cls: "vrpg-subtitle", text: "Priority" });
+          const prioritySelect = dynamicFields.createEl("select");
+          priorities.forEach(([value, label]) => {
+            const xp = value === "major" ? "100" : "50";
+            prioritySelect.createEl("option", { text: `${label} (${xp} XP)`, value });
+          });
+          prioritySelect.id = "vrpg-add-priority";
+          dynamicFields.createDiv({ cls: "vrpg-subtitle", text: "Deadline (optional)" });
+          const deadlineInput = dynamicFields.createEl("input", { type: "date" });
+          deadlineInput.id = "vrpg-add-deadline";
+        }
+        if (type === "main_quest") {
+          dynamicFields.createDiv({ cls: "vrpg-subtitle", text: "Target Date (optional)" });
+          const targetInput = dynamicFields.createEl("input", { type: "date" });
+          targetInput.id = "vrpg-add-target-date";
+          dynamicFields.createDiv({ cls: "vrpg-subtitle", text: "Steps (one per line)" });
+          const stepsInput = dynamicFields.createEl("textarea", {
+            placeholder: "Step 1\nStep 2\nStep 3",
+            attr: { rows: 4 }
+          });
+          stepsInput.id = "vrpg-add-steps";
+        }
+        if (type === "event") {
+          const dateRow = dynamicFields.createDiv({ cls: "vrpg-quest-selects" });
+          const startWrap = dateRow.createDiv();
+          startWrap.createDiv({ cls: "vrpg-subtitle", text: "Start Date" });
+          const startInput = startWrap.createEl("input", { type: "date" });
+          startInput.id = "vrpg-add-start-date";
+          const endWrap = dateRow.createDiv();
+          endWrap.createDiv({ cls: "vrpg-subtitle", text: "End Date" });
+          const endInput = endWrap.createEl("input", { type: "date" });
+          endInput.id = "vrpg-add-end-date";
+          dynamicFields.createDiv({ cls: "vrpg-subtitle", text: "Daily Tasks (one per line, optional)" });
+          const tasksInput = dynamicFields.createEl("textarea", {
+            placeholder: "Practice 30min\nReview notes\nLog progress",
+            attr: { rows: 3 }
+          });
+          tasksInput.id = "vrpg-add-daily-tasks";
+        }
+      }
+      typeSelect.onchange = refreshDynamicFields;
+      refreshDynamicFields();
       const addBtn = addPanel.createEl("button", { cls: "vrpg-primary", text: "Add Quest" });
       addBtn.onclick = () => {
         if (!titleInput.value.trim()) return;
-        addQuest({
+        const type = typeSelect.value;
+        const input = {
+          type,
           title: titleInput.value.trim(),
           description: descInput.value.trim(),
-          area: areaSelect.value,
-          priority: prioritySelect.value,
-          deadline: deadlineInput.value || null
-        });
+          area: areaSelect.value
+        };
+        if (type === "quest") {
+          const pSel = dynamicFields.querySelector("#vrpg-add-priority");
+          const dIn = dynamicFields.querySelector("#vrpg-add-deadline");
+          input.priority = pSel ? pSel.value : "standard";
+          input.deadline = dIn && dIn.value ? dIn.value : null;
+        }
+        if (type === "main_quest") {
+          const tIn = dynamicFields.querySelector("#vrpg-add-target-date");
+          const sIn = dynamicFields.querySelector("#vrpg-add-steps");
+          input.targetDate = tIn && tIn.value ? tIn.value : null;
+          input.steps = sIn && sIn.value.trim() ? sIn.value.trim().split("\n").filter((s) => s.trim()).map((s) => ({ title: s.trim() })) : [];
+        }
+        if (type === "event") {
+          const sdIn = dynamicFields.querySelector("#vrpg-add-start-date");
+          const edIn = dynamicFields.querySelector("#vrpg-add-end-date");
+          const dtIn = dynamicFields.querySelector("#vrpg-add-daily-tasks");
+          input.startDate = sdIn && sdIn.value ? sdIn.value : null;
+          input.endDate = edIn && edIn.value ? edIn.value : null;
+          input.dailyTasks = dtIn && dtIn.value.trim() ? dtIn.value.trim().split("\n").filter((s) => s.trim()).map((s) => ({ title: s.trim(), completed: false })) : [];
+        }
+        addQuest(input);
         titleInput.value = "";
         descInput.value = "";
-        deadlineInput.value = "";
       };
       const quests = Array.isArray(data.quests) ? data.quests : [];
       const active = quests.filter((q) => !q.completed && !q.abandoned);
@@ -2501,16 +3077,18 @@ var require_settingsQuestsScreen = __commonJS({
         const listPanel = parent.createDiv({ cls: "vrpg-panel" });
         listPanel.createDiv({ cls: "vrpg-section", text: "Active Quests" });
         for (const quest of active) {
-          renderQuestRow(listPanel, quest, { areas, priorities, updateQuest, deleteQuest, confirm: confirm2 });
+          renderQuestRow(listPanel, quest, { areas, priorities, updateQuest, deleteQuest, confirm: confirm2, questTypes, questTypeIcons });
         }
       }
       if (completed.length > 0) {
         const donePanel = parent.createDiv({ cls: "vrpg-panel" });
         donePanel.createDiv({ cls: "vrpg-section", text: "Completed Quests" });
         for (const quest of completed.slice(-10).reverse()) {
+          const type = quest.type || "quest";
+          const icon = questTypeIcons[type] || "\u2694\uFE0F";
           const row = donePanel.createDiv({ cls: "vrpg-setting-row" });
-          row.createDiv({ cls: "vrpg-card-title", text: `\u2705 ${quest.title}` });
-          row.createDiv({ cls: "vrpg-subtitle", text: `${AREA_LABELS2[quest.area] || quest.area} \xB7 ${quest.priority === "major" ? "Major" : "Standard"}` });
+          row.createDiv({ cls: "vrpg-card-title", text: `\u2705 ${icon} ${quest.title}` });
+          row.createDiv({ cls: "vrpg-subtitle", text: `${questTypes[type] || type} \xB7 ${AREA_LABELS2[quest.area] || quest.area}` });
           const remove = row.createEl("button", { cls: "vrpg-danger", text: "Delete" });
           remove.onclick = () => {
             if (confirm2(`Remove completed quest "${quest.title}" from history?`)) {
@@ -2531,12 +3109,30 @@ var require_settingsQuestsScreen = __commonJS({
       }
     }
     function renderQuestRow(parent, quest, opts) {
-      const { areas, priorities, updateQuest, deleteQuest, confirm: confirm2 } = opts;
+      const { areas, priorities, updateQuest, deleteQuest, confirm: confirm2, questTypes, questTypeIcons } = opts;
+      const type = quest.type || "quest";
+      const icon = (questTypeIcons || {})[type] || "\u2694\uFE0F";
+      const typeName = (questTypes || {})[type] || type;
       const row = parent.createDiv({ cls: "vrpg-setting-row" });
-      row.createDiv({ cls: "vrpg-card-title", text: quest.title });
-      const priorityLabel = quest.priority === "major" ? "\u2B50 Major" : "Standard";
-      const deadlineText = quest.deadline ? ` \xB7 Due: ${quest.deadline}` : "";
-      row.createDiv({ cls: "vrpg-subtitle", text: `${AREA_LABELS2[quest.area] || quest.area} \xB7 ${priorityLabel}${deadlineText}` });
+      row.createDiv({ cls: "vrpg-card-title", text: `${icon} ${quest.title}` });
+      const metaParts = [typeName, AREA_LABELS2[quest.area] || quest.area];
+      if (type === "quest") {
+        metaParts.push(quest.priority === "major" ? "\u2B50 Major" : "Standard");
+        if (quest.deadline) metaParts.push(`Due: ${quest.deadline}`);
+      }
+      if (type === "main_quest") {
+        const steps = quest.steps || [];
+        const done = steps.filter((s) => s.completed).length;
+        metaParts.push(`${done}/${steps.length} steps`);
+        if (quest.targetDate) metaParts.push(`Target: ${quest.targetDate}`);
+      }
+      if (type === "bounty") {
+        metaParts.push(`${quest.completionCount || 0} claims`);
+      }
+      if (type === "event") {
+        if (quest.startDate && quest.endDate) metaParts.push(`${quest.startDate} \u2192 ${quest.endDate}`);
+      }
+      row.createDiv({ cls: "vrpg-subtitle", text: metaParts.join(" \xB7 ") });
       const edit = row.createEl("button", { cls: "vrpg-primary", text: "Edit" });
       let editForm = null;
       edit.onclick = () => {
@@ -2551,26 +3147,57 @@ var require_settingsQuestsScreen = __commonJS({
         const descInput = editForm.createEl("input", { type: "text", placeholder: "Description" });
         descInput.value = quest.description || "";
         const areaSelect = editForm.createEl("select");
-        areas.forEach(([value, label]) => {
-          areaSelect.createEl("option", { text: label, value });
-        });
+        areas.forEach(([value, label]) => areaSelect.createEl("option", { text: label, value }));
         areaSelect.value = quest.area || "craft";
-        const prioritySelect = editForm.createEl("select");
-        priorities.forEach(([value, label]) => {
-          prioritySelect.createEl("option", { text: label, value });
-        });
-        prioritySelect.value = quest.priority || "standard";
-        editForm.createDiv({ cls: "vrpg-subtitle", text: "Deadline" });
-        const deadlineInput = editForm.createEl("input", { type: "date" });
-        deadlineInput.value = quest.deadline || "";
-        const save = editForm.createEl("button", { cls: "vrpg-primary", text: "Save" });
-        save.onclick = () => updateQuest(quest.id, {
-          title: titleInput.value,
-          description: descInput.value,
-          area: areaSelect.value,
-          priority: prioritySelect.value,
-          deadline: deadlineInput.value || null
-        });
+        if (type === "quest") {
+          const prioritySelect = editForm.createEl("select");
+          priorities.forEach(([value, label]) => prioritySelect.createEl("option", { text: label, value }));
+          prioritySelect.value = quest.priority || "standard";
+          editForm.createDiv({ cls: "vrpg-subtitle", text: "Deadline" });
+          const deadlineInput = editForm.createEl("input", { type: "date" });
+          deadlineInput.value = quest.deadline || "";
+          const save = editForm.createEl("button", { cls: "vrpg-primary", text: "Save" });
+          save.onclick = () => updateQuest(quest.id, {
+            title: titleInput.value,
+            description: descInput.value,
+            area: areaSelect.value,
+            priority: prioritySelect.value,
+            deadline: deadlineInput.value || null
+          });
+        } else if (type === "main_quest") {
+          editForm.createDiv({ cls: "vrpg-subtitle", text: "Target Date" });
+          const targetInput = editForm.createEl("input", { type: "date" });
+          targetInput.value = quest.targetDate || "";
+          const save = editForm.createEl("button", { cls: "vrpg-primary", text: "Save" });
+          save.onclick = () => updateQuest(quest.id, {
+            title: titleInput.value,
+            description: descInput.value,
+            area: areaSelect.value,
+            targetDate: targetInput.value || null
+          });
+        } else if (type === "event") {
+          editForm.createDiv({ cls: "vrpg-subtitle", text: "Start Date" });
+          const startInput = editForm.createEl("input", { type: "date" });
+          startInput.value = quest.startDate || "";
+          editForm.createDiv({ cls: "vrpg-subtitle", text: "End Date" });
+          const endInput = editForm.createEl("input", { type: "date" });
+          endInput.value = quest.endDate || "";
+          const save = editForm.createEl("button", { cls: "vrpg-primary", text: "Save" });
+          save.onclick = () => updateQuest(quest.id, {
+            title: titleInput.value,
+            description: descInput.value,
+            area: areaSelect.value,
+            startDate: startInput.value || null,
+            endDate: endInput.value || null
+          });
+        } else {
+          const save = editForm.createEl("button", { cls: "vrpg-primary", text: "Save" });
+          save.onclick = () => updateQuest(quest.id, {
+            title: titleInput.value,
+            description: descInput.value,
+            area: areaSelect.value
+          });
+        }
         const cancel = editForm.createEl("button", { cls: "vrpg-primary", text: "Cancel" });
         cancel.onclick = () => {
           editForm.remove();
@@ -2579,9 +3206,7 @@ var require_settingsQuestsScreen = __commonJS({
       };
       const remove = row.createEl("button", { cls: "vrpg-danger", text: "Delete" });
       remove.onclick = () => {
-        if (confirm2(`Delete quest "${quest.title}"?`)) {
-          deleteQuest(quest.id);
-        }
+        if (confirm2(`Delete quest "${quest.title}"?`)) deleteQuest(quest.id);
       };
     }
     module2.exports = {
@@ -2722,7 +3347,8 @@ var require_habitSystem = __commonJS({
 // src/systems/xpSystem.js
 var require_xpSystem = __commonJS({
   "src/systems/xpSystem.js"(exports2, module2) {
-    var { DAILY_XP, QUEST_XP_STANDARD, QUEST_XP_MAJOR } = require_constants();
+    var { DAILY_XP, MAIN_QUEST_STEP_XP, BOUNTY_XP, EVENT_SUBTASK_XP } = require_constants();
+    var { questXP } = require_questSystem();
     function heroTitle2(level) {
       if (level >= 50) return "Legend";
       if (level >= 30) return "Champion";
@@ -2743,8 +3369,34 @@ var require_xpSystem = __commonJS({
       }
       const quests = Array.isArray(data.quests) ? data.quests : [];
       for (const quest of quests) {
+        const type = quest.type || "quest";
+        if (type === "bounty") {
+          continue;
+        }
+        if (type === "main_quest") {
+          const steps = quest.steps || [];
+          for (const step of steps) {
+            if (step.completed) earned += MAIN_QUEST_STEP_XP;
+          }
+          if (quest.completed) earned += questXP(quest);
+          continue;
+        }
+        if (type === "event") {
+          const tasks = quest.dailyTasks || [];
+          for (const task of tasks) {
+            if (task.completed) earned += EVENT_SUBTASK_XP;
+          }
+          if (quest.completed) earned += questXP(quest);
+          continue;
+        }
         if (quest.completed) {
-          earned += quest.priority === "major" ? QUEST_XP_MAJOR : QUEST_XP_STANDARD;
+          earned += questXP(quest);
+        }
+      }
+      const log = Array.isArray(data.log) ? data.log : [];
+      for (const entry of log) {
+        if (entry.type === "bounty-claimed") {
+          earned += BOUNTY_XP;
         }
       }
       let spent = 0;
@@ -2971,7 +3623,10 @@ var {
   AREA_LABELS,
   MOODS,
   RARITIES,
-  HABIT_ICONS
+  HABIT_ICONS,
+  QUEST_TYPES,
+  QUEST_TYPE_ICONS,
+  BOUNTY_DAILY_CAP
 } = require_constants();
 var {
   dateKey,
@@ -3027,7 +3682,18 @@ var {
   applyQuestComplete,
   applyQuestAbandon,
   applyQuestUpdate,
-  applyQuestDelete
+  applyQuestDelete,
+  applyBountyClaim,
+  applyMainQuestStepComplete,
+  applyEventDailyTaskComplete,
+  applyCodexAdd,
+  applyCodexSort,
+  applyCodexDismiss,
+  applyCodexDelete,
+  questsByType,
+  unsortedScrolls,
+  mainQuestProgress,
+  bountyClaimsToday
 } = require_questSystem();
 var { heroTitle, totals } = require_xpSystem();
 var { TEXT } = require_textConfig();
@@ -3219,6 +3885,51 @@ var VibeRpgPlugin = class extends Plugin {
     applyQuestDelete(this.data, questId);
     await this.save();
   }
+  async claimBounty(questId) {
+    const result = applyBountyClaim(this.data, questId);
+    if (result.capped) {
+      new Notice("Daily bounty cap reached!");
+      return;
+    }
+    if (result.claimed) {
+      await this.save();
+      new Notice("Bounty claimed! \u{1F3AF}");
+    }
+  }
+  async completeMainQuestStep(questId, stepId) {
+    const result = applyMainQuestStepComplete(this.data, questId, stepId);
+    await this.save();
+    if (result.allDone) {
+      new Notice("Main Quest chain completed! \u{1F3F0}");
+    } else {
+      new Notice("Step completed!");
+    }
+  }
+  async completeEventTask(questId, taskIndex) {
+    applyEventDailyTaskComplete(this.data, questId, taskIndex);
+    await this.save();
+    new Notice("Event task completed!");
+  }
+  async addCodexEntry(text) {
+    const clean = String(text || "").trim();
+    if (!clean) return;
+    applyCodexAdd(this.data, { text: clean });
+    await this.save();
+    new Notice("Scroll added to Codex \u{1F4DC}");
+  }
+  async sortCodexEntry(scrollId, targetType, questInput) {
+    applyCodexSort(this.data, scrollId, targetType, questInput || {});
+    await this.save();
+    new Notice(`Scroll bound as ${QUEST_TYPES[targetType] || targetType}`);
+  }
+  async dismissCodexEntry(scrollId) {
+    applyCodexDismiss(this.data, scrollId);
+    await this.save();
+  }
+  async deleteCodexEntry(scrollId) {
+    applyCodexDelete(this.data, scrollId);
+    await this.save();
+  }
   async updateHomeLayout(layout) {
     this.data.settings = this.data.settings || {};
     const interfaceLayout = normalizeInterfaceLayout(this.data.settings.interfaceLayout);
@@ -3287,7 +3998,7 @@ var VibeRpgAppView = class extends ItemView {
     if (state.selectedDateKey) this.selectedDateKey = state.selectedDateKey;
     if (state.homePanel === "dashboard") this.homePanel = "hero";
     if (state.homePanel === "wallet") this.homePanel = "log";
-    if (["today", "hero", "quests", "rewards", "inventory", "log"].includes(state.homePanel)) this.homePanel = state.homePanel;
+    if (["today", "hero", "quests", "rewards", "inventory", "log", "codex"].includes(state.homePanel)) this.homePanel = state.homePanel;
     if (["profile", "interface", "habits", "quests", "rewards"].includes(state.settingsPanel)) this.settingsPanel = state.settingsPanel;
   }
   navigate(state) {
@@ -3467,6 +4178,20 @@ var VibeRpgAppView = class extends ItemView {
       data: this.plugin.data,
       completeQuest: (questId) => this.plugin.completeQuest(questId),
       abandonQuest: (questId) => this.plugin.abandonQuest(questId),
+      claimBounty: (questId) => this.plugin.claimBounty(questId),
+      completeMainQuestStep: (questId, stepId) => this.plugin.completeMainQuestStep(questId, stepId),
+      completeEventTask: (questId, taskIndex) => this.plugin.completeEventTask(questId, taskIndex),
+      addCodexEntry: (text) => this.plugin.addCodexEntry(text),
+      sortCodexEntry: (scrollId, targetType, questInput) => this.plugin.sortCodexEntry(scrollId, targetType, questInput),
+      dismissCodexEntry: (scrollId) => this.plugin.dismissCodexEntry(scrollId),
+      deleteCodexEntry: (scrollId) => this.plugin.deleteCodexEntry(scrollId),
+      questsByType,
+      unsortedScrolls,
+      mainQuestProgress,
+      bountyClaimsToday,
+      questTypes: QUEST_TYPES,
+      questTypeIcons: QUEST_TYPE_ICONS,
+      bountyDailyCap: BOUNTY_DAILY_CAP,
       displayDate
     });
   }
@@ -3538,6 +4263,9 @@ var VibeRpgAppView = class extends ItemView {
       addQuest: (questInput) => this.plugin.addQuest(questInput),
       updateQuest: (questId, patch) => this.plugin.updateQuest(questId, patch),
       deleteQuest: (questId) => this.plugin.deleteQuest(questId),
+      questTypes: QUEST_TYPES,
+      questTypeIcons: QUEST_TYPE_ICONS,
+      areaLabels: AREA_LABELS,
       confirm
     });
   }

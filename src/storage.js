@@ -42,6 +42,7 @@ function mergeData(data) {
   // New fields — quests, log, gold
   next.quests = Array.isArray(data.quests) ? data.quests : next.quests;
   next.log = Array.isArray(data.log) ? data.log : next.log;
+  next.codex = Array.isArray(data.codex) ? data.codex : next.codex;
   next.gold = typeof data.gold === "number" ? data.gold : next.gold;
 
   // DO NOT carry over legacy wallet field

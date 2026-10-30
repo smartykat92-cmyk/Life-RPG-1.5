@@ -43,6 +43,7 @@ const DEFAULT_DATA = {
   days: {},
   inventory: [],
   log: [],
+  codex: [],
   gold: 0
 };
 

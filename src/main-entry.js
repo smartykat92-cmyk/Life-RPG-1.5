@@ -5,7 +5,10 @@ const {
   AREA_LABELS,
   MOODS,
   RARITIES,
-  HABIT_ICONS
+  HABIT_ICONS,
+  QUEST_TYPES,
+  QUEST_TYPE_ICONS,
+  BOUNTY_DAILY_CAP
 } = require("./constants");
 const {
   dateKey,
@@ -63,7 +66,18 @@ const {
   applyQuestComplete,
   applyQuestAbandon,
   applyQuestUpdate,
-  applyQuestDelete
+  applyQuestDelete,
+  applyBountyClaim,
+  applyMainQuestStepComplete,
+  applyEventDailyTaskComplete,
+  applyCodexAdd,
+  applyCodexSort,
+  applyCodexDismiss,
+  applyCodexDelete,
+  questsByType,
+  unsortedScrolls,
+  mainQuestProgress,
+  bountyClaimsToday
 } = require("./systems/questSystem");
 const { heroTitle, totals } = require("./systems/xpSystem");
 // questStatsSystem removed — replaced by real quest system
@@ -285,6 +299,58 @@ class VibeRpgPlugin extends Plugin {
     await this.save();
   }
 
+  async claimBounty(questId) {
+    const result = applyBountyClaim(this.data, questId);
+    if (result.capped) {
+      new Notice("Daily bounty cap reached!");
+      return;
+    }
+    if (result.claimed) {
+      await this.save();
+      new Notice("Bounty claimed! 🎯");
+    }
+  }
+
+  async completeMainQuestStep(questId, stepId) {
+    const result = applyMainQuestStepComplete(this.data, questId, stepId);
+    await this.save();
+    if (result.allDone) {
+      new Notice("Main Quest chain completed! 🏰");
+    } else {
+      new Notice("Step completed!");
+    }
+  }
+
+  async completeEventTask(questId, taskIndex) {
+    applyEventDailyTaskComplete(this.data, questId, taskIndex);
+    await this.save();
+    new Notice("Event task completed!");
+  }
+
+  async addCodexEntry(text) {
+    const clean = String(text || "").trim();
+    if (!clean) return;
+    applyCodexAdd(this.data, { text: clean });
+    await this.save();
+    new Notice("Scroll added to Codex 📜");
+  }
+
+  async sortCodexEntry(scrollId, targetType, questInput) {
+    applyCodexSort(this.data, scrollId, targetType, questInput || {});
+    await this.save();
+    new Notice(`Scroll bound as ${QUEST_TYPES[targetType] || targetType}`);
+  }
+
+  async dismissCodexEntry(scrollId) {
+    applyCodexDismiss(this.data, scrollId);
+    await this.save();
+  }
+
+  async deleteCodexEntry(scrollId) {
+    applyCodexDelete(this.data, scrollId);
+    await this.save();
+  }
+
   async updateHomeLayout(layout) {
     this.data.settings = this.data.settings || {};
     const interfaceLayout = normalizeInterfaceLayout(this.data.settings.interfaceLayout);
@@ -355,7 +421,7 @@ class VibeRpgAppView extends ItemView {
     if (state.selectedDateKey) this.selectedDateKey = state.selectedDateKey;
     if (state.homePanel === "dashboard") this.homePanel = "hero";
     if (state.homePanel === "wallet") this.homePanel = "log"; // migrate wallet → log
-    if (["today", "hero", "quests", "rewards", "inventory", "log"].includes(state.homePanel)) this.homePanel = state.homePanel;
+    if (["today", "hero", "quests", "rewards", "inventory", "log", "codex"].includes(state.homePanel)) this.homePanel = state.homePanel;
     if (["profile", "interface", "habits", "quests", "rewards"].includes(state.settingsPanel)) this.settingsPanel = state.settingsPanel;
   }
 
@@ -553,6 +619,20 @@ class VibeRpgAppView extends ItemView {
       data: this.plugin.data,
       completeQuest: questId => this.plugin.completeQuest(questId),
       abandonQuest: questId => this.plugin.abandonQuest(questId),
+      claimBounty: questId => this.plugin.claimBounty(questId),
+      completeMainQuestStep: (questId, stepId) => this.plugin.completeMainQuestStep(questId, stepId),
+      completeEventTask: (questId, taskIndex) => this.plugin.completeEventTask(questId, taskIndex),
+      addCodexEntry: text => this.plugin.addCodexEntry(text),
+      sortCodexEntry: (scrollId, targetType, questInput) => this.plugin.sortCodexEntry(scrollId, targetType, questInput),
+      dismissCodexEntry: scrollId => this.plugin.dismissCodexEntry(scrollId),
+      deleteCodexEntry: scrollId => this.plugin.deleteCodexEntry(scrollId),
+      questsByType,
+      unsortedScrolls,
+      mainQuestProgress,
+      bountyClaimsToday,
+      questTypes: QUEST_TYPES,
+      questTypeIcons: QUEST_TYPE_ICONS,
+      bountyDailyCap: BOUNTY_DAILY_CAP,
       displayDate
     });
   }
@@ -633,6 +713,9 @@ class VibeRpgAppView extends ItemView {
       addQuest: questInput => this.plugin.addQuest(questInput),
       updateQuest: (questId, patch) => this.plugin.updateQuest(questId, patch),
       deleteQuest: questId => this.plugin.deleteQuest(questId),
+      questTypes: QUEST_TYPES,
+      questTypeIcons: QUEST_TYPE_ICONS,
+      areaLabels: AREA_LABELS,
       confirm
     });
   }
